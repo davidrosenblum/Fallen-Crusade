@@ -20,7 +20,7 @@ export class NPCsCollection{
     public static createCollections(database:Db):void{
         database.createCollection("npcs").then(() => {
             // creates the 'characters' collection with the unique field 'name'
-            database.collection("npcs").createIndex("type");
+            database.collection("npcs").createIndex("type", {unique: true});
         });
     }
     public static loadNPCs(database:Db):Promise<NPCDocument[]>{

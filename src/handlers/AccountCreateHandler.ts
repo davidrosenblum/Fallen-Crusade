@@ -5,7 +5,7 @@ import { RequestParser } from "../utils/RequestParser";
 class AccountCreateHandler{
     private static httpHeaders:{[header:string]: string} = {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Content-Type",
+        "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Content-Type",
         "Content-Type": "json"
     };
 

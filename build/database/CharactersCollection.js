@@ -5,7 +5,7 @@ var CharactersCollection = (function () {
     }
     CharactersCollection.createCollections = function (database) {
         database.createCollection("characters").then(function () {
-            database.collection("characters").createIndex("name");
+            database.collection("characters").createIndex("name", { unique: true });
         });
     };
     CharactersCollection.createCharacter = function (database, accountID, name, skin) {

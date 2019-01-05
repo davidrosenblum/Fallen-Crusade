@@ -29,16 +29,18 @@ var TokenGenerator = (function () {
     });
     TokenGenerator.hashToken = function (input) {
         var buffer = new Array(input.length);
-        var halfWay = Math.ceil(input.length / 2) - 1;
+        var halfWayIndex = Math.ceil(input.length / 2) - 1;
         for (var i = 0, s = 0; i < input.length; i++) {
-            var arrayIndex = Math.floor((i + i * 2) % TokenGenerator.vals.length);
-            if (i < halfWay) {
-                s += 2;
+            var cc = input.charCodeAt(i);
+            var hashIndex = (i + Math.pow(cc, 2)) % TokenGenerator.vals.length;
+            var hashChar = TokenGenerator.vals[hashIndex];
+            if (i < halfWayIndex) {
+                s = halfWayIndex - i;
             }
-            else if (i > halfWay) {
-                s -= 2;
+            else if (i >= halfWayIndex) {
+                s = input.length - i + halfWayIndex;
             }
-            buffer[s] = TokenGenerator.vals[arrayIndex];
+            buffer[s] = hashChar;
         }
         return buffer.join("");
     };
@@ -50,7 +52,7 @@ var TokenGenerator = (function () {
         }
         return buffer.join("");
     };
-    TokenGenerator.vals = "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split("");
+    TokenGenerator.vals = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split("");
     return TokenGenerator;
 }());
 exports.TokenGenerator = TokenGenerator;

@@ -69,6 +69,10 @@ export class Server{
         });
 
         // account creation handler 
+        this._app.options("/accounts/create", (req, res) => {
+            AccountCreateHandler.options(req, res);
+        });
+
         this._app.post("/accounts/create", (req, res) => {
             AccountCreateHandler.post(req, res, this._database);
         });

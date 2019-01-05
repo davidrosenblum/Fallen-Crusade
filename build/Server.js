@@ -81,6 +81,9 @@ var Server = (function () {
                 setTimeout(function () { return _this.close(); }, 1000 * s);
             }
         });
+        this._app.options("/accounts/create", function (req, res) {
+            AccountCreateHandler_1.default.options(req, res);
+        });
         this._app.post("/accounts/create", function (req, res) {
             AccountCreateHandler_1.default.post(req, res, _this._database);
         });

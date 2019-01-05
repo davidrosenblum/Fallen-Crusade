@@ -26,7 +26,7 @@ export class CharactersCollection{
     public static createCollections(database:Db):void{
         database.createCollection("characters").then(() => {
             // creates the 'characters' collection with the unique field 'name'
-            database.collection("characters").createIndex("name")
+            database.collection("characters").createIndex("name", {unique: true})
         });
     }
 

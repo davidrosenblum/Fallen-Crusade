@@ -2,10 +2,11 @@ import React from "react";
 import { Form, FormGroup, Label, Input, Button, Row, Col } from "reactstrap";
 import { BUTTON_WIDTH, INPUT_MAX_LENGTH } from "../data/Data";
 import { Banner } from "./Banner";
-import Client, { CLIENT_VERSION } from "../game/Client";
+import { Footer } from "./Footer";
+import Client from "../game/Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
 import NavDispatcher from "../dispatchers/NavDispatcher";
-import { Footer } from "./Footer";
+
 
 export class Login extends React.Component{
     constructor(props){
@@ -13,7 +14,7 @@ export class Login extends React.Component{
 
         this.usernameInput = null;
         this.passwordInput = null;
-        this.successfulUsername = null;
+        this.usernameToSave = null;
 
         this.state = {
             pending: false
@@ -26,11 +27,10 @@ export class Login extends React.Component{
 
         this.onLogin = evt => {
             if(evt.status === "ok"){
-                this.saveUsername();
+                this.saveUsername(this.usernameToSave);
                 NavDispatcher.showMenu("character-select");
             }
             else{
-                console.log(evt);
                 ModalDispatcher.modal("Login Error", evt.message);
             }
             this.setState({pending: false});
@@ -62,7 +62,7 @@ export class Login extends React.Component{
         let username = this.usernameInput.value;
         let password = this.passwordInput.value;
 
-        this.saveUsername = username;
+        this.usernameToSave = username;
 
         Client.login(username, password);
     }
@@ -72,7 +72,7 @@ export class Login extends React.Component{
     }
 
     saveUsername(username){
-        window.localStorage.setItem("username", username || this.successfulUsername);
+        window.localStorage.setItem("username", username);
     }
 
     getSavedUsername(){

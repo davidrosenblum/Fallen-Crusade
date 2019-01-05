@@ -3,14 +3,15 @@ import { Table, Button } from "reactstrap";
 import { BUTTON_WIDTH } from "../data/Data";
 import Client from "../game/Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
+import NavDispatcher from "../dispatchers/NavDispatcher";
 
 export class CharacterSelect extends React.Component{
     constructor(props){
         super(props);
 
         this.state = {
-            characterList:          null,
-            characterListErrMsg:    null
+            characterList:  null,
+            errMessage:     null
         };
 
         this.onCharacterList = evt => {
@@ -18,8 +19,8 @@ export class CharacterSelect extends React.Component{
                 this.setState({characterList: evt.characterList || null});
             }
             else{
-                ModalDispatcher.modal("Character List Error", evt.message);
-                this.setState({characterListErrMsg: evt.message});
+                ModalDispatcher.modal("Characters Error", evt.message);
+                this.setState({errMessage: evt.message});
             }
         };
     }
@@ -36,12 +37,22 @@ export class CharacterSelect extends React.Component{
         Client.removeListener("character-list", this.onCharacterList);
     }
 
+    onCreate(){
+        NavDispatcher.showMenu("create-character");
+    }
+
+    onLogout(){
+        Client.logout();
+        NavDispatcher.showMenu("login");
+    }
+
     selectPlayer(name){
         Client.selectCharacter(name);
     }
 
     renderCharacterList(){
-        let {characterList} = this.state.characterList;
+        let characterList = this.state.characterList;
+
         if(!characterList){
             return <div>{this.state.characterListErrMsg || "Loading..."}</div>;
         }
@@ -55,7 +66,7 @@ export class CharacterSelect extends React.Component{
                 let {name, level, last_map} = characterData;
 
                 rows.push(
-                    <tr>
+                    <tr key={i}>
                         <td>{name}</td>
                         <td>Level {level}</td>
                         <td>{last_map}</td>
@@ -69,7 +80,7 @@ export class CharacterSelect extends React.Component{
             }
             else{
                 rows.push(
-                    <tr>
+                    <tr key={i}>
                         <td>
                             <Button width={BUTTON_WIDTH} disabled={this.state.inputsDisabled}>
                                 Create
@@ -87,14 +98,44 @@ export class CharacterSelect extends React.Component{
                         {rows}
                     </thead>
                 </Table>
+                {this.renderLogoutBtn()}
             </div>  
         )
     }
 
+    renderLogoutBtn(){
+        return (
+            <div className="text-center">
+                <Button width={BUTTON_WIDTH} onClick={this.onLogout.bind(this)}>
+                    Logout
+                </Button>
+            </div>
+        );
+    }
+
+    renderBody(){
+        let {characterList=null, errMessage=null} = this.state;
+
+        if(errMessage){
+            return (
+                <div>
+                    <div>{errMessage}</div>
+                    {this.renderLogoutBtn()}
+                </div>
+            );
+        }
+
+        else if(characterList){
+            return this.renderCharacterList();
+        }
+
+        return <div>Loading...</div>
+    }
+
     render(){
         return (
-            <div>
-                {this.renderCharacterList()}
+            <div className="app-menu">
+                {this.renderBody()}
             </div>
         );
     }

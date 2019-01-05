@@ -5,7 +5,7 @@ var NPCsCollection = (function () {
     }
     NPCsCollection.createCollections = function (database) {
         database.createCollection("npcs").then(function () {
-            database.collection("npcs").createIndex("type");
+            database.collection("npcs").createIndex("type", { unique: true });
         });
     };
     NPCsCollection.loadNPCs = function (database) {

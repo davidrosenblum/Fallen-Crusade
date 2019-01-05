@@ -35,7 +35,7 @@ var AccountCreateHandler = (function () {
     };
     AccountCreateHandler.httpHeaders = {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Content-Type",
+        "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Content-Type",
         "Content-Type": "json"
     };
     return AccountCreateHandler;

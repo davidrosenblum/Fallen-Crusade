@@ -44,7 +44,7 @@ export class Register extends React.Component{
             return;
         }
 
-        let url = window.location.origin.replace(":3000", ":8080");
+        let url = `${window.location.origin.replace(":3000", ":8080")}/accounts/create`;
         let headers = Ajax.getCorsHeaders();
         let query = null;
         let data = JSON.stringify({username, password});

@@ -25,12 +25,12 @@ export class AccountsCollection{
     public static createCollections(database:Db):void{
         // creates the 'accounts' collection, with the unique field 'username'
         database.createCollection("accounts").then(() => {
-            database.collection("accounts").createIndex("username")
+            database.collection("accounts").createIndex("username", {unique: true})
         });
 
         // creates the 'salts' collection, with the unique field 'username'
         database.createCollection("salts").then(() => {
-            database.collection("salts").createIndex("username")
+            database.collection("salts").createIndex("username", {unique: true})
         });
     }
 
@@ -38,7 +38,7 @@ export class AccountsCollection{
     public static createAccount(database:Db, username:string, password:string):Promise<string>{
         return new Promise((resolve, reject) => {
             // generate a salt, relative to the size of the password 
-            let salt:string = TokenGenerator.anyToken(password.length - AccountsCollection.PASSWORD_LENGTH)
+            let salt:string = TokenGenerator.anyToken(AccountsCollection.PASSWORD_LENGTH - password.length);
             // salt the password and hash it 
             let hash:string = TokenGenerator.hashToken(password + salt);
 
@@ -68,7 +68,13 @@ export class AccountsCollection{
                             reject(err);
                         });                             
                 })
-                .catch(err => reject(err)); // account error (probably bad username)
+                .catch(err => {
+                    // account error (probably bad username)
+                    if(err.code === 11000){
+                        reject(new Error(`Account "${username}" already exists.`));
+                    }
+                    else reject(err)
+                }); 
         });
     }
 

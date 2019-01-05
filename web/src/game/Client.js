@@ -64,6 +64,11 @@ class Client extends EventEmitter{
             case OpCode.ACCOUNT_LOGIN:
                 this.handleLogin(data, status);
                 break;
+            case OpCode.ACCOUNT_LOGOUT:
+                break;
+            case OpCode.CHARACTER_LIST:
+                this.handleCharacterList(data, status);
+                break;
         }
     }
 
@@ -75,6 +80,12 @@ class Client extends EventEmitter{
         }
 
         this.emit("login", {message, status})
+    }
+
+    handleCharacterList(data, status){
+        let {message=null, characterList=null} = data;
+
+        this.emit("character-list", {message, characterList, status});
     }
 
     login(username, password){
