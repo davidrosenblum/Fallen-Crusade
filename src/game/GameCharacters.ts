@@ -49,6 +49,7 @@ export class GameCharacters{
                 client.respondCharacterCreate(response, null);
             })
             .catch(err => {
+                console.log('err in HCC',err.message);
                 client.respondCharacterCreate(null, err.message);
             });
     }

@@ -6,7 +6,7 @@ import { TokenGenerator } from '../utils/TokenGenerator';
 import { RelativeMapState } from '../maps/MapInstance';
 import { CharacterPreviewDocument } from '../database/CharactersCollection';
 import { CharacterSpawnState, CharacterUpdateState } from '../characters/Character';
-import { PendingInvite } from './PendingInvite';
+import { PendingInvite } from "./invites/PendingInvite";
 
 export interface GameClientRequest{
     opCode:OpCode,
@@ -96,35 +96,35 @@ export class GameClient{
     }
 
     public respondLogin(clientID:string, errMsg:string):void{
-        this.send(OpCode.ACCOUNT_LOGIN, (errMsg ? errMsg : {clientID}), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.ACCOUNT_LOGIN, errMsg ? errMsg : {clientID}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondLogout(message:string, errMsg:string):void{
-        this.send(OpCode.ACCOUNT_LOGOUT, message, errMsg ? Status.BAD : Status.GOOD);
+        this.send(OpCode.ACCOUNT_LOGOUT, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondCharacterList(characterList:CharacterPreviewDocument[], errMsg:string):void{
-        this.send(OpCode.CHARACTER_LIST, (characterList ? {characterList}: errMsg), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.CHARACTER_LIST, characterList ? {characterList}: errMsg, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondCharacterCreate(message:string, errMsg:string):void{
-        this.send(OpCode.CHARACTER_CREATE, message, errMsg ? Status.BAD : Status.GOOD);
+        this.send(OpCode.CHARACTER_CREATE, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondCharacterDelete(message:string, errMsg:string):void{
-        this.send(OpCode.CHARACTER_DELETE, message, errMsg ? Status.BAD : Status.GOOD);
+        this.send(OpCode.CHARACTER_DELETE, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondCharacterSelect(message:string, errMsg:string):void{
-        this.send(OpCode.CHARACTER_SELECT, message, errMsg ? Status.BAD : Status.GOOD);
+        this.send(OpCode.CHARACTER_SELECT, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondEnterMap(mapState:RelativeMapState, errMsg:string):void{
-        this.send(OpCode.ENTER_MAP, (errMsg ? errMsg : mapState), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.ENTER_MAP, errMsg ? errMsg : mapState, errMsg ? Status.BAD : Status.GOOD);
     } 
 
     public respondEnterInstance(mapState:RelativeMapState, errMsg:string,):void{
-        this.send(OpCode.ENTER_INSTANCE, (errMsg ? errMsg : mapState), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.ENTER_INSTANCE, errMsg ? errMsg : mapState, errMsg ? Status.BAD : Status.GOOD);
     } 
 
     public respondChatMessage(chat:string, from?:string, errMsg?:string):void{
@@ -132,27 +132,27 @@ export class GameClient{
     }
 
     public respondObjectStats(stats, errMsg:string):void{
-        this.send(OpCode.OBJECT_STATS, (errMsg ? errMsg : {stats}), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.OBJECT_STATS, errMsg ? errMsg : {stats}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondAbilityList(abilityList:{[name:string]: number}, errMsg:string):void{
-        this.send(OpCode.ABILITY_CAST, (errMsg ? errMsg : {abilityList}), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.ABILITY_CAST, errMsg ? errMsg : {abilityList}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondAbilityUpgrade(abilityList:{[name:string]: number}, errMsg:string):void{
-        this.send(OpCode.ABILITY_UPGRADE, (errMsg ? errMsg : {abilityList}), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.ABILITY_UPGRADE, errMsg ? errMsg : {abilityList}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondAbilityCast(message:string, errMsg:string):void{
-        this.send(OpCode.ABILITY_CAST, (errMsg ? errMsg : message), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.ABILITY_CAST, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondInviteSend(message:string, errMsg:string):void{
-        this.send(OpCode.INVITE_SEND, (errMsg ? errMsg : message), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.INVITE_SEND, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondInviteReply(message:string, errMsg:string):void{
-        this.send(OpCode.INVITE_REPLY, (errMsg ? errMsg : message), (errMsg ? Status.BAD : Status.GOOD));
+        this.send(OpCode.INVITE_REPLY, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public notifyObjectCreate(state:CharacterSpawnState):void{

@@ -38,7 +38,7 @@ export class CharacterSelect extends React.Component{
     }
 
     onCreate(){
-        NavDispatcher.showMenu("create-character");
+        NavDispatcher.showMenu("character-create");
     }
 
     onLogout(){
@@ -71,7 +71,11 @@ export class CharacterSelect extends React.Component{
                         <td>Level {level}</td>
                         <td>{last_map}</td>
                         <td>
-                            <Button width={BUTTON_WIDTH} onClick={() => this.selectPlayer(name)} disabled={this.state.inputsDisabled}>
+                            <Button
+                                width={BUTTON_WIDTH}
+                                onClick={() => this.selectPlayer(name)}
+                                disabled={this.state.inputsDisabled}
+                            >
                                 Select
                             </Button>
                         </td>
@@ -82,7 +86,11 @@ export class CharacterSelect extends React.Component{
                 rows.push(
                     <tr key={i}>
                         <td>
-                            <Button width={BUTTON_WIDTH} disabled={this.state.inputsDisabled}>
+                            <Button
+                                width={BUTTON_WIDTH}
+                                onClick={this.onCreate.bind(this)}
+                                disabled={this.state.inputsDisabled}
+                            >
                                 Create
                             </Button>
                         </td>
@@ -134,8 +142,11 @@ export class CharacterSelect extends React.Component{
 
     render(){
         return (
-            <div className="app-menu">
-                {this.renderBody()}
+            <div>
+                <div className="app-menu">
+                    <br/>
+                    {this.renderBody()}
+                </div>
             </div>
         );
     }

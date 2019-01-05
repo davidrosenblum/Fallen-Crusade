@@ -32,6 +32,7 @@ var GameCharacters = (function () {
             client.respondCharacterCreate(response, null);
         })
             .catch(function (err) {
+            console.log('err in HCC', err.message);
             client.respondCharacterCreate(null, err.message);
         });
     };

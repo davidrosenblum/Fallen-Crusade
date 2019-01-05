@@ -43,7 +43,12 @@ export class CharactersCollection{
             // store the character 'save' in the database
             database.collection("characters").insertOne(characterDoc)
                 .then(() => resolve(`Character "${name}" created.`))
-                .catch(err => reject(err));
+                .catch(err => {
+                    if(err.code === 11000){
+                        reject(new Error(`Character "${name}" already exists.`));
+                    }
+                    else reject(err);
+                });
         });
     }
 

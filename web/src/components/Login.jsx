@@ -107,7 +107,7 @@ export class Login extends React.Component{
                                 required
                             />
                         </FormGroup>
-                        <FormGroup>
+                        <div className="text-center">
                             <Button width={BUTTON_WIDTH} disabled={this.state.pending}>
                                 Submit
                             </Button>
@@ -120,7 +120,7 @@ export class Login extends React.Component{
                             >
                                 Create
                             </Button>
-                        </FormGroup>
+                        </div>
                     </Form>
                     <Footer/>
                 </div>

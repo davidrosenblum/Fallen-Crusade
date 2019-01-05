@@ -73,7 +73,7 @@ export class AccountsCollection{
                     if(err.code === 11000){
                         reject(new Error(`Account "${username}" already exists.`));
                     }
-                    else reject(err)
+                    else reject(err);
                 }); 
         });
     }

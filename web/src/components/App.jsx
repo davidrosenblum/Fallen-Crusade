@@ -3,6 +3,7 @@ import "./App.css";
 import { Login } from "./Login";
 import { Register } from "./Register";
 import { CharacterSelect } from "./CharacterSelect";
+import { CharacterCreate } from "./CharacterCreate";
 import { AlertModal } from "./AlertModal";
 import Client from "../game/Client";
 import NavDispatcher from "../dispatchers/NavDispatcher";
@@ -51,6 +52,8 @@ export class App extends React.Component{
                 return <Register/>;
             case "character-select":
                 return <CharacterSelect/>;
+            case "character-create":
+                return <CharacterCreate/>
             default:
                 return null;
         }

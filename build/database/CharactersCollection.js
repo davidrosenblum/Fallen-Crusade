@@ -18,7 +18,13 @@ var CharactersCollection = (function () {
             };
             database.collection("characters").insertOne(characterDoc)
                 .then(function () { return resolve("Character \"" + name + "\" created."); })
-                .catch(function (err) { return reject(err); });
+                .catch(function (err) {
+                if (err.code === 11000) {
+                    reject(new Error("Character \"" + name + "\" already exists."));
+                }
+                else
+                    reject(err);
+            });
         });
     };
     CharactersCollection.getCharacter = function (database, accountID, name) {

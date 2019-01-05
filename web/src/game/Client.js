@@ -65,9 +65,13 @@ class Client extends EventEmitter{
                 this.handleLogin(data, status);
                 break;
             case OpCode.ACCOUNT_LOGOUT:
+                this.handleLogout(data, status);
                 break;
             case OpCode.CHARACTER_LIST:
                 this.handleCharacterList(data, status);
+                break;
+            case OpCode.CHARACTER_CREATE:
+                this.handleCharacterCreate(data, status);
                 break;
         }
     }
@@ -82,10 +86,22 @@ class Client extends EventEmitter{
         this.emit("login", {message, status})
     }
 
+    handleLogout(data, status){
+        let {message=null} = data;
+
+        this.emit("logout", {message, status});
+    }
+
     handleCharacterList(data, status){
         let {message=null, characterList=null} = data;
 
         this.emit("character-list", {message, characterList, status});
+    }
+
+    handleCharacterCreate(data, status){
+        let {message=null} = data;
+
+        this.emit("character-create", {message, status});
     }
 
     login(username, password){
@@ -99,6 +115,10 @@ class Client extends EventEmitter{
 
     getCharacterList(){
         this.send(OpCode.CHARACTER_LIST);
+    }
+
+    createCharacter(name, skin){
+        this.send(OpCode.CHARACTER_CREATE, {name, skin});
     }
 
     selectCharacter(name){
