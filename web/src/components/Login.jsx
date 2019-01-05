@@ -1,9 +1,11 @@
 import React from "react";
 import { Form, FormGroup, Label, Input, Button, Row, Col } from "reactstrap";
 import { BUTTON_WIDTH, INPUT_MAX_LENGTH } from "../data/Data";
-import Client from "../game/Client";
+import { Banner } from "./Banner";
+import Client, { CLIENT_VERSION } from "../game/Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
 import NavDispatcher from "../dispatchers/NavDispatcher";
+import { Footer } from "./Footer";
 
 export class Login extends React.Component{
     constructor(props){
@@ -14,12 +16,12 @@ export class Login extends React.Component{
         this.successfulUsername = null;
 
         this.state = {
-            inputsDisabled: false
+            pending: false
         };
 
         this.onConnect = () => {
             console.log("Connected");
-            this.setState({inputsDisabled: false});
+            this.setState({pending: false});
         };
 
         this.onLogin = evt => {
@@ -31,7 +33,7 @@ export class Login extends React.Component{
                 console.log(evt);
                 ModalDispatcher.modal("Login Error", evt.message);
             }
-            this.setState({inputsDisabled: false});
+            this.setState({pending: false});
         };
     }
 
@@ -65,6 +67,10 @@ export class Login extends React.Component{
         Client.login(username, password);
     }
 
+    onCreate(){
+        NavDispatcher.showMenu("register");
+    }
+
     saveUsername(username){
         window.localStorage.setItem("username", username || this.successfulUsername);
     }
@@ -76,34 +82,48 @@ export class Login extends React.Component{
     render(){
         return (
             <div>
-                <Form onSubmit={this.onSubmit.bind(this)}>
-                    <FormGroup>
-                        <Label>Username</Label>
-                        <Input
-                            innerRef={input => this.usernameInput = input}
-                            type="text"
-                            maxLength={INPUT_MAX_LENGTH}
-                            disabled={this.state.inputsDisabled}
-                            required
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label>Password</Label>
-                        <Input
-                            innerRef={input => this.passwordInput = input}
-                            type="password"
-                            maxLength={INPUT_MAX_LENGTH}
-                            disabled={this.state.inputsDisabled}
-                            required
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Row>
-
-                        </Row>
-                        <Button disabled={this.state.inputsDisabled}>Submit</Button>
-                    </FormGroup>
-                </Form>
+                <br/>
+                <Banner/>
+                <br/>
+                <div className="app-menu">
+                    <Form onSubmit={this.onSubmit.bind(this)}>
+                        <FormGroup>
+                            <Label>Username</Label>
+                            <Input
+                                innerRef={input => this.usernameInput = input}
+                                type="text"
+                                maxLength={INPUT_MAX_LENGTH}
+                                disabled={this.state.pending}
+                                required
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Password</Label>
+                            <Input
+                                innerRef={input => this.passwordInput = input}
+                                type="password"
+                                maxLength={INPUT_MAX_LENGTH}
+                                disabled={this.state.pending}
+                                required
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Button width={BUTTON_WIDTH} disabled={this.state.pending}>
+                                Submit
+                            </Button>
+                            &nbsp;
+                            <Button
+                                type="button"
+                                width={BUTTON_WIDTH}
+                                disabled={this.state.pending}
+                                onClick={this.onCreate.bind(this)}
+                            >
+                                Create
+                            </Button>
+                        </FormGroup>
+                    </Form>
+                    <Footer/>
+                </div>
             </div>
         );
     }
