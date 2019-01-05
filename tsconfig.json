@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "outDir": "build",
+        "rootDir": "src",
+        "removeComments": true,
+        "lib": ["dom", "es2015"]
+    }
+}
