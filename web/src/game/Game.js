@@ -7,6 +7,8 @@ import ModalDispatcher from "../dispatchers/ModalDispatcher";
 
 export const TILE_SIZE = 64;
 
+fw.TextField.defaultFont = "15px electrolize";
+
 class Game extends EventEmitter{
     constructor(){
         super();
@@ -18,6 +20,9 @@ class Game extends EventEmitter{
         this.collisionGrid = null;
         this.mapBounds = null;
         this.scroller = null;
+
+        this.started = false;
+        this.todo = [];
     }
 
     loadAssets(){
@@ -64,11 +69,17 @@ class Game extends EventEmitter{
         this.scroller = new fw.Scroller(this.renderer, this.mapBounds);
 
         transportNodes.forEach(tData => this.createTransportNode(tData));
+        units.forEach(uData => this.createObject(uData));
 
         this.renderer.startRendering(this.layers.mapSprite);
+
+        this.started = true;
+        this.todo.forEach(task => task());
+        this.todo = [];
     }
 
     unloadMap(){
+        this.started = false;
         this.renderer.stopRendering();
 
         this.layers.removeAll();
@@ -81,16 +92,33 @@ class Game extends EventEmitter{
     }
 
     createObject(data){
-        let {type, col, row} = data;
+        if(!this.started){
+            this.todo.push(() => this.createObject(data));
+            return;
+        }
 
-        let object = GameObjects.create(type);
+        let {x, y, spawnLocation} = data;
+        let object = GameObjects.create(data);
 
         if(object && this.objects.addObject(object)){
-            this.layers.addAt(object, col, row);
+            if(spawnLocation){
+                let {col, row} = spawnLocation;
+                this.layers.addAt(object, col, row);
+            }
+            else{
+                object.setPosition(x, y);
+                this.layers.add(object);
+            }
         }
+        else console.log("Did not create:", data);
     }
 
     removeObject(objectID){
+        if(!this.started){
+            this.todo.push(() => this.removeObject(objectID));
+            return;
+        }
+
         let object = this.objects.getObject(objectID);
         if(object){
             object.remove();
@@ -99,18 +127,20 @@ class Game extends EventEmitter{
     }
 
     updateObject(data){
+        if(!this.started){
+            this.todo.push(() => this.updateObject(data));
+            return;
+        }
+
         this.objects.updateObject(data);
     }
 
     createTransportNode(data){
-        console.log(data);
         let {col, row} = data.spawnLocation;
         let tnode = TransportObjects.create(data);
         if(tnode){
             this.layers.addAt(tnode, col, row);
-            console.log(tnode)
         }
-        else console.log("NO TNDOE")
     }
 
     injectInto(element){

@@ -76,6 +76,21 @@ class Client extends EventEmitter{
             case OpCode.ENTER_MAP:
                 this.handleMapEnter(data, status);
                 break;
+            case OpCode.ENTER_INSTANCE:
+                this.handleInstanceEnter(data, status);
+                break;
+            case OpCode.CHAT_MESSAGE:
+                this.handleChatMessage(data, status);
+                break;
+            case OpCode.OBJECT_CREATE:
+                this.handleObjectCreate(data, status);
+                break;
+            case OpCode.OBJECT_DELETE:
+                this.handleObjectDelete(data, status);
+                break;
+            case OpCode.OBJECT_UPDATE:
+                this.handleObjectUpdate(data, status);
+                break;
         }
     }
 
@@ -111,6 +126,30 @@ class Client extends EventEmitter{
         let {message=null, mapState=null, playerState=null} = data;
 
         this.emit("enter-map", {message, mapState, playerState, status});
+    }
+
+    handleInstanceEnter(data, status){
+        let {message=null, mapState=null, playerState=null} = data;
+
+        this.emit("enter-instance", {message, mapState, playerState, status});
+    }
+
+    handleChatMessage(data, status){
+        let {chat="", from=null} = data;
+        
+        this.emit("chat", {chat, from, status});
+    }
+
+    handleObjectCreate(data){
+        this.emit("object-create", data);
+    }
+
+    handleObjectDelete(data){
+        this.emit("object-delete", data);
+    }
+
+    handleObjectUpdate(data){
+        this.emit("object-update", data);
     }
 
     login(username, password){

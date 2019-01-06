@@ -1,4 +1,4 @@
-import { NPC } from './NPC';
+import { NPC, NPCTier } from './NPC';
 import { NPCDocument } from '../database/NPCsCollection';
 import { SpawnLocation } from './Character';
 
@@ -6,6 +6,7 @@ export interface NPCOptions{
     type:string;
     ownerID:string;
     spawnLocation:SpawnLocation;
+    tier?:NPCTier;
     anim?:string;
     name?:string;
     team?:string;
@@ -15,7 +16,7 @@ export class NPCFactory{
     private static npcTypes:{[type:string]: NPCDocument} = {};
 
     public static create(options:NPCOptions):NPC{
-        let {type, ownerID, anim, name, team, spawnLocation} = options;
+        let {type, ownerID, spawnLocation, anim=null, name=null, team=null, tier=null} = options;
 
         if(type in this.npcTypes){
             let doc:NPCDocument = this.npcTypes[type];
@@ -25,6 +26,7 @@ export class NPCFactory{
                 type:           doc.type,
                 name:           name || doc.name,
                 team:           team || doc.team,
+                tier:           tier || doc.tier,
                 moveSpeed:      doc.move_speed,
                 anim:           anim || null,
                 health:         doc.health,

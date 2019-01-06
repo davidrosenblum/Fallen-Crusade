@@ -6,7 +6,7 @@ import { GameClient, GameClientResponse } from '../game/GameClient';
 import { OpCode, Status } from "../game/Comm";
 import { CharacterUpdateState, CharacterSpawnState } from '../characters/Character';
 import { PlayerState, Player } from '../characters/Player';
-import { NPC } from '../characters/NPC';
+import { NPC, NPCTier } from '../characters/NPC';
 import { NPCFactory, NPCOptions } from '../characters/NPCFactory';
 import { EventEmitter } from "events";
 
@@ -120,12 +120,13 @@ export class MapInstance extends EventEmitter{
         }
     }
 
-    public createNPC(options:{type:string, row:number, col:number, name?:string, team?:string, anim?:string}):void{
-        let {type, row, col, name, team, anim} = options;
+    public createNPC(options:{type:string, row:number, col:number, tier?:NPCTier, name?:string, team?:string, anim?:string}):void{
+        let {type, row, col, name, team, anim, tier} = options;
 
         let npcOpts:NPCOptions = {
             ownerID:    "server",
             spawnLocation: {col, row},
+            tier,
             type,
             name,
             team,

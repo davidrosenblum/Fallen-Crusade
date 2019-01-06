@@ -82,10 +82,11 @@ var MapInstance = (function (_super) {
         }
     };
     MapInstance.prototype.createNPC = function (options) {
-        var type = options.type, row = options.row, col = options.col, name = options.name, team = options.team, anim = options.anim;
+        var type = options.type, row = options.row, col = options.col, name = options.name, team = options.team, anim = options.anim, tier = options.tier;
         var npcOpts = {
             ownerID: "server",
             spawnLocation: { col: col, row: row },
+            tier: tier,
             type: type,
             name: name,
             team: team,

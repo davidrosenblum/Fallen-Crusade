@@ -55,7 +55,7 @@ export class DatabaseController{
         return NPCsCollection.loadNPCs(this._database);
     }
 
-    public insertDefaultNPCs():Promise<any>{
+    public insertDefaultNPCs():Promise<string[]>{
         return NPCsCollection.insertDefaults(this._database);
     }
 }

@@ -25,7 +25,7 @@ export class Player extends Unit{
     constructor(saveData:CharacterDocument, ownerID?:string){
         super({
             name:           saveData.name,
-            type:           "Player",
+            type:           "player",
             team:           "Crusaders",
             ownerID,
             health:         25,
