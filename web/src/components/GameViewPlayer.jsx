@@ -2,7 +2,7 @@ import React from "react";
 import Client from "../game/Client";
 import Game from "../game/Game";
 
-export class GameViewTarget extends React.Component{
+export class GameViewPlayer extends React.Component{
     constructor(props){
         super(props);
 
@@ -11,10 +11,10 @@ export class GameViewTarget extends React.Component{
         };
 
         this.onObjectStats = evt => {
-            if(evt.status === "ok" && Game.selectedTarget){
+            if(evt.status === "ok" && Game.player){
                 let {stats} = evt;
 
-                if(Game.selectedTarget.objectID === stats.objectID){
+                if(Game.player.objectID === stats.objectID){
                     this.setState({stats});
                 }
             }
@@ -33,19 +33,14 @@ export class GameViewTarget extends React.Component{
         let stats = this.state.stats;
         if(!stats) return null;
 
-        let {base, current, name, team, level=null} = stats;
+        let {base, current, level, xp, xpNeeded, name} = stats;
 
         return (
             <table>
                 <tbody>
                     <tr className="text-center">
                         <td colSpan={2}>
-                            {name} {level ? `(${level})` : null}
-                        </td>
-                    </tr>
-                    <tr className="text-center">
-                        <td colSpan={2}>
-                            &lt;{team}&gt;
+                            {name} - Level {level}
                         </td>
                     </tr>
                     <tr>
@@ -55,6 +50,7 @@ export class GameViewTarget extends React.Component{
                         <td>
                             {current.health.toFixed(0)} / {base.health.toFixed(0)}
                         </td>
+                        
                     </tr>
                     <tr>
                         <td>
@@ -66,18 +62,10 @@ export class GameViewTarget extends React.Component{
                     </tr>
                     <tr>
                         <td>
-                            DEF
+                            XP
                         </td>
                         <td>
-                            {(base.defense * 100).toFixed(0)}%
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            RES
-                        </td>
-                        <td>
-                            {(base.resistance * 100).toFixed(0)}%
+                            {xp.toFixed(0)} / {xpNeeded.toFixed(0)}
                         </td>
                     </tr>
                 </tbody>
@@ -87,7 +75,7 @@ export class GameViewTarget extends React.Component{
 
     render(){
         return (
-            <div className="hud-target">
+            <div className="hud-player">
                 {this.renderStats()}
             </div>
         );

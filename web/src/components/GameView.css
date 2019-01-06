@@ -32,10 +32,8 @@
     height: 250px;
 }
 
-.hud-target{
+.hud-target, .hud-player{
     position: fixed; 
-    left: 10px;
-    top: 10px;
     background: linear-gradient(180deg, white, silver);
     opacity: 0.9;
     border: 1px solid black;
@@ -45,6 +43,16 @@
     width: 200px;
 }
 
-.hud-target table{
+.hud-target{
+    left: 10px;
+    top: 10px;
+}
+
+.hud-player{
+    right: 10px;
+    top: 10px;
+}
+
+.hud-target table, .hud-player table{
     margin: auto;
 }

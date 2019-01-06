@@ -4,6 +4,7 @@ import Client from "../game/Client";
 import "./GameView.css";
 import { GameViewChat } from "./GameViewChat";
 import { GameViewTarget } from "./GameViewTarget";
+import { GameViewPlayer } from "./GameViewPlayer";
 
 export class GameView extends React.Component{
     constructor(props){
@@ -36,6 +37,7 @@ export class GameView extends React.Component{
                 <div ref={this.containerRef} className="canvas-container"></div>
                 <GameViewChat/>
                 <GameViewTarget/>
+                <GameViewPlayer/>
             </div>
         );
     }
