@@ -86,10 +86,10 @@ export class GameViewTarget extends React.Component{
     }
 
     render(){
-        return (
+        return this.state.stats ? (
             <div className="hud-target">
                 {this.renderStats()}
             </div>
-        );
+        ) : null;
     }
 }

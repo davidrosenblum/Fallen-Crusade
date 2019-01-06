@@ -61,6 +61,17 @@ var Unit = (function (_super) {
         }
         return abilities;
     };
+    Unit.prototype.getAbilityList = function () {
+        var abilityList = [];
+        for (var abilityName in this._abilities) {
+            var ability = this._abilities[abilityName];
+            abilityList.push({
+                abilityName: abilityName,
+                level: ability.level
+            });
+        }
+        return abilityList;
+    };
     Unit.prototype.setMap = function (map) {
         if (!map || map.hasUnit(this) || map.addUnit(this)) {
             this._map = map;

@@ -2,7 +2,7 @@ import { GameClient } from "./GameClient";
 import { OpCode, Status } from "./Comm";
 import { DatabaseController } from "../database/DatabaseController";
 import { Player } from '../characters/Player';
-import { MapInstance } from '../maps/MapInstance';
+import { MapInstance, MapState } from '../maps/MapInstance';
 import { CharacterUpdateState } from '../characters/Character';
 import { Unit } from '../characters/Unit';
 import { CharacterStats } from '../characters/CombatCharacter';
@@ -57,7 +57,8 @@ export class GameMaps{
                 client.setPlayer(player);
                 map.addClient(client);
 
-                client.respondEnterMap(map.getRelativeMapState(client), null);
+                let mapState:MapState = map.getMapState();
+                client.respondEnterMap(mapState, null);
             })
             .catch(err => {
                 client.respondEnterMap(null, err.message);
@@ -94,7 +95,8 @@ export class GameMaps{
                 client.setPlayer(player);
                 map.addClient(client);
 
-                client.respondEnterInstance(map.getRelativeMapState(client), null);
+                let mapState:MapState = map.getMapState();
+                client.respondEnterInstance(mapState, null);
             })
             .catch(err => {
                 client.respondEnterInstance(null, err.message);

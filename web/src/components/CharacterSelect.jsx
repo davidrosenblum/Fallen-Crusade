@@ -29,7 +29,7 @@ export class CharacterSelect extends React.Component{
         this.onEnterMap = evt => {
             if(evt.status === "ok"){
                NavDispatcher.showMenu("game");
-               Game.loadMap(evt);
+               Game.loadMap(evt.mapState);
             }
             else{
                 ModalDispatcher.modal("Characters Error", evt.message);
@@ -37,10 +37,11 @@ export class CharacterSelect extends React.Component{
             }
         };
     }
-    
+
     componentDidMount(){
         Client.on("character-list", this.onCharacterList);
         Client.on("enter-map", this.onEnterMap);
+        Client.on("enter-instance", this.onEnterMap);
 
         Client.getCharacterList();
     }
@@ -48,6 +49,7 @@ export class CharacterSelect extends React.Component{
     componentWillUnmount(){
         Client.removeListener("character-list", this.onCharacterList);
         Client.removeListener("enter-map", this.onEnterMap);
+        Client.removeListener("enter-instance", this.onEnterMap);
     }
 
     onCreate(){

@@ -44,15 +44,40 @@
 }
 
 .hud-target{
-    left: 10px;
-    top: 10px;
+    right: 225px;
+    bottom: 175px;
 }
 
 .hud-player{
     right: 10px;
-    top: 10px;
+    bottom: 175px;
 }
 
 .hud-target table, .hud-player table{
     margin: auto;
+}
+
+.hud-abilities{
+    opacity: 0.9;
+    background: linear-gradient(180deg, white, silver);
+    position: fixed; 
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid black;
+    border-radius: 6px;
+    box-shadow: 1px 1px 1px;
+    padding: 6px;
+    width: 415px;
+    text-align: center;
+}
+
+.hud-abilities img{
+    border: 1px solid black;
+    border-radius: 6px;
+    margin: 3px;
+    cursor: pointer;
+}
+
+.hud-abilities img:disabled{
+    cursor: not-allowed
 }

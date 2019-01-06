@@ -126,15 +126,15 @@ class Client extends EventEmitter{
     }
 
     handleMapEnter(data, status){
-        let {message=null, mapState=null, playerStats=null} = data;
+        let {message=null, mapState=null} = data;
 
-        this.emit("enter-map", {message, mapState, playerStats, status});
+        this.emit("enter-map", {message, mapState, status});
     }
 
     handleInstanceEnter(data, status){
-        let {message=null, mapState=null, playerStats=null} = data;
+        let {message=null, mapState=null} = data;
 
-        this.emit("enter-instance", {message, mapState, playerStats, status});
+        this.emit("enter-instance", {message, mapState, status});
     }
 
     handleChatMessage(data, status){
@@ -191,6 +191,18 @@ class Client extends EventEmitter{
 
     getObjectStats(objectID){
         this.send(OpCode.OBJECT_STATS, {objectID});
+    }
+
+    getAbilityList(){
+        this.send(OpCode.ABILITY_LIST);
+    }
+
+    upgradeAbility(abilityName){
+        this.send(OpCode.ABILITY_UPGRADE, {abilityName});
+    }
+
+    castAbility(abilityName, objectID){
+        this.send(OpCode.ABILITY_CAST, {abilityName, objectID});
     }
 
     send(opCode, data){

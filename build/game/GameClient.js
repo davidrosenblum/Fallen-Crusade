@@ -80,10 +80,10 @@ var GameClient = (function () {
         this.send(6, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondEnterMap = function (mapState, errMsg) {
-        this.send(8, errMsg ? errMsg : mapState, errMsg ? "bad" : "ok");
+        this.send(8, errMsg ? errMsg : { mapState: mapState }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondEnterInstance = function (mapState, errMsg) {
-        this.send(9, errMsg ? errMsg : mapState, errMsg ? "bad" : "ok");
+        this.send(9, errMsg ? errMsg : { mapState: mapState }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondChatMessage = function (chat, from, errMsg) {
         this.send(10, errMsg ? errMsg : { chat: chat, from: from }, errMsg ? "bad" : "ok");

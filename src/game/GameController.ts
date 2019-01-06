@@ -116,8 +116,8 @@ export class GameController{
                 this._chat.handleChatMessage(client, data);
                 break;
             // player requests all abilities 
-            case OpCode.ABILITY_CAST:
-                this._abilities.handleAbilityList(data);
+            case OpCode.ABILITY_LIST:
+                this._abilities.handleAbilityList(client);
                 break;
             // player requests ability upgrade/learn
             case OpCode.ABILITY_UPGRADE:

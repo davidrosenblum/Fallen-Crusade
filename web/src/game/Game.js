@@ -37,14 +37,11 @@ class Game extends EventEmitter{
         return fw.AssetUtils.loadAliases();
     }
 
-    async loadMap(data){
+    async loadMap(mapState){
         // destroy existing map
         this.unloadMap();
 
-        let {mapState, playerStats} = data;
         let {name, mapData, transportNodes, units} = mapState;
-        console.log(playerStats);
-        let {abilities, abilityPoints, gold, xp, xpNeeded, level, current, base} = playerStats;
         
         let report = await this.loadAssets();
         
@@ -122,9 +119,12 @@ class Game extends EventEmitter{
             }
 
             if(data.type === "player" && data.ownerID === Client.clientID){
+                // player found
                 this.player = object;
-
                 object.on("move", () => Client.playerUpdate(object.getData()));
+
+                Client.getObjectStats(object.objectID);
+                Client.getAbilityList();
             }
 
             object.on("click", () => this.selectTarget(object));
@@ -178,6 +178,12 @@ class Game extends EventEmitter{
             // something? 
         }
         this.selectedTarget = null;
+    }
+
+    castAbility(abilityName){
+        if(this.selectedTarget){
+            Client.castAbility(abilityName, this.selectedTarget.objectID);
+        }
     }
 
     onGameFrame(){

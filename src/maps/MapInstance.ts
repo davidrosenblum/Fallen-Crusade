@@ -17,11 +17,6 @@ export interface MapState{
     mapData:MapData;
 }
 
-export interface RelativeMapState{
-    mapState:MapState;
-    playerStats:PlayerStats
-}
-
 export interface MapData{
     background:number[][];
     midground:number[][];
@@ -221,7 +216,7 @@ export class MapInstance extends EventEmitter{
         });
     }
 
-    public getRelativeMapState(client:GameClient):RelativeMapState{
+    public getMapState():MapState{
         let units:CharacterSpawnState[] = [];
         this.forEachUnit(unit => {
             units.push(unit.getSpawnState());
@@ -233,13 +228,10 @@ export class MapInstance extends EventEmitter{
         });
 
         return {
-            mapState: {
-                name:   this.name,
-                mapData: this._mapData, // dangerous
-                transportNodes,
-                units
-            },
-            playerStats: client.player.getPlayerStats()
+            name:       this.name,
+            mapData:    this._mapData, // dangerous
+            transportNodes,
+            units
         };
     }
 

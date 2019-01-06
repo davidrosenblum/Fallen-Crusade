@@ -7,6 +7,11 @@ export interface UnitConfig extends CombatCharacterConfig{
     abilities?: {[abilityName:string]: number};
 }
 
+export interface AbilityListItem{
+    abilityName:string;
+    level:number;
+}
+
 export class Unit extends CombatCharacter{
     private _abilities:{[abilityName:string]: Ability};
     private _map:MapInstance;
@@ -64,6 +69,21 @@ export class Unit extends CombatCharacter{
         }
 
         return abilities;
+    }
+
+    public getAbilityList():AbilityListItem[]{
+        let abilityList:AbilityListItem[] = [];
+
+        for(let abilityName in this._abilities){
+            let ability:Ability = this._abilities[abilityName];
+
+            abilityList.push({
+                abilityName,
+                level: ability.level
+            })
+        }
+
+        return abilityList;
     }
 
     public setMap(map:MapInstance):boolean{

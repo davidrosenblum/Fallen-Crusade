@@ -74,10 +74,10 @@ export class GameViewPlayer extends React.Component{
     }
 
     render(){
-        return (
+        return this.state.stats ? (
             <div className="hud-player">
                 {this.renderStats()}
             </div>
-        );
+        ) : null;
     }
 }

@@ -35,7 +35,8 @@ var GameMaps = (function () {
             .then(function (player) {
             client.setPlayer(player);
             map.addClient(client);
-            client.respondEnterMap(map.getRelativeMapState(client), null);
+            var mapState = map.getMapState();
+            client.respondEnterMap(mapState, null);
         })
             .catch(function (err) {
             client.respondEnterMap(null, err.message);
@@ -60,7 +61,8 @@ var GameMaps = (function () {
             .then(function (player) {
             client.setPlayer(player);
             map.addClient(client);
-            client.respondEnterInstance(map.getRelativeMapState(client), null);
+            var mapState = map.getMapState();
+            client.respondEnterInstance(mapState, null);
         })
             .catch(function (err) {
             client.respondEnterInstance(null, err.message);

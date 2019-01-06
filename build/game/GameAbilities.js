@@ -8,7 +8,7 @@ var GameAbilities = (function () {
             client.respondAbilityList(null, "You do not have a player.");
             return;
         }
-        var abilityList = client.player.getAbilities();
+        var abilityList = client.player.getAbilityList();
         client.respondAbilityList(abilityList, null);
     };
     GameAbilities.prototype.handleAbilityCast = function (client, data) {

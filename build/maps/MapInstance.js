@@ -160,7 +160,7 @@ var MapInstance = (function (_super) {
             }
         });
     };
-    MapInstance.prototype.getRelativeMapState = function (client) {
+    MapInstance.prototype.getMapState = function () {
         var units = [];
         this.forEachUnit(function (unit) {
             units.push(unit.getSpawnState());
@@ -170,13 +170,10 @@ var MapInstance = (function (_super) {
             transportNodes.push(tnode.getTransportNodeState());
         });
         return {
-            mapState: {
-                name: this.name,
-                mapData: this._mapData,
-                transportNodes: transportNodes,
-                units: units
-            },
-            playerStats: client.player.getPlayerStats()
+            name: this.name,
+            mapData: this._mapData,
+            transportNodes: transportNodes,
+            units: units
         };
     };
     Object.defineProperty(MapInstance.prototype, "isEmpty", {

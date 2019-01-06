@@ -44,7 +44,7 @@ export class Login extends React.Component{
         this.usernameInput.value = this.getSavedUsername() || "";
 
         if(!Client.isConnected){
-            this.setState({inputsDisabled: true});
+            this.setState({pending: true});
             Client.connect();
         }
     }

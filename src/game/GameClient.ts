@@ -3,10 +3,11 @@ import { Status, OpCode, MSG_DELIM } from './Comm';
 import { AccountData } from '../database/AccountData';
 import { Player } from '../characters/Player';
 import { TokenGenerator } from '../utils/TokenGenerator';
-import { RelativeMapState } from '../maps/MapInstance';
+import { MapState } from '../maps/MapInstance';
 import { CharacterPreviewDocument } from '../database/CharactersCollection';
 import { CharacterSpawnState, CharacterUpdateState } from '../characters/Character';
 import { PendingInvite } from "./invites/PendingInvite";
+import { AbilityListItem } from "../characters/Unit";
 
 export interface GameClientRequest{
     opCode:OpCode,
@@ -121,12 +122,12 @@ export class GameClient{
         this.send(OpCode.CHARACTER_SELECT, errMsg ? errMsg : message, errMsg ? Status.BAD : Status.GOOD);
     }
 
-    public respondEnterMap(mapState:RelativeMapState, errMsg:string):void{
-        this.send(OpCode.ENTER_MAP, errMsg ? errMsg : mapState, errMsg ? Status.BAD : Status.GOOD);
+    public respondEnterMap(mapState:MapState, errMsg:string):void{
+        this.send(OpCode.ENTER_MAP, errMsg ? errMsg : {mapState}, errMsg ? Status.BAD : Status.GOOD);
     } 
 
-    public respondEnterInstance(mapState:RelativeMapState, errMsg:string,):void{
-        this.send(OpCode.ENTER_INSTANCE, errMsg ? errMsg : mapState, errMsg ? Status.BAD : Status.GOOD);
+    public respondEnterInstance(mapState:MapState, errMsg:string,):void{
+        this.send(OpCode.ENTER_INSTANCE, errMsg ? errMsg : {mapState}, errMsg ? Status.BAD : Status.GOOD);
     } 
 
     public respondChatMessage(chat:string, from?:string, errMsg?:string):void{
@@ -137,7 +138,7 @@ export class GameClient{
         this.send(OpCode.OBJECT_STATS, errMsg ? errMsg : {stats}, errMsg ? Status.BAD : Status.GOOD);
     }
 
-    public respondAbilityList(abilityList:{[name:string]: number}, errMsg:string):void{
+    public respondAbilityList(abilityList:AbilityListItem[], errMsg:string):void{
         this.send(OpCode.ABILITY_CAST, errMsg ? errMsg : {abilityList}, errMsg ? Status.BAD : Status.GOOD);
     }
 
