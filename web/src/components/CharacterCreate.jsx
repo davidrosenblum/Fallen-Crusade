@@ -27,7 +27,7 @@ export class CharacterCreate extends React.Component{
         };
     }
 
-    componentWillMount(){
+    componentDidMount(){
         Client.on("character-create", this.onCharacterCreate);
     }
 

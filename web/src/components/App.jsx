@@ -33,7 +33,7 @@ export class App extends React.Component{
         };
     }
 
-    componentWillMount(){
+    componentDidMount(){
         NavDispatcher.on("menu", this.onMenu);
         Client.on("close", this.onClientClose);
         Client.on("error", this.onClientError);

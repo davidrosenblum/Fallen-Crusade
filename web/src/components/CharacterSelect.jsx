@@ -37,13 +37,11 @@ export class CharacterSelect extends React.Component{
             }
         };
     }
-
-    componentWillMount(){
+    
+    componentDidMount(){
         Client.on("character-list", this.onCharacterList);
         Client.on("enter-map", this.onEnterMap);
-    }
 
-    componentDidMount(){
         Client.getCharacterList();
     }
 

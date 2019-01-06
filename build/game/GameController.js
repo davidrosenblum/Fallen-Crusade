@@ -69,6 +69,7 @@ var GameController = (function () {
                 break;
             case 10:
                 this._chat.handleChatMessage(client, data);
+                break;
             case 18:
                 this._abilities.handleAbilityList(data);
                 break;

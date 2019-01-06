@@ -37,12 +37,10 @@ export class Login extends React.Component{
         };
     }
 
-    componentWillMount(){
+    componentDidMount(){
         Client.on("connect", this.onConnect);
         Client.on("login", this.onLogin);
-    }
 
-    componentDidMount(){
         this.usernameInput.value = this.getSavedUsername() || "";
 
         if(!Client.isConnected){

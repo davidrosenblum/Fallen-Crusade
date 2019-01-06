@@ -173,6 +173,10 @@ class Client extends EventEmitter{
         this.send(OpCode.CHARACTER_SELECT, {name});
     }
 
+    chatMessage(chat){
+        this.send(OpCode.CHAT_MESSAGE, {chat});
+    }
+
     send(opCode, data){
         this.socket.send(JSON.stringify({opCode, data}) + MSG_DELIM);
     }

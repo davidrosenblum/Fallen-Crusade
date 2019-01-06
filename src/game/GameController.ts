@@ -110,6 +110,7 @@ export class GameController{
             // chat message posted 
             case OpCode.CHAT_MESSAGE:
                 this._chat.handleChatMessage(client, data);
+                break;
             // player requests all abilities 
             case OpCode.ABILITY_CAST:
                 this._abilities.handleAbilityList(data);

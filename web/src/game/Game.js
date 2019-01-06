@@ -3,6 +3,7 @@ import * as fw from "@davidrosenblum/frostwork";
 import { MapTiles } from "../data/MapObjects";
 import { TransportObjects } from "../data/TransportObjects";
 import { GameObjects } from "../data/GameObjects";
+import Client from "./Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
 
 export const TILE_SIZE = 64;
@@ -20,6 +21,9 @@ class Game extends EventEmitter{
         this.collisionGrid = null;
         this.mapBounds = null;
         this.scroller = null;
+        this.player = null;
+
+        this.renderer.on("render", this.onGameFrame.bind(this));
 
         this.started = false;
         this.todo = [];
@@ -89,6 +93,7 @@ class Game extends EventEmitter{
         this.collisionGrid = null;
         this.mapBounds = null;
         this.scroller = null;
+        this.player = null;
     }
 
     createObject(data){
@@ -109,8 +114,11 @@ class Game extends EventEmitter{
                 object.setPosition(x, y);
                 this.layers.add(object);
             }
+
+            if(data.type === "player" && data.ownerID === Client.clientID){
+                this.player = object;
+            }
         }
-        else console.log("Did not create:", data);
     }
 
     removeObject(objectID){
@@ -145,6 +153,25 @@ class Game extends EventEmitter{
 
     injectInto(element){
         this.renderer.injectInto(element);
+    }
+
+    onGameFrame(){
+        if(this.player && this.keys.numKeys > 0){
+            if(this.keys.isKeyDown("w")){
+                this.player.moveUp(this.collisionGrid, this.mapBounds, this.scroller);
+            }
+            else if(this.keys.isKeyDown("s")){
+                this.player.moveDown(this.collisionGrid, this.mapBounds, this.scroller);
+            }
+            if(this.keys.isKeyDown("a")){
+                this.player.moveLeft(this.collisionGrid, this.mapBounds, this.scroller);
+            }
+            else if(this.keys.isKeyDown("d")){
+                this.player.moveRight(this.collisionGrid, this.mapBounds, this.scroller);
+            }
+
+            this.layers.depthSort();
+        }
     }
 }
 
