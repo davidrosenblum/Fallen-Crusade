@@ -20,6 +20,7 @@ var Player = (function (_super) {
         var _this = _super.call(this, {
             name: saveData.name,
             type: "Player",
+            team: "Crusaders",
             ownerID: ownerID,
             health: 25,
             healthRegen: 0.02,

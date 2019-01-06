@@ -44,9 +44,11 @@ var GameClient = (function () {
         this._selectedPlayer = name;
     };
     GameClient.prototype.setPlayer = function (player) {
-        if (this.player !== player) {
-            this.player.map.removeClient(this);
-            this._player = null;
+        if (player && this.player !== player) {
+            if (this.player) {
+                this.player.map.removeClient(this);
+                this._player = null;
+            }
         }
         this._player = player;
     };

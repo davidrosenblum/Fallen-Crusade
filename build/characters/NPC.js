@@ -18,6 +18,7 @@ var NPC = (function (_super) {
     __extends(NPC, _super);
     function NPC(config) {
         var _this = _super.call(this, config) || this;
+        _this._tier = config.tier;
         _this._xpValue = config.xpValue || 0;
         _this._goldValue = config.goldValue || 0;
         _this._bountyGiven = false;
@@ -30,6 +31,13 @@ var NPC = (function (_super) {
             this.map.giveBounty(this.xpValue, this.goldValue);
         }
     };
+    Object.defineProperty(NPC.prototype, "tier", {
+        get: function () {
+            return this._tier;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(NPC.prototype, "xpValue", {
         get: function () {
             return this._xpValue;

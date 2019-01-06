@@ -37,7 +37,7 @@ export class CharactersCollection{
             let characterDoc:CharacterDocument = {
                 account_id: accountID, name, skin,
                 level: 1, xp: 0, gold: 0, ability_points: 0, abilities: {},
-                last_map: null
+                last_map: "Village Center"
             };
 
             // store the character 'save' in the database

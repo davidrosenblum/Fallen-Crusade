@@ -53,7 +53,7 @@ export class Unit extends CombatCharacter{
     }
 
     public setMap(map:MapInstance):boolean{
-        if(map.hasUnit(this) || map.addUnit(this)){
+        if(!map || map.hasUnit(this) || map.addUnit(this)){
             this._map = map;
             return true;
         }

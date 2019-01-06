@@ -50,7 +50,6 @@ export class GameMaps{
             return;
         }
 
-
         // reload player data
         this.loadPlayer(client)
             .then(player => {

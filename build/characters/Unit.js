@@ -51,7 +51,7 @@ var Unit = (function (_super) {
         return abilities;
     };
     Unit.prototype.setMap = function (map) {
-        if (map.hasUnit(this) || map.addUnit(this)) {
+        if (!map || map.hasUnit(this) || map.addUnit(this)) {
             this._map = map;
             return true;
         }

@@ -10,8 +10,6 @@ var MapInstanceFactory = (function () {
                 return new Maps_1.VillageCenter();
             case "Northern Keep":
                 return new Maps_1.NorthernKeep();
-            case "Burning Ruins":
-                return new Maps_1.BurningRuins();
             default:
                 throw new Error("Invalid map type.");
         }
@@ -19,8 +17,7 @@ var MapInstanceFactory = (function () {
     MapInstanceFactory.createDefaultMaps = function () {
         return {
             "Village Center": new Maps_1.VillageCenter(),
-            "Northern Keep": new Maps_1.NorthernKeep(),
-            "Burning Ruins": new Maps_1.BurningRuins()
+            "Northern Keep": new Maps_1.NorthernKeep()
         };
     };
     return MapInstanceFactory;

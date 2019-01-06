@@ -96,8 +96,9 @@ var MapInstance = (function (_super) {
             this.addUnit(npc);
         }
     };
-    MapInstance.prototype.createTransportNode = function (type, text, col, row, outMapID, outCol, outRow) {
-        var tnode = new TransportNode_1.TransportNode(type, text, this, col, row, outMapID, outCol, outRow);
+    MapInstance.prototype.createTransportNode = function (options) {
+        var type = options.type, text = options.text, col = options.col, row = options.row, outMapName = options.outMapName, outCol = options.outCol, outRow = options.outRow;
+        var tnode = new TransportNode_1.TransportNode(type, text, col, row, outMapName, outCol, outRow);
         this._transportNodes[tnode.nodeID] = tnode;
     };
     MapInstance.prototype.handleAoEAbility = function (caster, target, ability) {

@@ -138,9 +138,11 @@ export class MapInstance extends EventEmitter{
         }
     }
 
-    public createTransportNode(type:string, text:string, col:number, row:number, outMapID:string, outCol:number, outRow:number):void{
+    public createTransportNode(options:{type:string, text:string, col:number, row:number, outMapName:string, outCol:number, outRow:number}):void{
+        // node parameters
+        let {type, text, col, row, outMapName, outCol, outRow} = options;
         // create node
-        let tnode:TransportNode = new TransportNode(type, text, this, col, row, outMapID, outCol, outRow);
+        let tnode:TransportNode = new TransportNode(type, text, col, row, outMapName, outCol, outRow);
         // store node
         this._transportNodes[tnode.nodeID] = tnode;
     }

@@ -26,6 +26,7 @@ export class Player extends Unit{
         super({
             name:           saveData.name,
             type:           "Player",
+            team:           "Crusaders",
             ownerID,
             health:         25,
             healthRegen:    0.02,

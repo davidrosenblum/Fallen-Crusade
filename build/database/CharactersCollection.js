@@ -14,7 +14,7 @@ var CharactersCollection = (function () {
             var characterDoc = {
                 account_id: accountID, name: name, skin: skin,
                 level: 1, xp: 0, gold: 0, ability_points: 0, abilities: {},
-                last_map: null
+                last_map: "Village Center"
             };
             database.collection("characters").insertOne(characterDoc)
                 .then(function () { return resolve("Character \"" + name + "\" created."); })
