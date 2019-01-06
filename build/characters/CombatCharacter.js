@@ -48,7 +48,7 @@ var CombatCharacter = (function (_super) {
         if (resist === void 0) { resist = true; }
         if (defend && this.rollDodge()) {
             this.emit("dodge");
-            return;
+            return false;
         }
         var resistAmount = resist ? (damage * this._currStats.resistance) : 0;
         var actualDamage = damage - resistAmount;
@@ -57,14 +57,31 @@ var CombatCharacter = (function (_super) {
         if (this._currStats.health <= 0) {
             this.emit("death");
         }
+        return true;
+    };
+    CombatCharacter.prototype.takeDamageWithDOT = function (damage, tickDamage, ticks, defend, resist) {
+        if (defend === void 0) { defend = true; }
+        if (resist === void 0) { resist = true; }
+        if (this.takeDamage(damage, defend, resist)) {
+            this.takeDamageOverTime(tickDamage, ticks, defend, resist);
+        }
+    };
+    CombatCharacter.prototype.takeDamageOverTime = function (damagePerTick, ticks, defend, resist) {
+        var _this = this;
+        if (defend === void 0) { defend = true; }
+        if (resist === void 0) { resist = true; }
+        setTimeout(function () { return _this.takeDamage(damagePerTick, defend, resist); }, 1000);
     };
     CombatCharacter.prototype.rollDodge = function () {
         return Math.random() + this._currStats.defense >= CombatCharacter.DODGE_ROLL_NEEDED;
     };
-    CombatCharacter.prototype.getCombatState = function () {
+    CombatCharacter.prototype.getCharacterStats = function () {
         return {
             base: this.getBaseStats(),
-            current: this.getCurrentStats()
+            current: this.getCurrentStats(),
+            objectID: this.objectID,
+            name: this.name,
+            team: this.team
         };
     };
     CombatCharacter.prototype.getBaseStats = function () {

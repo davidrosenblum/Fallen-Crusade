@@ -1,8 +1,8 @@
 import { Unit } from "./Unit";
 import { CharacterDocument } from '../database/CharactersCollection';
-import { CombatState } from './CombatCharacter';
+import { CharacterStats } from './CombatCharacter';
 
-export interface PlayerState extends CombatState{ 
+export interface PlayerStats extends CharacterStats{ 
     gold:number;
     abilityPoints:number;
     xp:number;
@@ -95,12 +95,15 @@ export class Player extends Unit{
         return false;
     }
 
-    public getPlayerState():PlayerState{
-        let combatState:CombatState = this.getCombatState();
+    public getPlayerStats():PlayerStats{
+        let stats:CharacterStats = this.getCharacterStats();
 
         return {
-            base:           combatState.base,
-            current:        combatState.current,
+            base:           stats.base,
+            current:        stats.current,
+            objectID:       stats.objectID,
+            name:           stats.name,
+            team:           stats.team,
             gold:           this.gold,
             xp:             this.xp,
             xpNeeded:       this.xpNeeded,

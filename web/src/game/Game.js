@@ -23,7 +23,11 @@ class Game extends EventEmitter{
         this.scroller = null;
         this.player = null;
 
+        this.selectedTarget = null;
+        this.selectionBox = {draw(ctx, x, y){ ctx.strokeRect(x, y, this.selectTarget.width, this.selectTarget.height) }};
+
         this.renderer.on("render", this.onGameFrame.bind(this));
+        this.renderer.on("click", evt => this.layers.processClick(evt));
 
         this.started = false;
         this.todo = [];
@@ -37,9 +41,10 @@ class Game extends EventEmitter{
         // destroy existing map
         this.unloadMap();
 
-        let {mapState, playerState} = data;
+        let {mapState, playerStats} = data;
         let {name, mapData, transportNodes, units} = mapState;
-        let {abilities, abilityPoints, gold, xp, xpNeeded, level, current, base} = playerState;
+        console.log(playerStats);
+        let {abilities, abilityPoints, gold, xp, xpNeeded, level, current, base} = playerStats;
         
         let report = await this.loadAssets();
         
@@ -68,6 +73,7 @@ class Game extends EventEmitter{
         });
 
         this.keys = new fw.KeyboardWatcher();
+        this.keys.onKey("+", () => this.layers.toggleMapGrid());
         this.collisionGrid = gmd.collisionGrid;
         this.mapBounds = gmd.mapBounds;
         this.scroller = new fw.Scroller(this.renderer, this.mapBounds);
@@ -117,7 +123,11 @@ class Game extends EventEmitter{
 
             if(data.type === "player" && data.ownerID === Client.clientID){
                 this.player = object;
+
+                object.on("move", () => Client.playerUpdate(object.getData()));
             }
+
+            object.on("click", () => this.selectTarget(object));
         }
     }
 
@@ -153,6 +163,21 @@ class Game extends EventEmitter{
 
     injectInto(element){
         this.renderer.injectInto(element);
+    }
+
+    selectTarget(target){
+        this.unselectTarget();
+
+        this.selectedTarget = target;
+        
+        Client.getObjectStats(target.objectID);
+    }
+
+    unselectTarget(){
+        if(this.selectedTarget){
+            // something? 
+        }
+        this.selectedTarget = null;
     }
 
     onGameFrame(){

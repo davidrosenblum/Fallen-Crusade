@@ -91,6 +91,9 @@ class Client extends EventEmitter{
             case OpCode.OBJECT_UPDATE:
                 this.handleObjectUpdate(data, status);
                 break;
+            case OpCode.OBJECT_STATS:
+                this.handleObjectStats(data, status);
+                break;
         }
     }
 
@@ -123,15 +126,15 @@ class Client extends EventEmitter{
     }
 
     handleMapEnter(data, status){
-        let {message=null, mapState=null, playerState=null} = data;
+        let {message=null, mapState=null, playerStats=null} = data;
 
-        this.emit("enter-map", {message, mapState, playerState, status});
+        this.emit("enter-map", {message, mapState, playerStats, status});
     }
 
     handleInstanceEnter(data, status){
-        let {message=null, mapState=null, playerState=null} = data;
+        let {message=null, mapState=null, playerStats=null} = data;
 
-        this.emit("enter-instance", {message, mapState, playerState, status});
+        this.emit("enter-instance", {message, mapState, playerStats, status});
     }
 
     handleChatMessage(data, status){
@@ -150,6 +153,11 @@ class Client extends EventEmitter{
 
     handleObjectUpdate(data){
         this.emit("object-update", data);
+    }
+
+    handleObjectStats(data, status){
+        let stats = Object.assign({status}, data);
+        this.emit("object-stats", stats);
     }
 
     login(username, password){
@@ -177,8 +185,18 @@ class Client extends EventEmitter{
         this.send(OpCode.CHAT_MESSAGE, {chat});
     }
 
+    playerUpdate(data){
+        this.send(OpCode.OBJECT_UPDATE, data);
+    }
+
+    getObjectStats(objectID){
+        this.send(OpCode.OBJECT_STATS, {objectID});
+    }
+
     send(opCode, data){
-        this.socket.send(JSON.stringify({opCode, data}) + MSG_DELIM);
+        if(this.isConnected){
+            this.socket.send(JSON.stringify({opCode, data}) + MSG_DELIM);
+        }
     }
 
     sendString(str){

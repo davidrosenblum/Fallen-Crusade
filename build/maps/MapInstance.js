@@ -30,15 +30,17 @@ var MapInstance = (function (_super) {
         _this._numClients = 0;
         return _this;
     }
-    MapInstance.prototype.broadcastChat = function (chat, from) {
-        this.forEachClient(function (client) {
-            client.respondChatMessage(chat, from);
+    MapInstance.prototype.broadcastChat = function (chat, from, ignoreClient) {
+        this.forEachClientIgnoring(ignoreClient, function (client) {
+            if (client !== ignoreClient) {
+                client.respondChatMessage(chat, from);
+            }
         });
     };
     MapInstance.prototype.addClient = function (client) {
         if (!this.hasClient(client)) {
             this._clients[client.clientID] = client;
-            this.broadcastChat(client.selectedPlayer + " connected.");
+            this.broadcastChat(client.selectedPlayer + " connected.", null, client);
             this.addUnit(client.player);
             return true;
         }
@@ -48,7 +50,7 @@ var MapInstance = (function (_super) {
         if (this.hasClient(client)) {
             delete this._clients[client.clientID];
             this.removeUnit(client.player);
-            this.broadcastChat(client.selectedPlayer + " disconneced.");
+            this.broadcastChat(client.selectedPlayer + " disconneced.", null, client);
             if (this.isEmpty)
                 this.emit("empty");
             return true;
@@ -78,7 +80,8 @@ var MapInstance = (function (_super) {
         var unit = data.objectID ? this.getUnit(data.objectID) : null;
         if (unit) {
             unit.setState(data);
-            this.forEachClient(function (client) { return client.notifyObjectUpdate(data); });
+            var ignore = this._clients[unit.ownerID];
+            this.forEachClientIgnoring(ignore, function (client) { return client.notifyObjectUpdate(data); });
         }
     };
     MapInstance.prototype.createNPC = function (options) {
@@ -150,6 +153,13 @@ var MapInstance = (function (_super) {
             fn(this._clients[id], id);
         }
     };
+    MapInstance.prototype.forEachClientIgnoring = function (ignore, fn) {
+        this.forEachClient(function (client) {
+            if (client !== ignore) {
+                fn(client);
+            }
+        });
+    };
     MapInstance.prototype.getRelativeMapState = function (client) {
         var units = [];
         this.forEachUnit(function (unit) {
@@ -166,7 +176,7 @@ var MapInstance = (function (_super) {
                 transportNodes: transportNodes,
                 units: units
             },
-            playerState: client.player.getPlayerState()
+            playerStats: client.player.getPlayerStats()
         };
     };
     Object.defineProperty(MapInstance.prototype, "isEmpty", {

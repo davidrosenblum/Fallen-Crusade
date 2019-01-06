@@ -12,6 +12,10 @@ var GameAccounts = (function () {
             client.respondLogin(null, "Wrong client version.");
             return;
         }
+        if (username in this._accounts) {
+            client.respondLogin(null, "Account \"" + username + "\" is already online.");
+            return;
+        }
         this._database.getAccount(username, password)
             .then(function (accountData) {
             _this._accounts[username] = client;

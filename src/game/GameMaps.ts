@@ -5,7 +5,7 @@ import { Player } from '../characters/Player';
 import { MapInstance } from '../maps/MapInstance';
 import { CharacterUpdateState } from '../characters/Character';
 import { Unit } from '../characters/Unit';
-import { CombatState } from '../characters/CombatCharacter';
+import { CharacterStats } from '../characters/CombatCharacter';
 import { MapInstanceFactory } from "../maps/MapInstanceFactory";
 
 export class GameMaps{
@@ -135,8 +135,15 @@ export class GameMaps{
         }
 
         // find and send the stats
-        // combat state = base & current stats
-        let stats:CombatState = unit.getCombatState();
+        let stats:CharacterStats;
+
+        if(unit.type === "player"){
+            stats = (unit as Player).getPlayerStats();
+        }
+        else{
+            stats = unit.getCharacterStats();
+        }
+         
         client.respondObjectStats(stats, null);
     }
 }

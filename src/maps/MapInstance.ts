@@ -5,7 +5,7 @@ import { TransportNode, TransportNodeState } from './TransportNode';
 import { GameClient, GameClientResponse } from '../game/GameClient';
 import { OpCode, Status } from "../game/Comm";
 import { CharacterUpdateState, CharacterSpawnState } from '../characters/Character';
-import { PlayerState, Player } from '../characters/Player';
+import { PlayerStats, Player } from '../characters/Player';
 import { NPC, NPCTier } from '../characters/NPC';
 import { NPCFactory, NPCOptions } from '../characters/NPCFactory';
 import { EventEmitter } from "events";
@@ -19,7 +19,7 @@ export interface MapState{
 
 export interface RelativeMapState{
     mapState:MapState;
-    playerState:PlayerState
+    playerStats:PlayerStats
 }
 
 export interface MapData{
@@ -51,9 +51,10 @@ export class MapInstance extends EventEmitter{
         this._numClients = 0;
     }
 
-    public broadcastChat(chat:string, from?:string):void{
-        this.forEachClient(client => {
-            client.respondChatMessage(chat, from);
+    public broadcastChat(chat:string, from?:string, ignoreClient?:GameClient):void{
+        this.forEachClientIgnoring(ignoreClient, client => {
+            if(client !== ignoreClient){
+                client.respondChatMessage(chat, from)}
         });
     }
 
@@ -61,7 +62,7 @@ export class MapInstance extends EventEmitter{
         if(!this.hasClient(client)){
             this._clients[client.clientID] = client;
 
-            this.broadcastChat(`${client.selectedPlayer} connected.`);
+            this.broadcastChat(`${client.selectedPlayer} connected.`, null, client);
 
             this.addUnit(client.player);
 
@@ -76,7 +77,7 @@ export class MapInstance extends EventEmitter{
 
             this.removeUnit(client.player);
 
-            this.broadcastChat(`${client.selectedPlayer} disconneced.`);
+            this.broadcastChat(`${client.selectedPlayer} disconneced.`, null, client);
 
             if(this.isEmpty) this.emit("empty");
 
@@ -116,7 +117,8 @@ export class MapInstance extends EventEmitter{
         if(unit){
             unit.setState(data);
 
-            this.forEachClient(client => client.notifyObjectUpdate(data));
+            let ignore:GameClient = this._clients[unit.ownerID];
+            this.forEachClientIgnoring(ignore, client => client.notifyObjectUpdate(data));
         }
     }
 
@@ -211,6 +213,14 @@ export class MapInstance extends EventEmitter{
         }
     }
 
+    private forEachClientIgnoring(ignore:GameClient, fn:(client:GameClient, id?:string)=>void):void{
+        this.forEachClient(client => {
+            if(client !== ignore){
+                fn(client);
+            }
+        });
+    }
+
     public getRelativeMapState(client:GameClient):RelativeMapState{
         let units:CharacterSpawnState[] = [];
         this.forEachUnit(unit => {
@@ -229,7 +239,7 @@ export class MapInstance extends EventEmitter{
                 transportNodes,
                 units
             },
-            playerState: client.player.getPlayerState()
+            playerStats: client.player.getPlayerStats()
         };
     }
 

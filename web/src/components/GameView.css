@@ -31,3 +31,20 @@
 .hud-chat textarea{
     height: 250px;
 }
+
+.hud-target{
+    position: fixed; 
+    left: 10px;
+    top: 10px;
+    background: linear-gradient(180deg, white, silver);
+    opacity: 0.9;
+    border: 1px solid black;
+    border-radius: 6px;
+    box-shadow: 1px 1px 1px;
+    padding: 6px;
+    width: 200px;
+}
+
+.hud-target table{
+    margin: auto;
+}

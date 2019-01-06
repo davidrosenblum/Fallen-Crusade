@@ -14,14 +14,25 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var CombatCharacter_1 = require("./CombatCharacter");
+var AbilityFactory_1 = require("../abilities/AbilityFactory");
 var Unit = (function (_super) {
     __extends(Unit, _super);
     function Unit(config) {
         var _this = _super.call(this, config) || this;
         _this._abilities = {};
         _this._map = null;
+        _this.learnInitialAbilities(config.abilities || {});
         return _this;
     }
+    Unit.prototype.learnInitialAbilities = function (abilities) {
+        for (var abilityName in abilities) {
+            var level = abilities[abilityName];
+            var ability = AbilityFactory_1.AbilityFactory.create(abilityName, level);
+            if (ability) {
+                this.learnAbility(ability);
+            }
+        }
+    };
     Unit.prototype.castAbility = function (abilityName, target, handleError) {
         if (this.hasAbility(abilityName)) {
             this._abilities[abilityName].cast(this, target, handleError);

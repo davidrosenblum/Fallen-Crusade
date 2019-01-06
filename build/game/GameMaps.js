@@ -88,7 +88,13 @@ var GameMaps = (function () {
             client.respondObjectStats(null, "Target does not exist.");
             return;
         }
-        var stats = unit.getCombatState();
+        var stats;
+        if (unit.type === "player") {
+            stats = unit.getPlayerStats();
+        }
+        else {
+            stats = unit.getCharacterStats();
+        }
         client.respondObjectStats(stats, null);
     };
     return GameMaps;

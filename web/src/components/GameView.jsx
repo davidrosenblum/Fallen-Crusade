@@ -3,6 +3,7 @@ import Game from "../game/Game";
 import Client from "../game/Client";
 import "./GameView.css";
 import { GameViewChat } from "./GameViewChat";
+import { GameViewTarget } from "./GameViewTarget";
 
 export class GameView extends React.Component{
     constructor(props){
@@ -12,7 +13,7 @@ export class GameView extends React.Component{
 
         this.onObjectCreate = evt => Game.createObject(evt);
         this.onObjectDelete = evt => Game.removeObject(evt.objectID);
-        this.onObjectUpdate = evt => Game.createObject(evt);
+        this.onObjectUpdate = evt => Game.updateObject(evt);
     }
 
     componentDidMount(){
@@ -34,6 +35,7 @@ export class GameView extends React.Component{
             <div>
                 <div ref={this.containerRef} className="canvas-container"></div>
                 <GameViewChat/>
+                <GameViewTarget/>
             </div>
         );
     }

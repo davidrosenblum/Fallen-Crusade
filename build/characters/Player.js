@@ -75,11 +75,14 @@ var Player = (function (_super) {
         }
         return false;
     };
-    Player.prototype.getPlayerState = function () {
-        var combatState = this.getCombatState();
+    Player.prototype.getPlayerStats = function () {
+        var stats = this.getCharacterStats();
         return {
-            base: combatState.base,
-            current: combatState.current,
+            base: stats.base,
+            current: stats.current,
+            objectID: stats.objectID,
+            name: stats.name,
+            team: stats.team,
             gold: this.gold,
             xp: this.xp,
             xpNeeded: this.xpNeeded,
