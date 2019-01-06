@@ -10,6 +10,7 @@ export class CharacterSelect extends React.Component{
         super(props);
 
         this.state = {
+            pending:        false,
             characterList:  null,
             errMessage:     null
         };
@@ -21,6 +22,16 @@ export class CharacterSelect extends React.Component{
             else{
                 ModalDispatcher.modal("Characters Error", evt.message);
                 this.setState({errMessage: evt.message});
+            }
+        };
+
+        this.onEnterMap = evt => {
+            if(evt.status === "ok"){
+                NavDispatcher.showMenu("game");
+            }
+            else{
+                ModalDispatcher.modal("Characters Error", evt.message);
+                this.setState({pending: false});
             }
         };
     }
@@ -47,6 +58,8 @@ export class CharacterSelect extends React.Component{
     }
 
     selectPlayer(name){
+        this.setState({pending: true});
+
         Client.selectCharacter(name);
     }
 
@@ -74,7 +87,7 @@ export class CharacterSelect extends React.Component{
                             <Button
                                 width={BUTTON_WIDTH}
                                 onClick={() => this.selectPlayer(name)}
-                                disabled={this.state.inputsDisabled}
+                                disabled={this.state.pending}
                             >
                                 Select
                             </Button>
@@ -89,7 +102,7 @@ export class CharacterSelect extends React.Component{
                             <Button
                                 width={BUTTON_WIDTH}
                                 onClick={this.onCreate.bind(this)}
-                                disabled={this.state.inputsDisabled}
+                                disabled={this.state.pending}
                             >
                                 Create
                             </Button>
@@ -114,7 +127,7 @@ export class CharacterSelect extends React.Component{
     renderLogoutBtn(){
         return (
             <div className="text-center">
-                <Button width={BUTTON_WIDTH} onClick={this.onLogout.bind(this)}>
+                <Button width={BUTTON_WIDTH} disabled={this.state.pending} onClick={this.onLogout.bind(this)}>
                     Logout
                 </Button>
             </div>

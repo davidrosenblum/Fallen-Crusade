@@ -17,10 +17,13 @@ export class CharacterCreate extends React.Component{
         };
 
         this.onCharacterCreate = evt => {
-            let header = evt.status === "ok" ? "Character Created" : "Character Error";
-            ModalDispatcher.modal(header, evt.message);
-
-            this.setState({pending: false});
+            if(evt.status === "ok"){
+                NavDispatcher.showMenu("character-select");
+            }
+            else{
+                ModalDispatcher.modal("Character Error", evt.message);
+                this.setState({pending: false});
+            }
         };
     }
 
