@@ -74,7 +74,7 @@ class Client extends EventEmitter{
                 this.handleCharacterCreate(data, status);
                 break;
             case OpCode.ENTER_MAP:
-                this.handleCharacterCreate(data, status);
+                this.handleMapEnter(data, status);
                 break;
         }
     }
@@ -108,9 +108,9 @@ class Client extends EventEmitter{
     }
 
     handleMapEnter(data, status){
-        let {message=null, mapState=null} = data;
+        let {message=null, mapState=null, playerState=null} = data;
 
-        this.emit("enter-map", {message, mapState, status});
+        this.emit("enter-map", {message, mapState, playerState, status});
     }
 
     login(username, password){

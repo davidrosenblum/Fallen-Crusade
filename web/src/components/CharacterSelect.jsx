@@ -4,6 +4,7 @@ import { BUTTON_WIDTH } from "../data/Data";
 import Client from "../game/Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
 import NavDispatcher from "../dispatchers/NavDispatcher";
+import Game from "../game/Game";
 
 export class CharacterSelect extends React.Component{
     constructor(props){
@@ -27,7 +28,8 @@ export class CharacterSelect extends React.Component{
 
         this.onEnterMap = evt => {
             if(evt.status === "ok"){
-                NavDispatcher.showMenu("game");
+               NavDispatcher.showMenu("game");
+               Game.loadMap(evt);
             }
             else{
                 ModalDispatcher.modal("Characters Error", evt.message);
@@ -38,6 +40,7 @@ export class CharacterSelect extends React.Component{
 
     componentWillMount(){
         Client.on("character-list", this.onCharacterList);
+        Client.on("enter-map", this.onEnterMap);
     }
 
     componentDidMount(){
@@ -46,6 +49,7 @@ export class CharacterSelect extends React.Component{
 
     componentWillUnmount(){
         Client.removeListener("character-list", this.onCharacterList);
+        Client.removeListener("enter-map", this.onEnterMap);
     }
 
     onCreate(){

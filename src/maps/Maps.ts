@@ -48,7 +48,7 @@ export class VillageCenter extends MapInstance{
         });
 
         this.createTransportNode({
-            type:       "Airship",
+            type:       "airship",
             text:       "<Northern Keep Airship>",
             col:        3,
             row:        3,

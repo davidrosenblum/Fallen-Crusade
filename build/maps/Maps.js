@@ -62,7 +62,7 @@ var VillageCenter = (function (_super) {
             ]
         }) || this;
         _this.createTransportNode({
-            type: "Airship",
+            type: "airship",
             text: "<Northern Keep Airship>",
             col: 3,
             row: 3,
