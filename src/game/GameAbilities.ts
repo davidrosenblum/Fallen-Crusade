@@ -9,7 +9,8 @@ export class GameAbilities{
             return;
         }
 
-        let abilityList:{[abilityName:string]: number} = client.player.getAbilities();
+        //let abilityList:{[abilityName:string]: number} = client.player.getAbilities();
+        let abilityList:{abilityName:string, level:number}[] = client.player.getAbilityList();
 
         client.respondAbilityList(abilityList, null);
     }

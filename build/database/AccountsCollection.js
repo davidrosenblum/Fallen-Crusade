@@ -7,15 +7,15 @@ var AccountsCollection = (function () {
     }
     AccountsCollection.createCollections = function (database) {
         database.createCollection("accounts").then(function () {
-            database.collection("accounts").createIndex("username");
+            database.collection("accounts").createIndex("username", { unique: true });
         });
         database.createCollection("salts").then(function () {
-            database.collection("salts").createIndex("username");
+            database.collection("salts").createIndex("username", { unique: true });
         });
     };
     AccountsCollection.createAccount = function (database, username, password) {
         return new Promise(function (resolve, reject) {
-            var salt = TokenGenerator_1.TokenGenerator.anyToken(password.length - AccountsCollection.PASSWORD_LENGTH);
+            var salt = TokenGenerator_1.TokenGenerator.anyToken(AccountsCollection.PASSWORD_LENGTH - password.length);
             var hash = TokenGenerator_1.TokenGenerator.hashToken(password + salt);
             var accountDoc = {
                 username: username, password: hash, enabled: true, access_level: 1, date_joined: Date.now()
@@ -34,7 +34,13 @@ var AccountsCollection = (function () {
                     reject(err);
                 });
             })
-                .catch(function (err) { return reject(err); });
+                .catch(function (err) {
+                if (err.code === 11000) {
+                    reject(new Error("Account \"" + username + "\" already exists."));
+                }
+                else
+                    reject(err);
+            });
         });
     };
     AccountsCollection.getAccount = function (database, username, password) {

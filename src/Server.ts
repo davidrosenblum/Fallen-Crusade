@@ -69,6 +69,10 @@ export class Server{
         });
 
         // account creation handler 
+        this._app.options("/accounts/create", (req, res) => {
+            AccountCreateHandler.options(req, res);
+        });
+
         this._app.post("/accounts/create", (req, res) => {
             AccountCreateHandler.post(req, res, this._database);
         });
@@ -102,15 +106,23 @@ export class Server{
             this._database = new DatabaseController(client.db(mongoDbName));
             // store connection 
             this._mongo = client;
-            // create the game
-            this._game = new GameController(this._database, settings);
 
             // step 3 load required collections
             console.log("Loading game data...");
             let npcs:NPCDocument[] = await this._database.loadNPCs();
+
+            // create NPCs if none are found! 
+            if(!npcs.length){
+                console.log("\t(Creating default NPCs)");
+                await this._database.insertDefaultNPCs();
+                npcs = await this._database.loadNPCs();
+            }
         
             // store npc types from the database
             NPCFactory.setNPCTypes(npcs);
+
+            // create the game
+            this._game = new GameController(this._database, settings);
 
             // data loaded
             console.log("Game data loaded.\n");

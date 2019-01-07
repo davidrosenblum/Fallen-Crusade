@@ -22,6 +22,12 @@ export class GameAccounts{
             return;
         }
 
+        // one login at once
+        if(username in this._accounts){
+            client.respondLogin(null, `Account "${username}" is already online.`);
+            return;
+        }
+
         // load account from database (enforces login credentials)
         this._database.getAccount(username, password)
             .then(accountData => {

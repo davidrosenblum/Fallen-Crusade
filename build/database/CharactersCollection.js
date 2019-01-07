@@ -5,7 +5,7 @@ var CharactersCollection = (function () {
     }
     CharactersCollection.createCollections = function (database) {
         database.createCollection("characters").then(function () {
-            database.collection("characters").createIndex("name");
+            database.collection("characters").createIndex("name", { unique: true });
         });
     };
     CharactersCollection.createCharacter = function (database, accountID, name, skin) {
@@ -14,11 +14,17 @@ var CharactersCollection = (function () {
             var characterDoc = {
                 account_id: accountID, name: name, skin: skin,
                 level: 1, xp: 0, gold: 0, ability_points: 0, abilities: {},
-                last_map: null
+                last_map: "Village Center"
             };
             database.collection("characters").insertOne(characterDoc)
                 .then(function () { return resolve("Character \"" + name + "\" created."); })
-                .catch(function (err) { return reject(err); });
+                .catch(function (err) {
+                if (err.code === 11000) {
+                    reject(new Error("Character \"" + name + "\" already exists."));
+                }
+                else
+                    reject(err);
+            });
         });
     };
     CharactersCollection.getCharacter = function (database, accountID, name) {

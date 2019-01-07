@@ -64,6 +64,36 @@ class Client extends EventEmitter{
             case OpCode.ACCOUNT_LOGIN:
                 this.handleLogin(data, status);
                 break;
+            case OpCode.ACCOUNT_LOGOUT:
+                this.handleLogout(data, status);
+                break;
+            case OpCode.CHARACTER_LIST:
+                this.handleCharacterList(data, status);
+                break;
+            case OpCode.CHARACTER_CREATE:
+                this.handleCharacterCreate(data, status);
+                break;
+            case OpCode.ENTER_MAP:
+                this.handleMapEnter(data, status);
+                break;
+            case OpCode.ENTER_INSTANCE:
+                this.handleInstanceEnter(data, status);
+                break;
+            case OpCode.CHAT_MESSAGE:
+                this.handleChatMessage(data, status);
+                break;
+            case OpCode.OBJECT_CREATE:
+                this.handleObjectCreate(data, status);
+                break;
+            case OpCode.OBJECT_DELETE:
+                this.handleObjectDelete(data, status);
+                break;
+            case OpCode.OBJECT_UPDATE:
+                this.handleObjectUpdate(data, status);
+                break;
+            case OpCode.OBJECT_STATS:
+                this.handleObjectStats(data, status);
+                break;
         }
     }
 
@@ -75,6 +105,59 @@ class Client extends EventEmitter{
         }
 
         this.emit("login", {message, status})
+    }
+
+    handleLogout(data, status){
+        let {message=null} = data;
+
+        this.emit("logout", {message, status});
+    }
+
+    handleCharacterList(data, status){
+        let {message=null, characterList=null} = data;
+
+        this.emit("character-list", {message, characterList, status});
+    }
+
+    handleCharacterCreate(data, status){
+        let {message=null} = data;
+
+        this.emit("character-create", {message, status});
+    }
+
+    handleMapEnter(data, status){
+        let {message=null, mapState=null} = data;
+
+        this.emit("enter-map", {message, mapState, status});
+    }
+
+    handleInstanceEnter(data, status){
+        let {message=null, mapState=null} = data;
+
+        this.emit("enter-instance", {message, mapState, status});
+    }
+
+    handleChatMessage(data, status){
+        let {chat="", from=null} = data;
+        
+        this.emit("chat", {chat, from, status});
+    }
+
+    handleObjectCreate(data){
+        this.emit("object-create", data);
+    }
+
+    handleObjectDelete(data){
+        this.emit("object-delete", data);
+    }
+
+    handleObjectUpdate(data){
+        this.emit("object-update", data);
+    }
+
+    handleObjectStats(data, status){
+        let stats = Object.assign({status}, data);
+        this.emit("object-stats", stats);
     }
 
     login(username, password){
@@ -90,12 +173,42 @@ class Client extends EventEmitter{
         this.send(OpCode.CHARACTER_LIST);
     }
 
+    createCharacter(name, skin){
+        this.send(OpCode.CHARACTER_CREATE, {name, skin});
+    }
+
     selectCharacter(name){
         this.send(OpCode.CHARACTER_SELECT, {name});
     }
 
+    chatMessage(chat){
+        this.send(OpCode.CHAT_MESSAGE, {chat});
+    }
+
+    playerUpdate(data){
+        this.send(OpCode.OBJECT_UPDATE, data);
+    }
+
+    getObjectStats(objectID){
+        this.send(OpCode.OBJECT_STATS, {objectID});
+    }
+
+    getAbilityList(){
+        this.send(OpCode.ABILITY_LIST);
+    }
+
+    upgradeAbility(abilityName){
+        this.send(OpCode.ABILITY_UPGRADE, {abilityName});
+    }
+
+    castAbility(abilityName, objectID){
+        this.send(OpCode.ABILITY_CAST, {abilityName, objectID});
+    }
+
     send(opCode, data){
-        this.socket.send(JSON.stringify({opCode, data}) + MSG_DELIM);
+        if(this.isConnected){
+            this.socket.send(JSON.stringify({opCode, data}) + MSG_DELIM);
+        }
     }
 
     sendString(str){

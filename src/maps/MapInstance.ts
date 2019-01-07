@@ -5,8 +5,8 @@ import { TransportNode, TransportNodeState } from './TransportNode';
 import { GameClient, GameClientResponse } from '../game/GameClient';
 import { OpCode, Status } from "../game/Comm";
 import { CharacterUpdateState, CharacterSpawnState } from '../characters/Character';
-import { PlayerState, Player } from '../characters/Player';
-import { NPC } from '../characters/NPC';
+import { PlayerStats, Player } from '../characters/Player';
+import { NPC, NPCTier } from '../characters/NPC';
 import { NPCFactory, NPCOptions } from '../characters/NPCFactory';
 import { EventEmitter } from "events";
 
@@ -15,11 +15,6 @@ export interface MapState{
     units:CharacterSpawnState[];
     transportNodes:TransportNodeState[];
     mapData:MapData;
-}
-
-export interface RelativeMapState{
-    mapState:MapState;
-    playerState:PlayerState
 }
 
 export interface MapData{
@@ -51,9 +46,10 @@ export class MapInstance extends EventEmitter{
         this._numClients = 0;
     }
 
-    public broadcastChat(chat:string, from?:string):void{
-        this.forEachClient(client => {
-            client.respondChatMessage(chat, from);
+    public broadcastChat(chat:string, from?:string, ignoreClient?:GameClient):void{
+        this.forEachClientIgnoring(ignoreClient, client => {
+            if(client !== ignoreClient){
+                client.respondChatMessage(chat, from)}
         });
     }
 
@@ -61,7 +57,7 @@ export class MapInstance extends EventEmitter{
         if(!this.hasClient(client)){
             this._clients[client.clientID] = client;
 
-            this.broadcastChat(`${client.selectedPlayer} connected.`);
+            this.broadcastChat(`${client.selectedPlayer} connected.`, null, client);
 
             this.addUnit(client.player);
 
@@ -76,7 +72,7 @@ export class MapInstance extends EventEmitter{
 
             this.removeUnit(client.player);
 
-            this.broadcastChat(`${client.selectedPlayer} disconneced.`);
+            this.broadcastChat(`${client.selectedPlayer} disconneced.`, null, client);
 
             if(this.isEmpty) this.emit("empty");
 
@@ -116,16 +112,18 @@ export class MapInstance extends EventEmitter{
         if(unit){
             unit.setState(data);
 
-            this.forEachClient(client => client.notifyObjectUpdate(data));
+            let ignore:GameClient = this._clients[unit.ownerID];
+            this.forEachClientIgnoring(ignore, client => client.notifyObjectUpdate(data));
         }
     }
 
-    public createNPC(options:{type:string, row:number, col:number, name?:string, team?:string, anim?:string}):void{
-        let {type, row, col, name, team, anim} = options;
+    public createNPC(options:{type:string, row:number, col:number, tier?:NPCTier, name?:string, team?:string, anim?:string}):void{
+        let {type, row, col, name, team, anim, tier} = options;
 
         let npcOpts:NPCOptions = {
             ownerID:    "server",
             spawnLocation: {col, row},
+            tier,
             type,
             name,
             team,
@@ -138,9 +136,11 @@ export class MapInstance extends EventEmitter{
         }
     }
 
-    public createTransportNode(type:string, text:string, col:number, row:number, outMapID:string, outCol:number, outRow:number):void{
+    public createTransportNode(options:{type:string, text:string, col:number, row:number, outMapName:string, outCol:number, outRow:number}):void{
+        // node parameters
+        let {type, text, col, row, outMapName, outCol, outRow} = options;
         // create node
-        let tnode:TransportNode = new TransportNode(type, text, this, col, row, outMapID, outCol, outRow);
+        let tnode:TransportNode = new TransportNode(type, text, col, row, outMapName, outCol, outRow);
         // store node
         this._transportNodes[tnode.nodeID] = tnode;
     }
@@ -208,7 +208,15 @@ export class MapInstance extends EventEmitter{
         }
     }
 
-    public getRelativeMapState(client:GameClient):RelativeMapState{
+    private forEachClientIgnoring(ignore:GameClient, fn:(client:GameClient, id?:string)=>void):void{
+        this.forEachClient(client => {
+            if(client !== ignore){
+                fn(client);
+            }
+        });
+    }
+
+    public getMapState():MapState{
         let units:CharacterSpawnState[] = [];
         this.forEachUnit(unit => {
             units.push(unit.getSpawnState());
@@ -220,13 +228,10 @@ export class MapInstance extends EventEmitter{
         });
 
         return {
-            mapState: {
-                name:   this.name,
-                mapData: this._mapData, // dangerous
-                transportNodes,
-                units
-            },
-            playerState: client.player.getPlayerState()
+            name:       this.name,
+            mapData:    this._mapData, // dangerous
+            transportNodes,
+            units
         };
     }
 

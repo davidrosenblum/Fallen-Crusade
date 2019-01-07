@@ -5,7 +5,7 @@ var NPCFactory = (function () {
     function NPCFactory() {
     }
     NPCFactory.create = function (options) {
-        var type = options.type, ownerID = options.ownerID, anim = options.anim, name = options.name, team = options.team, spawnLocation = options.spawnLocation;
+        var type = options.type, ownerID = options.ownerID, spawnLocation = options.spawnLocation, _a = options.anim, anim = _a === void 0 ? null : _a, _b = options.name, name = _b === void 0 ? null : _b, _c = options.team, team = _c === void 0 ? null : _c, _d = options.tier, tier = _d === void 0 ? null : _d;
         if (type in this.npcTypes) {
             var doc = this.npcTypes[type];
             return new NPC_1.NPC({
@@ -13,6 +13,7 @@ var NPCFactory = (function () {
                 type: doc.type,
                 name: name || doc.name,
                 team: team || doc.team,
+                tier: tier || doc.tier,
                 moveSpeed: doc.move_speed,
                 anim: anim || null,
                 health: doc.health,

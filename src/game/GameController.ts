@@ -107,12 +107,17 @@ export class GameController{
             case OpCode.OBJECT_UPDATE:
                 this._maps.handleObjectUpdate(client, data);
                 break;
+            // object stats requested
+            case OpCode.OBJECT_STATS:
+                this._maps.handeObjectStats(client, data);
+                break;
             // chat message posted 
             case OpCode.CHAT_MESSAGE:
                 this._chat.handleChatMessage(client, data);
+                break;
             // player requests all abilities 
-            case OpCode.ABILITY_CAST:
-                this._abilities.handleAbilityList(data);
+            case OpCode.ABILITY_LIST:
+                this._abilities.handleAbilityList(client);
                 break;
             // player requests ability upgrade/learn
             case OpCode.ABILITY_UPGRADE:

@@ -30,15 +30,17 @@ var MapInstance = (function (_super) {
         _this._numClients = 0;
         return _this;
     }
-    MapInstance.prototype.broadcastChat = function (chat, from) {
-        this.forEachClient(function (client) {
-            client.respondChatMessage(chat, from);
+    MapInstance.prototype.broadcastChat = function (chat, from, ignoreClient) {
+        this.forEachClientIgnoring(ignoreClient, function (client) {
+            if (client !== ignoreClient) {
+                client.respondChatMessage(chat, from);
+            }
         });
     };
     MapInstance.prototype.addClient = function (client) {
         if (!this.hasClient(client)) {
             this._clients[client.clientID] = client;
-            this.broadcastChat(client.selectedPlayer + " connected.");
+            this.broadcastChat(client.selectedPlayer + " connected.", null, client);
             this.addUnit(client.player);
             return true;
         }
@@ -48,7 +50,7 @@ var MapInstance = (function (_super) {
         if (this.hasClient(client)) {
             delete this._clients[client.clientID];
             this.removeUnit(client.player);
-            this.broadcastChat(client.selectedPlayer + " disconneced.");
+            this.broadcastChat(client.selectedPlayer + " disconneced.", null, client);
             if (this.isEmpty)
                 this.emit("empty");
             return true;
@@ -78,14 +80,16 @@ var MapInstance = (function (_super) {
         var unit = data.objectID ? this.getUnit(data.objectID) : null;
         if (unit) {
             unit.setState(data);
-            this.forEachClient(function (client) { return client.notifyObjectUpdate(data); });
+            var ignore = this._clients[unit.ownerID];
+            this.forEachClientIgnoring(ignore, function (client) { return client.notifyObjectUpdate(data); });
         }
     };
     MapInstance.prototype.createNPC = function (options) {
-        var type = options.type, row = options.row, col = options.col, name = options.name, team = options.team, anim = options.anim;
+        var type = options.type, row = options.row, col = options.col, name = options.name, team = options.team, anim = options.anim, tier = options.tier;
         var npcOpts = {
             ownerID: "server",
             spawnLocation: { col: col, row: row },
+            tier: tier,
             type: type,
             name: name,
             team: team,
@@ -96,8 +100,9 @@ var MapInstance = (function (_super) {
             this.addUnit(npc);
         }
     };
-    MapInstance.prototype.createTransportNode = function (type, text, col, row, outMapID, outCol, outRow) {
-        var tnode = new TransportNode_1.TransportNode(type, text, this, col, row, outMapID, outCol, outRow);
+    MapInstance.prototype.createTransportNode = function (options) {
+        var type = options.type, text = options.text, col = options.col, row = options.row, outMapName = options.outMapName, outCol = options.outCol, outRow = options.outRow;
+        var tnode = new TransportNode_1.TransportNode(type, text, col, row, outMapName, outCol, outRow);
         this._transportNodes[tnode.nodeID] = tnode;
     };
     MapInstance.prototype.handleAoEAbility = function (caster, target, ability) {
@@ -148,7 +153,14 @@ var MapInstance = (function (_super) {
             fn(this._clients[id], id);
         }
     };
-    MapInstance.prototype.getRelativeMapState = function (client) {
+    MapInstance.prototype.forEachClientIgnoring = function (ignore, fn) {
+        this.forEachClient(function (client) {
+            if (client !== ignore) {
+                fn(client);
+            }
+        });
+    };
+    MapInstance.prototype.getMapState = function () {
         var units = [];
         this.forEachUnit(function (unit) {
             units.push(unit.getSpawnState());
@@ -158,13 +170,10 @@ var MapInstance = (function (_super) {
             transportNodes.push(tnode.getTransportNodeState());
         });
         return {
-            mapState: {
-                name: this.name,
-                mapData: this._mapData,
-                transportNodes: transportNodes,
-                units: units
-            },
-            playerState: client.player.getPlayerState()
+            name: this.name,
+            mapData: this._mapData,
+            transportNodes: transportNodes,
+            units: units
         };
     };
     Object.defineProperty(MapInstance.prototype, "isEmpty", {

@@ -1,0 +1,14 @@
+body{
+    
+    font-family: electrolize;
+}
+
+.app-menu{
+    width: 350px;
+    margin: auto;
+}
+
+::selection{
+    background-color: black;
+    color: white;
+}

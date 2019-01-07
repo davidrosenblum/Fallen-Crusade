@@ -20,7 +20,7 @@ var Ability = (function (_super) {
         var _this = _super.call(this) || this;
         _this._name = config.name;
         _this._manaCost = config.manaCost;
-        _this._recharge = config.recharge;
+        _this._recharge = config.rechargeSec / 1000;
         _this._range = config.range;
         _this._maxTargets = config.maxTargets || 1;
         _this._level = 1;
@@ -63,6 +63,34 @@ var Ability = (function (_super) {
             _this._ready = true;
             _this.emit("recharge");
         }, this.recharge);
+    };
+    Ability.prototype.upgrade = function () {
+        if (this.level < Ability.UPGRADE_CAP) {
+            this._level++;
+            return true;
+        }
+        return false;
+    };
+    Ability.prototype.validateEnemiesOnly = function (caster, target) {
+        return caster.team !== target.team;
+    };
+    Ability.prototype.validateAlliesOnly = function (caster, target) {
+        return target === caster || this.validateAlliesOrSelf(caster, target);
+    };
+    Ability.prototype.validateAlliesOrSelf = function (caster, target) {
+        return caster.team === target.team;
+    };
+    Ability.prototype.setManaCost = function (manaCost) {
+        this._manaCost = manaCost;
+    };
+    Ability.prototype.setMaxTargets = function (maxTargets) {
+        this._maxTargets = maxTargets;
+    };
+    Ability.prototype.setRecharge = function (rechargeSec) {
+        this._recharge = rechargeSec;
+    };
+    Ability.prototype.setRange = function (range) {
+        this._range = range;
     };
     Object.defineProperty(Ability.prototype, "name", {
         get: function () {
@@ -113,6 +141,7 @@ var Ability = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Ability.UPGRADE_CAP = 3;
     return Ability;
 }(events_1.EventEmitter));
 exports.Ability = Ability;

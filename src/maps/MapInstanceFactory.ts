@@ -1,5 +1,5 @@
 import { MapInstance } from './MapInstance';
-import { NorthernKeep, VillageCenter, BurningRuins } from './Maps';
+import { NorthernKeep, VillageCenter } from './Maps';
 
 export class MapInstanceFactory{
     public static create(type:string):MapInstance{
@@ -8,8 +8,6 @@ export class MapInstanceFactory{
                 return new VillageCenter();
             case "Northern Keep":
                 return new NorthernKeep();
-            case "Burning Ruins":
-                return new BurningRuins();
             default:
                 throw new Error("Invalid map type.");
         }
@@ -18,8 +16,7 @@ export class MapInstanceFactory{
     public static createDefaultMaps():{[mapName:string]: MapInstance}{
         return {
             "Village Center":   new VillageCenter(),
-            "Northern Keep":    new NorthernKeep(),
-            "Burning Ruins":    new BurningRuins()
+            "Northern Keep":    new NorthernKeep()
         };
     }
 }

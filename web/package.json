@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@davidrosenblum/frostwork": "^0.1.4",
     "bootstrap": "^4.2.1",
     "events": "^3.0.0",
     "react": "^16.7.0",

@@ -26,7 +26,7 @@ export class CharactersCollection{
     public static createCollections(database:Db):void{
         database.createCollection("characters").then(() => {
             // creates the 'characters' collection with the unique field 'name'
-            database.collection("characters").createIndex("name")
+            database.collection("characters").createIndex("name", {unique: true})
         });
     }
 
@@ -37,13 +37,18 @@ export class CharactersCollection{
             let characterDoc:CharacterDocument = {
                 account_id: accountID, name, skin,
                 level: 1, xp: 0, gold: 0, ability_points: 0, abilities: {},
-                last_map: null
+                last_map: "Village Center"
             };
 
             // store the character 'save' in the database
             database.collection("characters").insertOne(characterDoc)
                 .then(() => resolve(`Character "${name}" created.`))
-                .catch(err => reject(err));
+                .catch(err => {
+                    if(err.code === 11000){
+                        reject(new Error(`Character "${name}" already exists.`));
+                    }
+                    else reject(err);
+                });
         });
     }
 

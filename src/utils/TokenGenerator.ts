@@ -1,5 +1,5 @@
 export class TokenGenerator{
-    private static vals:string[] = "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split("");
+    private static vals:string[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split("");
 
     private _tokenLength:number;
     private _tokens:{[token:string]: boolean};
@@ -43,24 +43,29 @@ export class TokenGenerator{
         // buffer to store generated characters
         let buffer:string[] = new Array<string>(input.length);
         // calculate halfway index (part of algorithm)
-        let halfWay:number = Math.ceil(input.length / 2) - 1;
+        let halfWayIndex:number = Math.ceil(input.length / 2) - 1;
 
         // for each input character...
         // (i = current character index, s = buffer index to store character at)
         for(let i:number = 0, s:number=0; i < input.length; i++){
-            // generate a random in-range index
-            let arrayIndex:number = Math.floor((i + i * 2) % TokenGenerator.vals.length);
+            // character code
+            let cc:number = input.charCodeAt(i);
+
+            // calculate an the hash index
+            let hashIndex:number = (i + cc ** 2) % TokenGenerator.vals.length;
+            // get the hash character using the hash index 
+            let hashChar:string = TokenGenerator.vals[hashIndex];
 
             // update buffex index 's' 
-            if(i < halfWay){
-                s += 2
+            if(i < halfWayIndex){
+                s = halfWayIndex - i;
             }
-            else if(i > halfWay){
-                s -= 2
+            else if(i >= halfWayIndex){
+                s = input.length - i + halfWayIndex;
             }
 
             // store token in the buffer 
-            buffer[s] = TokenGenerator.vals[arrayIndex];
+            buffer[s] = hashChar;
         }
 
         // conver the buffer to a string 
@@ -76,7 +81,7 @@ export class TokenGenerator{
         for(let i:number = 0; i < tokenLength; i++){
             // generate a random in-range index, store the value at that location in the buffer
             let arrayIndex:number = Math.floor(Math.random() * TokenGenerator.vals.length);
-            buffer[i] = TokenGenerator.vals[arrayIndex]
+            buffer[i] = TokenGenerator.vals[arrayIndex];
         }
 
         // convert buffer to string 

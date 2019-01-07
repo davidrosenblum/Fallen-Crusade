@@ -81,6 +81,9 @@ var Server = (function () {
                 setTimeout(function () { return _this.close(); }, 1000 * s);
             }
         });
+        this._app.options("/accounts/create", function (req, res) {
+            AccountCreateHandler_1.default.options(req, res);
+        });
         this._app.post("/accounts/create", function (req, res) {
             AccountCreateHandler_1.default.post(req, res, _this._database);
         });
@@ -91,7 +94,7 @@ var Server = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 4, , 5]);
+                        _a.trys.push([0, 7, , 8]);
                         console.log("Loading settings...");
                         return [4, SettingsUtils_1.SettingsUtils.load()];
                     case 1:
@@ -106,24 +109,34 @@ var Server = (function () {
                         console.log("Connected to database.\n");
                         this._database = new DatabaseController_1.DatabaseController(client.db(mongoDbName));
                         this._mongo = client;
-                        this._game = new GameController_1.GameController(this._database, settings);
                         console.log("Loading game data...");
                         return [4, this._database.loadNPCs()];
                     case 3:
                         npcs = _a.sent();
+                        if (!!npcs.length) return [3, 6];
+                        console.log("\t(Creating default NPCs)");
+                        return [4, this._database.insertDefaultNPCs()];
+                    case 4:
+                        _a.sent();
+                        return [4, this._database.loadNPCs()];
+                    case 5:
+                        npcs = _a.sent();
+                        _a.label = 6;
+                    case 6:
                         NPCFactory_1.NPCFactory.setNPCTypes(npcs);
+                        this._game = new GameController_1.GameController(this._database, settings);
                         console.log("Game data loaded.\n");
                         port_1 = parseInt(process.env.PORT) || settings.port;
                         this._httpServer.listen(port_1, function () {
                             console.log("Server listening on port " + port_1 + ".\n");
                         });
-                        return [3, 5];
-                    case 4:
+                        return [3, 8];
+                    case 7:
                         err_1 = _a.sent();
                         console.log(err_1.message);
                         process.exit();
-                        return [3, 5];
-                    case 5: return [2];
+                        return [3, 8];
+                    case 8: return [2];
                 }
             });
         });

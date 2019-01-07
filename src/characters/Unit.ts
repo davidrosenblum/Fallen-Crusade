@@ -1,9 +1,15 @@
 import { CombatCharacter, CombatCharacterConfig } from './CombatCharacter';
 import { Ability } from '../abilities/Ability';
+import { AbilityFactory } from '../abilities/AbilityFactory';
 import { MapInstance } from '../maps/MapInstance';
 
 export interface UnitConfig extends CombatCharacterConfig{
-    abilities?: {[abilityName:string]: Ability};
+    abilities?: {[abilityName:string]: number};
+}
+
+export interface AbilityListItem{
+    abilityName:string;
+    level:number;
 }
 
 export class Unit extends CombatCharacter{
@@ -15,6 +21,19 @@ export class Unit extends CombatCharacter{
 
         this._abilities = {};
         this._map = null;
+
+        this.learnInitialAbilities(config.abilities || {});
+    }
+
+    private learnInitialAbilities(abilities:{[abilityName:string]: number}):void{
+        for(let abilityName in abilities){
+            let level:number = abilities[abilityName];
+            let ability:Ability = AbilityFactory.create(abilityName, level);
+
+            if(ability){
+                this.learnAbility(ability);
+            }
+        }
     }
 
     public castAbility(abilityName:string, target:Unit, handleError:(err:Error)=>void):void{
@@ -52,8 +71,23 @@ export class Unit extends CombatCharacter{
         return abilities;
     }
 
+    public getAbilityList():AbilityListItem[]{
+        let abilityList:AbilityListItem[] = [];
+
+        for(let abilityName in this._abilities){
+            let ability:Ability = this._abilities[abilityName];
+
+            abilityList.push({
+                abilityName,
+                level: ability.level
+            })
+        }
+
+        return abilityList;
+    }
+
     public setMap(map:MapInstance):boolean{
-        if(map.hasUnit(this) || map.addUnit(this)){
+        if(!map || map.hasUnit(this) || map.addUnit(this)){
             this._map = map;
             return true;
         }

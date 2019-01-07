@@ -2,13 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var TokenGenerator_1 = require("../utils/TokenGenerator");
 var TransportNode = (function () {
-    function TransportNode(type, text, map, col, row, outID, outCol, outRow) {
+    function TransportNode(type, text, col, row, outMapName, outCol, outRow) {
         this._nodeID = TransportNode.tokenGen.nextToken();
         this._type = type;
         this._text = text;
         this._spawnLocation = { col: col, row: row };
-        this._map = map;
-        this._outID = outID;
+        this._outMapName = outMapName;
         this._outLocation = { col: outCol, row: outRow };
     }
     TransportNode.prototype.getTransportNodeState = function () {
@@ -16,7 +15,7 @@ var TransportNode = (function () {
             nodeID: this.nodeID,
             type: this.type,
             text: this.text,
-            outID: this.outID,
+            outMapName: this.outMapName,
             spawnLocation: Object.assign({}, this._spawnLocation),
             outLocation: Object.assign({}, this._outLocation)
         };
@@ -42,9 +41,9 @@ var TransportNode = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TransportNode.prototype, "outID", {
+    Object.defineProperty(TransportNode.prototype, "outMapName", {
         get: function () {
-            return this._outID;
+            return this._outMapName;
         },
         enumerable: true,
         configurable: true

@@ -39,6 +39,9 @@ var DatabaseController = (function () {
     DatabaseController.prototype.loadNPCs = function () {
         return NPCsCollection_1.NPCsCollection.loadNPCs(this._database);
     };
+    DatabaseController.prototype.insertDefaultNPCs = function () {
+        return NPCsCollection_1.NPCsCollection.insertDefaults(this._database);
+    };
     return DatabaseController;
 }());
 exports.DatabaseController = DatabaseController;

@@ -18,9 +18,12 @@ export interface CombatStats{
     resistance:number;
 }
 
-export interface CombatState{
+export interface CharacterStats{
     base:CombatStats;
     current:CombatStats;
+    objectID:string;
+    name:string;
+    team:string;
 }
 
 export interface CombatModifiers{
@@ -72,11 +75,11 @@ export abstract class CombatCharacter extends Character{
         return this._currStats.mana >= manaNeeded;
     }
 
-    public takeDamage(damage:number, defend:boolean=true, resist:boolean=true):void{
+    public takeDamage(damage:number, defend:boolean=true, resist:boolean=true):boolean{
         // possibly dodge (based on defense)
         if(defend && this.rollDodge()){
             this.emit("dodge");
-            return;
+            return false;
         }
 
         // possibly resist damage
@@ -91,16 +94,30 @@ export abstract class CombatCharacter extends Character{
         if(this._currStats.health <= 0){
             this.emit("death");
         }
+        return true;
+    }
+
+    public takeDamageWithDOT(damage:number, tickDamage:number, ticks:number, defend:boolean=true, resist:boolean=true):void{
+        if(this.takeDamage(damage, defend, resist)){
+            this.takeDamageOverTime(tickDamage, ticks, defend, resist);
+        }
+    }
+
+    public takeDamageOverTime(damagePerTick:number, ticks:number, defend:boolean=true, resist:boolean=true):void{
+        setTimeout(() => this.takeDamage(damagePerTick, defend, resist), 1000);
     }
 
     public rollDodge():boolean{
         return Math.random() + this._currStats.defense >= CombatCharacter.DODGE_ROLL_NEEDED
     }
 
-    public getCombatState():CombatState{
+    public getCharacterStats():CharacterStats{
         return {
             base:       this.getBaseStats(),
-            current:    this.getCurrentStats()
+            current:    this.getCurrentStats(),
+            objectID:   this.objectID,
+            name:       this.name,
+            team:       this.team
         };
     }    
 

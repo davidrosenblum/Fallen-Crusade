@@ -4,13 +4,15 @@ import { EventEmitter } from 'events';
 export interface AbilityConfig{
     name:string;
     manaCost:number;
-    recharge:number;
+    rechargeSec:number;
     range:number;
     level?:number;
     maxTargets?:number
 }
 
 export abstract class Ability extends EventEmitter{
+    public static readonly UPGRADE_CAP:number = 3;
+
     private _name:string;
     private _manaCost:number;
     private _recharge:number;
@@ -24,7 +26,7 @@ export abstract class Ability extends EventEmitter{
 
         this._name = config.name;
         this._manaCost = config.manaCost;
-        this._recharge = config.recharge;
+        this._recharge = config.rechargeSec / 1000;
         this._range = config.range;
         this._maxTargets = config.maxTargets || 1;
         this._level = 1;
@@ -35,7 +37,6 @@ export abstract class Ability extends EventEmitter{
         }
     }
 
-    public abstract upgrade():boolean;
     public abstract validateTarget(caster:Unit, target:Unit):boolean;
     public abstract effect(caster:Unit, target:Unit):void;
 
@@ -88,6 +89,42 @@ export abstract class Ability extends EventEmitter{
             this._ready = true;
             this.emit("recharge");
         }, this.recharge);
+    }
+
+    public upgrade():boolean{
+        if(this.level < Ability.UPGRADE_CAP){
+            this._level++;
+            return true;
+        }
+        return false;
+    }
+
+    public validateEnemiesOnly(caster:Unit, target:Unit):boolean{
+        return caster.team !== target.team;
+    }
+
+    public validateAlliesOnly(caster:Unit, target:Unit):boolean{
+        return target === caster || this.validateAlliesOrSelf(caster, target);
+    }
+
+    public validateAlliesOrSelf(caster:Unit, target:Unit):boolean{
+        return caster.team === target.team;
+    }
+
+    protected setManaCost(manaCost:number){
+        this._manaCost = manaCost;
+    }
+
+    protected setMaxTargets(maxTargets:number){
+        this._maxTargets = maxTargets;
+    }
+
+    protected setRecharge(rechargeSec:number){
+        this._recharge = rechargeSec;
+    }
+
+    protected setRange(range:number){
+        this._range = range;
     }
 
     public get name():string{

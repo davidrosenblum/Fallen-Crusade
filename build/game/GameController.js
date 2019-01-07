@@ -67,10 +67,14 @@ var GameController = (function () {
             case 13:
                 this._maps.handleObjectUpdate(client, data);
                 break;
+            case 14:
+                this._maps.handeObjectStats(client, data);
+                break;
             case 10:
                 this._chat.handleChatMessage(client, data);
-            case 18:
-                this._abilities.handleAbilityList(data);
+                break;
+            case 16:
+                this._abilities.handleAbilityList(client);
                 break;
             case 17:
                 this._abilities.handleAbilityUpgrade(client, data);
