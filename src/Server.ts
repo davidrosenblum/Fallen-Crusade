@@ -10,26 +10,36 @@ import { NPCDocument } from './database/NPCsCollection';
 import { NPCFactory } from "./characters/NPCFactory";
 
 export class Server{
-    private _app:express.Application;
-    private _httpServer:http.Server;
-    private _wsServer:websocket.server;
-    private _mongo:MongoClient;
-    private _database:DatabaseController;
-    private _game:GameController;
-    private _shuttingDown:boolean;
+    private _app:express.Application;       // express application helps to handle http requests
+    private _httpServer:http.Server;        // http server hanldes http connections
+    private _wsServer:websocket.server;     // websocket server handles websocket connections
+    private _mongo:MongoClient;             // mongo client is the database connection
+    private _database:DatabaseController;   // database is the database controller
+    private _game:GameController;           // game is the game controler
+    private _shuttingDown:boolean;          // server shutdown started or not 
 
     constructor(){
+        // create the express handler app, also serves static files from the /web folder
         this._app = express().use(express.static(`${__dirname}/../../web`));
+        // create the http server, use the express app as the handler
         this._httpServer = http.createServer(this._app);
+        // create the websocket server, uses the existing http server
         this._wsServer = new websocket.server({httpServer: this._httpServer});
+        // hold mongo client (set in init)
         this._mongo = null;
+        // hold the database controller (set in init)
         this._database = null;
+        // hold the game controller (set in init)
         this._game = null;
+        // server in shutdown phase? 
         this._shuttingDown = false;
 
+        // listen for websocket connections
         this._wsServer.on("request", this.onWebSocket.bind(this));
 
+        // setup http routing
         this.createRoutes();
+        // start the server 
         this.init();
     }
 
@@ -46,14 +56,16 @@ export class Server{
 
     // integrates a websocket connection into the game system 
     private onWebSocket(request:websocket.request):void{
+        // accept the connection
         let conn:websocket.connection = request.accept(null, "*");
 
+        // give the connection to the game 
         this._game.handleConnection(conn);
     }
 
-    // establishes static file & rest API http routing 
+    // http routing with express 
     private createRoutes():void{
-        // serve static files 
+        // serve web client 
         this._app.get("/", (req, res) => res.sendFile("index.html"));
 
         // killswitch :) 
@@ -72,7 +84,6 @@ export class Server{
         this._app.options("/accounts/create", (req, res) => {
             AccountCreateHandler.options(req, res);
         });
-
         this._app.post("/accounts/create", (req, res) => {
             AccountCreateHandler.post(req, res, this._database);
         });
@@ -137,12 +148,14 @@ export class Server{
 
         }
         catch(err){
+            // something went wrong 
             console.log(err.message);
             process.exit();
         }
     }
 }
 
+// main method 
 if(require.main === module){
     new Server();
 }

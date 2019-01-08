@@ -13,7 +13,7 @@ export class GameObject extends fw.MPGameEntity{
     }
 }
 
-export const GameObjects = {
+export const GameObjectFactory = {
     create(data){
         let {type, name, anim, objectID, team} = data;
 

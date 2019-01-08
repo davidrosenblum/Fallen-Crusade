@@ -10,10 +10,15 @@ export class GameViewTarget extends React.Component{
             stats: null
         };
 
+        // handler for when the client gets object stats
+        // (this component is the view for target object stats)
         this.onObjectStats = evt => {
+            // must still have a selected target and successful response
             if(evt.status === "ok" && Game.selectedTarget){
+                // extract stats
                 let {stats} = evt;
 
+                // if the stats match up with select target - update the UI 
                 if(Game.selectedTarget.objectID === stats.objectID){
                     this.setState({stats});
                 }
@@ -22,17 +27,23 @@ export class GameViewTarget extends React.Component{
     }
 
     componentDidMount(){
+        // listen for the client to receive object stats 
         Client.on("object-stats", this.onObjectStats);
     }
 
     componentWillUnmount(){
+        // stop listening for object stats (prevents leak)
         Client.removeListener("object-stats", this.onObjectStats);
     }
 
+    // renders the stats table (note: different from player stats)
     renderStats(){
+        // extract the stats, return nothing if no stats
         let stats = this.state.stats;
         if(!stats) return null;
 
+        // extract stats values 
+        // note: base and current are objects, the rest are strings or numbers 
         let {base, current, name, team, level=null} = stats;
 
         return (
