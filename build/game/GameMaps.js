@@ -99,6 +99,40 @@ var GameMaps = (function () {
         }
         client.respondObjectStats(stats, null);
     };
+    GameMaps.prototype.handleCreateInstance = function (client, data) {
+        var _this = this;
+        if (!client.player || !client.player.map) {
+            client.send(25, "You are not in a room.", "bad");
+            return;
+        }
+        var _a = data.instanceName, instanceName = _a === void 0 ? null : _a, _b = data.difficulty, difficulty = _b === void 0 ? 1 : _b;
+        if (!instanceName) {
+            client.send(25, "Bad request json.", "bad");
+            return;
+        }
+        var instance = null;
+        try {
+            instance = MapInstanceFactory_1.MapInstanceFactory.create(instanceName);
+        }
+        catch (err) {
+            client.send(25, "Invalid instance name \"" + instanceName + "\".", "bad");
+            return;
+        }
+        this._instances[instance.instanceID] = instance;
+        instance.on("empty", function () {
+            delete _this._instances[instance.instanceID];
+            instance = null;
+        });
+        this.handleEnterInstance(client, { instanceID: instance.instanceID });
+    };
+    GameMaps.prototype.handleMapPlayers = function (client) {
+        if (!client.player || !client.player.map) {
+            client.send(26, "You are not in a room.", "bad");
+            return;
+        }
+        var players = client.player.map.getPlayers();
+        client.send(26, { players: players }, "ok");
+    };
     return GameMaps;
 }());
 exports.GameMaps = GameMaps;

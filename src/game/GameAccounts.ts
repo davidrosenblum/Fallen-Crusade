@@ -18,13 +18,13 @@ export class GameAccounts{
 
         // enforce version
         if(version !== GameAccounts.CLIENT_VERSION){
-            client.respondLogin(null, "Wrong client version.");
+            client.respondLogin(null, -1, "Wrong client version.");
             return;
         }
 
         // one login at once
         if(username in this._accounts){
-            client.respondLogin(null, `Account "${username}" is already online.`);
+            client.respondLogin(null, -1, `Account "${username}" is already online.`);
             return;
         }
 
@@ -37,10 +37,10 @@ export class GameAccounts{
                 // store account data
                 client.setAccountData(accountData);
 
-                client.respondLogin(client.clientID, null);
+                client.respondLogin(client.clientID, client.accessLevel, null);
             })
             .catch(err => {
-                client.respondLogin(null, err.message);
+                client.respondLogin(null, -1, err.message);
             }); 
         
     }
@@ -63,6 +63,10 @@ export class GameAccounts{
         if(client.player && client.player.map){
             client.player.map.removeClient(client);
         }
+
+        // destroy player info 
+        client.setPlayer(null);
+        client.setSelectedPlayer(null);
 
         // decline any pending invite 
         if(client.hasPendingInvite){

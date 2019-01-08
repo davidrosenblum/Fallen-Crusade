@@ -138,6 +138,15 @@ var MapInstance = (function (_super) {
     MapInstance.prototype.getUnit = function (objectID) {
         return this._units[objectID] || null;
     };
+    MapInstance.prototype.getPlayers = function () {
+        var players = {};
+        this.forEachClient(function (client) {
+            if (client.player) {
+                players[client.player.name] = client.player.level;
+            }
+        });
+        return players;
+    };
     MapInstance.prototype.forEachUnit = function (fn) {
         for (var id in this._units) {
             fn(this._units[id], id);

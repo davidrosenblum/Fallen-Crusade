@@ -95,6 +95,11 @@ var Server = (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 7, , 8]);
+                        console.log("  ______________________");
+                        console.log(" /                      \\");
+                        console.log("| Fallen Crusade: Server | ");
+                        console.log("| David Rosenblum, 2019  |");
+                        console.log(" \\______________________/\n");
                         console.log("Loading settings...");
                         return [4, SettingsUtils_1.SettingsUtils.load()];
                     case 1:

@@ -98,8 +98,8 @@ export class GameClient{
         this._conn.send(str + MSG_DELIM);
     }
 
-    public respondLogin(clientID:string, errMsg:string):void{
-        this.send(OpCode.ACCOUNT_LOGIN, errMsg || {clientID}, errMsg ? Status.BAD : Status.GOOD);
+    public respondLogin(clientID:string, accessLevel:number, errMsg:string):void{
+        this.send(OpCode.ACCOUNT_LOGIN, errMsg || {clientID, accessLevel}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondLogout(message:string, errMsg:string):void{
@@ -156,6 +156,14 @@ export class GameClient{
 
     public respondInviteReply(message:string, errMsg:string):void{
         this.send(OpCode.INVITE_REPLY, errMsg || message, errMsg ? Status.BAD : Status.GOOD);
+    }
+
+    public respondCreateInstance(message:string, errMsg:string):void{
+        this.send(OpCode.CREATE_INSTANCE, errMsg || message, errMsg ? Status.BAD : Status.GOOD);   
+    }
+
+    public respondMapPlayers(players:{[name:string]: number}, errMsg:string):void{
+        this.send(OpCode.MAP_PLAYERS, errMsg || {players}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public notifyObjectCreate(spawnState:CharacterSpawnState):void{

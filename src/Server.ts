@@ -92,6 +92,13 @@ export class Server{
     // initializes the server 
     private async init():Promise<any>{
         try{
+            // title 
+            console.log("  ______________________");
+            console.log(" /                      \\");
+            console.log("| Fallen Crusade: Server | ");
+            console.log("| David Rosenblum, 2019  |")
+            console.log(" \\______________________/\n");
+
             // step 1: load settings file
             // (missing file does NOT throw an error)
             console.log("Loading settings...");

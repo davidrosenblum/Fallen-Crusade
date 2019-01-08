@@ -88,6 +88,12 @@ var GameController = (function () {
             case 23:
                 this._invites.handleReplyInvite(client, data);
                 break;
+            case 25:
+                this._maps.handleCreateInstance(client, data);
+                break;
+            case 26:
+                this._maps.handleMapPlayers(client);
+                break;
             default:
                 client.send(99, "Bad request opcode.", "bad");
                 break;

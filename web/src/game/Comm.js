@@ -27,6 +27,8 @@ export const OpCode = {
     INVITE_NOTIFY:      22,
     INVITE_REPLY:       23,
     INVITE_RESPONSE:    24,
+    CREATE_INSTANCE:    25,
+    MAP_PLAYERS:        26,
     BAD_REQUEST:        99
 }
 

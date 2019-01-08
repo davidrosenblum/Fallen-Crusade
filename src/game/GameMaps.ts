@@ -148,4 +148,56 @@ export class GameMaps{
          
         client.respondObjectStats(stats, null);
     }
+
+    public handleCreateInstance(client:GameClient, data:{instanceName?:string, difficulty?:number}):void{
+        // must be in a room
+        if(!client.player || !client.player.map){
+            client.send(OpCode.CREATE_INSTANCE, "You are not in a room.", Status.BAD);
+            return;
+        }
+
+        // extract request parameters
+        let {instanceName=null, difficulty=1} = data;
+
+        // enforce request parameters (note: difficulty is optional)
+        if(!instanceName){
+            client.send(OpCode.CREATE_INSTANCE, "Bad request json.", Status.BAD)
+            return;
+        }
+
+        // create the instance
+        let instance:MapInstance = null;
+        try{
+            // attempt to create
+            instance = MapInstanceFactory.create(instanceName);
+        }
+        catch(err){
+            // invalid instance type 
+            client.send(OpCode.CREATE_INSTANCE, `Invalid instance name "${instanceName}".`, Status.BAD)
+            return;
+        }
+        
+        // successfully created - store instance by id 
+        this._instances[instance.instanceID] = instance;
+        // destroy when empty
+        instance.on("empty", () => {
+            delete this._instances[instance.instanceID];
+            instance = null;
+        });
+
+        // auto join creator 
+        this.handleEnterInstance(client, {instanceID: instance.instanceID});
+    }
+
+    public handleMapPlayers(client:GameClient):void{
+        // must be in a room
+        if(!client.player || !client.player.map){
+            client.send(OpCode.MAP_PLAYERS, "You are not in a room.", Status.BAD);
+            return;
+        }
+
+        let players:{[name:string]: number} = client.player.map.getPlayers();
+
+        client.send(OpCode.MAP_PLAYERS, {players}, Status.GOOD);
+    }
 }

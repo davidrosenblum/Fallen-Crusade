@@ -7,8 +7,9 @@ class Client extends EventEmitter{
     constructor(){
         super();
 
-        this.socket = null;     // the websocket
-        this.clientID = null;   // server-assigned ID 
+        this.socket = null;         // the websocket
+        this.clientID = null;       // server-assigned ID 
+        this.accessLevel = 0;       // server-assigned acccess level (commands UI)
     }
 
     // creates and connects the weboscket to the game server
@@ -117,17 +118,27 @@ class Client extends EventEmitter{
             case OpCode.OBJECT_STATS:
                 this.handleObjectStats(data, status);
                 break;
+            case OpCode.ABILITY_LIST:
+                this.handleAbilityList(data, status);
+                break;
+            case OpCode.CREATE_INSTANCE:
+                this.handleCreateInstance(data, status);
+                break;
+            case OpCode.MAP_PLAYERS:
+                this.handleMapPlayers(data, status);
+                break;
         }
     }
 
     // handles a login response 
     handleLogin(data, status){
         // extract response properties
-        let {message=null, clientID=null} = data;
+        let {message=null, clientID=null, accessLevel=1} = data;
 
-        // store clientID if there was a successful login 
+        // store clientID and access level if there was a successful login 
         if(status === Status.GOOD){
-            this.clientID = clientID;
+            this.clientID =     clientID;
+            this.accessLevel =  accessLevel;
         }
 
         // trigger login listeners
@@ -215,13 +226,40 @@ class Client extends EventEmitter{
         this.emit("object-update", {updateState});
     }
 
-    // handle object stats response
+    // handles object stats response
     handleObjectStats(data, status){
         // extract response properties 
         let {stats=null} = data;
 
         // trigger object stats listeners 
         this.emit("object-stats", {stats, status});
+    }
+
+    // handles ability list response
+    handleAbilityList(data, status){
+        // extract response properties
+        let {message=null,abilityList=null} = data;
+
+        // trigger ability list listeners
+        this.emit("ability-list", {abilityList, status});
+    }
+
+    // handles create instance reponse 
+    handleCreateInstance(data, status){
+        // extract response properties
+        let {message=null} = data;
+
+        // trigger create instance listeners
+        this.emit("create-instance", {message, status});
+    }
+
+    // handles map players response 
+    handleMapPlayers(data, status){
+        // extract response properties
+        let {message=null, players=null} = data;
+
+        // trigger map players listeners
+        this.emit("map-players", {players, status});
     }
 
     // request to login to an account
@@ -290,6 +328,17 @@ class Client extends EventEmitter{
     // gives the ability's name and the target's objectID 
     castAbility(abilityName, objectID){
         this.send(OpCode.ABILITY_CAST, {abilityName, objectID});
+    }
+
+    // requests an instance to be generated
+    // gives teh name of the instance to create
+    createInstance(instanceName){
+        this.send(OpCode.CREATE_INSTANCE, {instanceName});
+    }
+
+    // requests info about every player in the current map
+    getMapPlayers(){
+        this.send(OpCode.MAP_PLAYERS);
     }
 
     // sends a formatted request through the websocket 

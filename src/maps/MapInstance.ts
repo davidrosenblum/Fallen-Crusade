@@ -190,6 +190,18 @@ export class MapInstance extends EventEmitter{
         return this._units[objectID] || null;
     }
 
+    public getPlayers():{[name:string]: number}{
+        let players:{[name:string]: number} = {};
+
+        this.forEachClient(client => {
+            if(client.player){
+                players[client.player.name] = client.player.level;
+            }
+        });
+
+        return players;
+    }
+
     private forEachUnit(fn:(unit:Unit, id?:string)=>void):void{
         for(let id in this._units){
             fn(this._units[id], id);

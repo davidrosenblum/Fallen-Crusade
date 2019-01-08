@@ -135,6 +135,14 @@ export class GameController{
             case OpCode.INVITE_REPLY:
                 this._invites.handleReplyInvite(client, data);
                 break;
+            // player is creating a new instance 
+            case OpCode.CREATE_INSTANCE:
+                this._maps.handleCreateInstance(client, data);
+                break;
+            // player requests all players in current map
+            case OpCode.MAP_PLAYERS:
+                this._maps.handleMapPlayers(client);
+                break;
             // opcode not recognized 
             default:
                 client.send(OpCode.BAD_REQUEST, "Bad request opcode.", Status.BAD);
