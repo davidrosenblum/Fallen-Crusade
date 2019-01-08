@@ -24,7 +24,7 @@ var Ability = (function (_super) {
         _this._range = config.range;
         _this._maxTargets = config.maxTargets || 1;
         _this._level = 1;
-        _this._ready = false;
+        _this._ready = true;
         for (var i = 1; i < _this._level; i++) {
             _this.upgrade();
         }

@@ -11,30 +11,43 @@ export class GameViewAbilities extends React.Component{
             abilityList: null
         };
 
+        // handler for when the client receives an ability list update
         this.onAbilityList = evt => {
+            // must be a successful response
             if(evt.status === "ok"){
+                // update the UI 
                 this.setState({abilityList: evt.abilityList});
             }
         };
     }
 
     componentDidMount(){
+        // listen for the client to receive ability list
         Client.on("ability-list", this.onAbilityList);
     }
 
     componentWillUnmount(){
+        // stop listening for the client to receive ability list (prevents leak)
         Client.removeListener("ability-list", this.onAbilityList);
     }
 
+    // renders the ability icons 
     renderAbilityList(){
+        // current abilities 
         let abilityList = this.state.abilityList || [];
+        // list of icons to render (there will always be 10 abilities)
         let icons = new Array(10);
 
-        for(let i = 0; i < 10; i++){
+        // for each icon slot...
+        for(let i = 0; i < icons.length; i++){
+            // find the corresponding ability
             let ability = abilityList[i] || null;
+            // prepare the icon <img>
             let icon = null;
 
+            // if an ability exists at that position 
             if(ability){
+                // create an image that can be clicked
                 icon = (
                     <img
                         key={i}
@@ -47,6 +60,7 @@ export class GameViewAbilities extends React.Component{
                 );
             }
             else{
+                // create an empty slot image (not interactable)
                 icon = (
                     <img
                         key={i}
@@ -58,9 +72,11 @@ export class GameViewAbilities extends React.Component{
                 );
             }
 
+            // put the <img> in the current slot
             icons[i] = icon;
         }
 
+        // split the list into 5x2 tray 
         return (
             <div>
                 {icons.slice(0, 5)}

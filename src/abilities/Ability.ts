@@ -1,6 +1,7 @@
 import { Unit } from '../characters/Unit';
 import { EventEmitter } from 'events';
 
+// ability configuration schema 
 export interface AbilityConfig{
     name:string;
     manaCost:number;
@@ -10,34 +11,47 @@ export interface AbilityConfig{
     maxTargets?:number
 }
 
+
 export abstract class Ability extends EventEmitter{
+    // how many times abilities can be ugraded (exclusive of first level)
     public static readonly UPGRADE_CAP:number = 3;
 
-    private _name:string;
-    private _manaCost:number;
-    private _recharge:number;
-    private _maxTargets:number;
-    private _range:number;
-    private _level:number;
-    private _ready:boolean;
+    private _name:string;           // name of the ability
+    private _manaCost:number;       // how much mana the ability costs to cast
+    private _recharge:number;       // cooldown time in milliseconds
+    private _maxTargets:number;     // max amount of targets hit (inclusive of initial target)
+    private _range:number;          // the range, in pixels, of how far away the caster can be from the target
+    private _level:number;          // upgrade level
+    private _ready:boolean;         // ability ready to cast again or not 
 
     constructor(config:AbilityConfig){
         super();
 
+        // extract name
         this._name = config.name;
+        // extract mana cost
         this._manaCost = config.manaCost;
+        // exttract recharge time, convert from seconds to milliseconds
         this._recharge = config.rechargeSec / 1000;
+        // extract range
         this._range = config.range;
+        // extract amount of targets tha can be hit (default is 1, meaning single target)
         this._maxTargets = config.maxTargets || 1;
+        // starts at level 1
         this._level = 1;
-        this._ready = false;
+        // begins ready to cast
+        this._ready = true;
 
+        // apply upgrades 
         for(let i:number = 1; i < this._level; i++){
             this.upgrade();
         }
     }
 
+    // determines if a target is eligible to be effected (hit)
     public abstract validateTarget(caster:Unit, target:Unit):boolean;
+    
+    // what happens to a target when 'hit'
     public abstract effect(caster:Unit, target:Unit):void;
 
     public cast(caster:Unit, target:Unit, handleError:(err?:Error)=>void):void{

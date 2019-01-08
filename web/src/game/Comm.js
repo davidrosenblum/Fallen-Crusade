@@ -1,3 +1,8 @@
+/*
+    WebSocket communication constants 
+*/
+
+// operation codes 
 export const OpCode = {
     ACCOUNT_LOGIN:      2,
     ACCOUNT_LOGOUT:     3,
@@ -23,12 +28,14 @@ export const OpCode = {
     INVITE_REPLY:       23,
     INVITE_RESPONSE:    24,
     BAD_REQUEST:        99
-
 }
 
+// server response status codes 
 export const Status = {
-    GOOD: "ok",
-    BAD: "bad"
+    GOOD:   "ok",
+    BAD:    "bad"
 };
 
+// delimiter for message json
+// (messages can be sent simulteanously as a concatenated string) 
 export const MSG_DELIM = "?&?";

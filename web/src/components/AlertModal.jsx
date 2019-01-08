@@ -7,30 +7,35 @@ export class AlertModal extends React.Component{
         super(props);
 
         this.state = {
-            isOpen: false,
-            header: null,
-            body: null,
-            footer: null
+            isOpen: false,      // visible or not?
+            header: null,       // header text
+            body: null,         // body text
+            footer: null        // footer text
         };
 
+        // handler for when a display modal is triggered via the modal dispatcher 
         this.onModal = evt => {
+            // show the modal with the new text data 
             this.setState({
                 isOpen: true,
-                header: evt.header || null,
-                body: evt.body || null,
-                footer: evt.footer || null
+                header: evt.header  || null,    // optional
+                body:   evt.body    || null,    // optional
+                footer: evt.footer  || null     // optional 
             })
         };
     }
 
     componentWillMount(){
+        // listen for display modal triggers
         ModalDispatcher.on("modal", this.onModal);
     }
 
     componentWillUnmount(){
+        // stop listening for display modal triggers (prevents leak)
         ModalDispatcher.removeListener("modal", this.onModal);
     }
 
+    // toggles the modal
     toggle(){
         this.setState({isOpen: !this.state.isOpen});
     }

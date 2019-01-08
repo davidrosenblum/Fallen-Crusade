@@ -62,58 +62,58 @@ var GameClient = (function () {
         this._conn.send(str + Comm_1.MSG_DELIM);
     };
     GameClient.prototype.respondLogin = function (clientID, errMsg) {
-        this.send(2, errMsg ? errMsg : { clientID: clientID }, errMsg ? "bad" : "ok");
+        this.send(2, errMsg || { clientID: clientID }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondLogout = function (message, errMsg) {
-        this.send(3, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
+        this.send(3, errMsg || message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondCharacterList = function (characterList, errMsg) {
         this.send(4, characterList ? { characterList: characterList } : errMsg, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondCharacterCreate = function (message, errMsg) {
-        this.send(5, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
+        this.send(5, errMsg || message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondCharacterDelete = function (message, errMsg) {
-        this.send(7, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
+        this.send(7, errMsg || message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondCharacterSelect = function (message, errMsg) {
-        this.send(6, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
+        this.send(6, errMsg || message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondEnterMap = function (mapState, errMsg) {
-        this.send(8, errMsg ? errMsg : { mapState: mapState }, errMsg ? "bad" : "ok");
+        this.send(8, errMsg || { mapState: mapState }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondEnterInstance = function (mapState, errMsg) {
-        this.send(9, errMsg ? errMsg : { mapState: mapState }, errMsg ? "bad" : "ok");
+        this.send(9, errMsg || { mapState: mapState }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondChatMessage = function (chat, from, errMsg) {
-        this.send(10, errMsg ? errMsg : { chat: chat, from: from }, errMsg ? "bad" : "ok");
+        this.send(10, errMsg || { chat: chat, from: from }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondObjectStats = function (stats, errMsg) {
-        this.send(14, errMsg ? errMsg : { stats: stats }, errMsg ? "bad" : "ok");
+        this.send(14, errMsg || { stats: stats }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondAbilityList = function (abilityList, errMsg) {
-        this.send(18, errMsg ? errMsg : { abilityList: abilityList }, errMsg ? "bad" : "ok");
+        this.send(18, errMsg || { abilityList: abilityList }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondAbilityUpgrade = function (abilityList, errMsg) {
-        this.send(17, errMsg ? errMsg : { abilityList: abilityList }, errMsg ? "bad" : "ok");
+        this.send(17, errMsg || { abilityList: abilityList }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondAbilityCast = function (message, errMsg) {
-        this.send(18, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
+        this.send(18, errMsg || message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondInviteSend = function (message, errMsg) {
-        this.send(21, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
+        this.send(21, errMsg || message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondInviteReply = function (message, errMsg) {
-        this.send(23, errMsg ? errMsg : message, errMsg ? "bad" : "ok");
+        this.send(23, errMsg || message, errMsg ? "bad" : "ok");
     };
-    GameClient.prototype.notifyObjectCreate = function (state) {
-        this.send(11, state, "ok");
+    GameClient.prototype.notifyObjectCreate = function (spawnState) {
+        this.send(11, { spawnState: spawnState }, "ok");
     };
     GameClient.prototype.notifyObjectDelete = function (objectID) {
         this.send(12, { objectID: objectID }, "ok");
     };
-    GameClient.prototype.notifyObjectUpdate = function (data) {
-        this.send(13, data, "ok");
+    GameClient.prototype.notifyObjectUpdate = function (updateState) {
+        this.send(13, { updateState: updateState }, "ok");
     };
     GameClient.prototype.notifyInvite = function (message) {
         this.send(22, { message: message }, "ok");

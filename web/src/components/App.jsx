@@ -15,36 +15,43 @@ export class App extends React.Component{
         super(props);
 
         this.state = {
-            menu: "login"
+            menu: "login"   // default menu is the login menu
         };
 
+        // handler for when a menu change is triggered via modal dispatcher 
         this.onMenu = evt => this.setState({menu: evt.menu});
 
+        // handler for when the websocket closes
         this.onClientClose = () => {
-            console.log('close');
+            // display connection lost message
             ModalDispatcher.modal("Socket Error", "Connection error.");
-            NavDispatcher.showMenu("login");
+            // show the login menu
+            NavDispatcher.showLogin();
         };
 
-        this.onClientError = err => {
-            console.log('err!');
-            ModalDispatcher.modal("Socket Error", "Connection error.");
-            NavDispatcher.showMenu("login");
-        };
+        // handler for the websocket errors 
+        this.onClientError = err => {};
     }
 
     componentDidMount(){
+        // listen for menu change signal from the navigation dispatcher 
         NavDispatcher.on("menu", this.onMenu);
+        // listen for the websocket to close 
         Client.on("close", this.onClientClose);
+        // listen for the websocket to error 
         Client.on("error", this.onClientError);
     }
 
     componentWillUnmount(){
+        // stop listening for menu changes (prevents leark)
         NavDispatcher.removeListener("menu", this.onMenu);
+        // stop listening for websocket closes (prevents leak)
         Client.removeListener("close", this.onClientClose);
+        // stop listening for websocket errors (prevents leak)
         Client.removeListener("error", this.onClientError);
     }
 
+    // renders the current menu component 
     renderMenu(){
         switch(this.state.menu){
             case "login":
