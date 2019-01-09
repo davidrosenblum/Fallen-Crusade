@@ -24,6 +24,12 @@ export interface MapData{
     foreground:number[][];
 }
 
+export interface PlayerListItem{
+    name:string;
+    level:number;
+    objectID:string;
+}
+
 export class MapInstance extends EventEmitter{
     private static tokenGen:TokenGenerator = new TokenGenerator(16);
 
@@ -148,7 +154,12 @@ export class MapInstance extends EventEmitter{
         if(npc){
             npc.on("health", () => this.broadcastUnitStats(npc));
             npc.on("mana", () => this.broadcastUnitStats(npc));
-            npc.on("death", () => this.removeUnit(npc));
+            
+            npc.on("death", () => {
+                this.giveBounty(npc.xpValue, npc.goldValue);
+                this.removeUnit(npc);
+                npc.removeAllListeners();
+            });
             
             this.addUnit(npc);
         }
@@ -208,12 +219,16 @@ export class MapInstance extends EventEmitter{
         return this._units[objectID] || null;
     }
 
-    public getPlayers():{[name:string]: number}{
-        let players:{[name:string]: number} = {};
+    public getPlayers():PlayerListItem[]{
+        let players:PlayerListItem[] = [];
 
         this.forEachClient(client => {
             if(client.player){
-                players[client.player.name] = client.player.level;
+                players.push({
+                    name:       client.player.name,
+                    level:      client.player.level,
+                    objectID:   client.player.objectID
+                });
             }
         });
 

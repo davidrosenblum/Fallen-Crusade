@@ -33,7 +33,8 @@ export class Player extends Unit{
             mana:           100,
             manaRegen:      0.02,
             defense:        0,
-            resistance:     0
+            resistance:     0,
+            abilities:      saveData.abilities || {}
         });
 
         this._level =           Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));
@@ -90,8 +91,10 @@ export class Player extends Unit{
     // override
     public upgradeAbility(abilityName:string):boolean{
         if(this._abilityPoints > 0){
-            this._abilityPoints--;
-            return super.upgradeAbility(abilityName);
+            if(super.upgradeAbility(abilityName)){
+                this._abilityPoints--;
+                return true;
+            }
         }
         return false;
     }
@@ -110,7 +113,7 @@ export class Player extends Unit{
             xpNeeded:       this.xpNeeded,
             abilityPoints:  this.abilityPoints,
             level:          this.level,
-            abilities:      super.getAbilities()
+            abilities:      this.getAbilities()
         }
     }
 

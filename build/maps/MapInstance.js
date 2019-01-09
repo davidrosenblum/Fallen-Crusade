@@ -109,7 +109,11 @@ var MapInstance = (function (_super) {
         if (npc) {
             npc.on("health", function () { return _this.broadcastUnitStats(npc); });
             npc.on("mana", function () { return _this.broadcastUnitStats(npc); });
-            npc.on("death", function () { return _this.removeUnit(npc); });
+            npc.on("death", function () {
+                _this.giveBounty(npc.xpValue, npc.goldValue);
+                _this.removeUnit(npc);
+                npc.removeAllListeners();
+            });
             this.addUnit(npc);
         }
     };
@@ -152,10 +156,14 @@ var MapInstance = (function (_super) {
         return this._units[objectID] || null;
     };
     MapInstance.prototype.getPlayers = function () {
-        var players = {};
+        var players = [];
         this.forEachClient(function (client) {
             if (client.player) {
-                players[client.player.name] = client.player.level;
+                players.push({
+                    name: client.player.name,
+                    level: client.player.level,
+                    objectID: client.player.objectID
+                });
             }
         });
         return players;

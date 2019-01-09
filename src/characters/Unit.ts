@@ -1,15 +1,10 @@
 import { CombatCharacter, CombatCharacterConfig } from './CombatCharacter';
-import { Ability } from '../abilities/Ability';
+import { Ability, AbilityListItem } from '../abilities/Ability';
 import { AbilityFactory } from '../abilities/AbilityFactory';
 import { MapInstance } from '../maps/MapInstance';
 
 export interface UnitConfig extends CombatCharacterConfig{
     abilities?: {[abilityName:string]: number};
-}
-
-export interface AbilityListItem{
-    abilityName:string;
-    level:number;
 }
 
 export class Unit extends CombatCharacter{
@@ -22,14 +17,14 @@ export class Unit extends CombatCharacter{
         this._abilities = {};
         this._map = null;
 
-        this.learnInitialAbilities(config.abilities || {});
+        if(config.abilities) this.learnInitialAbilities(config.abilities);
     }
 
     private learnInitialAbilities(abilities:{[abilityName:string]: number}):void{
         for(let abilityName in abilities){
             let level:number = abilities[abilityName];
             let ability:Ability = AbilityFactory.create(abilityName, level);
-
+            console.log(ability ? ability.formattedName : "NO " + abilityName);
             if(ability){
                 this.learnAbility(ability);
             }
@@ -37,17 +32,22 @@ export class Unit extends CombatCharacter{
     }
 
     public castAbility(abilityName:string, target:Unit, handleError:(err:Error)=>void):void{
-        if(this.hasAbility(abilityName)){
-            this._abilities[abilityName].cast(this, target, handleError);
+        let formattedName:string = Ability.formatName(abilityName);
+
+        if(this.hasAbility(formattedName)){
+            this._abilities[formattedName].cast(this, target, handleError);
         }
     }
 
     public learnAbility(ability:Ability):boolean{
-        if(!this.hasAbility(ability.name)){
-            this._abilities[ability.name] = ability;
+        let abilityName:string = Ability.formatName(ability.name);
+
+        if(!this.hasAbility(abilityName)){
+            this._abilities[abilityName] = ability;
 
             // trigger listeners 
-            this.emit("ability-learn", {abilityName: ability.name})
+            this.emit("ability-learn", {abilityName: ability.name});
+            this.emit("ability-upgrade", {abilityName: ability.name, level: ability.level});
 
             return true;
         }
@@ -55,8 +55,10 @@ export class Unit extends CombatCharacter{
     }
 
     public upgradeAbility(abilityName:string):boolean{
-        if(this.hasAbility(abilityName)){
-            let ability:Ability = this._abilities[abilityName];
+        let formattedName:string = Ability.formatName(abilityName);
+
+        if(this.hasAbility(formattedName)){
+            let ability:Ability = this._abilities[formattedName];
 
             if(ability.upgrade()){
                 this.emit("ability-upgrade", {abilityName: ability.name, level: ability.level});
@@ -73,9 +75,7 @@ export class Unit extends CombatCharacter{
     public getAbilities():{[abilityName:string]: number}{
         let abilities:{[abilityName:string]: number} = {};
 
-        for(let abilityName in this._abilities){
-            abilities[abilityName] = this._abilities[abilityName].level;
-        }
+        this.forEachAbility((ability, abilityName) => abilities[abilityName] = ability.level);
 
         return abilities;
     }
@@ -83,14 +83,7 @@ export class Unit extends CombatCharacter{
     public getAbilityList():AbilityListItem[]{
         let abilityList:AbilityListItem[] = [];
 
-        for(let abilityName in this._abilities){
-            let ability:Ability = this._abilities[abilityName];
-
-            abilityList.push({
-                abilityName,
-                level: ability.level
-            })
-        }
+        this.forEachAbility(ability => abilityList.push(ability.toListItem()));
 
         return abilityList;
     }
@@ -101,6 +94,12 @@ export class Unit extends CombatCharacter{
             return true;
         }
         return false;
+    }
+
+    private forEachAbility(fn:(ability:Ability, abilityName?:string)=>void):void{
+        for(let abilityName in this._abilities){
+            fn(this._abilities[abilityName], abilityName);
+        }
     }
 
     public get map():MapInstance{

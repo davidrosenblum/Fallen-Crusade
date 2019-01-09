@@ -44,6 +44,23 @@ var CombatCharacter = (function (_super) {
     CombatCharacter.prototype.hasEnoughMana = function (manaNeeded) {
         return this._currStats.mana >= manaNeeded;
     };
+    CombatCharacter.prototype.drainMana = function (manaPercent) {
+        var mana = this._baseStats.mana * manaPercent;
+        this._currStats.mana = Math.max(0, this._currStats.mana - mana);
+        this.emit("mana", { mana: -mana });
+    };
+    CombatCharacter.prototype.heal = function (healthPercent) {
+        var health = this._baseStats.health * healthPercent;
+        this.addHealth(health);
+    };
+    CombatCharacter.prototype.addHealth = function (health) {
+        this._currStats.health = Math.min(this._currStats.health + health, this._baseStats.health);
+        this.emit("health", { health: health });
+    };
+    CombatCharacter.prototype.addMana = function (mana) {
+        this._currStats.mana = Math.min(this._currStats.mana + mana, this._baseStats.mana);
+        this.emit("mana", { mana: mana });
+    };
     CombatCharacter.prototype.takeDamage = function (damage, defend, resist) {
         if (defend === void 0) { defend = true; }
         if (resist === void 0) { resist = true; }

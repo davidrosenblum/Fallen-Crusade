@@ -7,11 +7,16 @@ export interface AbilityConfig{
     manaCost:number;
     rechargeSec:number;
     range:number;
-    level?:number;
+    level:number;
     maxTargets?:number
     radius?:number;
 }
 
+export interface AbilityListItem{
+    abilityName:string;
+    name:string;
+    level:number;
+}
 
 export abstract class Ability extends EventEmitter{
     // how many times abilities can be ugraded (exclusive of first level)
@@ -53,8 +58,8 @@ export abstract class Ability extends EventEmitter{
         this._radius = config.radius || this._range;
         // extract amount of targets tha can be hit (default is 1, meaning single target)
         this._maxTargets = config.maxTargets || 1;
-        // starts at level 1
-        this._level = 1;
+        // ability level (default is 1, 0 = learnable)
+        this._level = config.level;
         // begins ready to cast
         this._ready = true;
 
@@ -70,8 +75,14 @@ export abstract class Ability extends EventEmitter{
     // what happens to a target when 'hit'
     public abstract effect(caster:Unit, target:Unit):void;
 
-    // 
+    // casts the ability on the initial target
     public cast(caster:Unit, target:Unit, handleError:(err?:Error)=>void):void{
+        // ability unlocked? 
+        if(this.level < 1){
+            handleError(new Error("Ability not learned."));
+            return;
+        }
+
         // ability ready? 
         if(!this.isReady){
             handleError(new Error("Not done recharging."));
@@ -98,7 +109,8 @@ export abstract class Ability extends EventEmitter{
 
         // 'consume' ability
         caster.useMana(this.manaCost);
-        this.beginCooldown();
+        // start recharge (emit when ready)
+        this.beginCooldown(() => caster.emit("ability-ready", {abilityName: this.name}));
 
         // effect the target if its friendly OR if the target is an enemy and did not dodge 
         if(caster.team === target.team || !target.rollDodge()){
@@ -111,14 +123,15 @@ export abstract class Ability extends EventEmitter{
         }
     }
 
-    private beginCooldown():void{
+    private beginCooldown(ready:()=>void):void{
         // ability no longer available
         this._ready = false;
 
         // make available when recharge is done
         setTimeout(() => {
             this._ready = true;
-            this.emit("recharge");
+            this.emit("ready");
+            ready();
         }, this.recharge);
     }
 
@@ -142,6 +155,10 @@ export abstract class Ability extends EventEmitter{
         return caster.team === target.team;
     }
 
+    public validateNotSelf(caster:Unit, target:Unit):boolean{
+        return caster !== target;
+    }
+
     protected setManaCost(manaCost:number){
         this._manaCost = manaCost;
     }
@@ -156,6 +173,14 @@ export abstract class Ability extends EventEmitter{
 
     protected setRange(range:number){
         this._range = range;
+    }
+
+    public toListItem():AbilityListItem{
+        return {
+            abilityName:    this.formattedName,
+            name:           this.name,
+            level:          this.level
+        }
     }
 
     public get name():string{
@@ -188,5 +213,17 @@ export abstract class Ability extends EventEmitter{
 
     public get isReady():boolean{
         return this._ready;
+    }
+
+    public get upgradeLevels():number{
+        return Math.max(0, this._level - 1);
+    }
+
+    public get formattedName():string{
+        return Ability.formatName(this.name);
+    }
+
+    public static formatName(abilityName:string):string{
+        return abilityName.toLowerCase().replace(/[\s_]/gi, "-");
     }
 }

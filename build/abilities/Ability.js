@@ -24,7 +24,7 @@ var Ability = (function (_super) {
         _this._range = config.range;
         _this._radius = config.radius || _this._range;
         _this._maxTargets = config.maxTargets || 1;
-        _this._level = 1;
+        _this._level = config.level;
         _this._ready = true;
         for (var i = 1; i < _this._level; i++) {
             _this.upgrade();
@@ -32,6 +32,11 @@ var Ability = (function (_super) {
         return _this;
     }
     Ability.prototype.cast = function (caster, target, handleError) {
+        var _this = this;
+        if (this.level < 1) {
+            handleError(new Error("Ability not learned."));
+            return;
+        }
         if (!this.isReady) {
             handleError(new Error("Not done recharging."));
             return;
@@ -49,7 +54,7 @@ var Ability = (function (_super) {
             return;
         }
         caster.useMana(this.manaCost);
-        this.beginCooldown();
+        this.beginCooldown(function () { return caster.emit("ability-ready", { abilityName: _this.name }); });
         if (caster.team === target.team || !target.rollDodge()) {
             this.effect(caster, target);
             if (this.maxTargets > 1 && caster.map) {
@@ -57,12 +62,13 @@ var Ability = (function (_super) {
             }
         }
     };
-    Ability.prototype.beginCooldown = function () {
+    Ability.prototype.beginCooldown = function (ready) {
         var _this = this;
         this._ready = false;
         setTimeout(function () {
             _this._ready = true;
-            _this.emit("recharge");
+            _this.emit("ready");
+            ready();
         }, this.recharge);
     };
     Ability.prototype.upgrade = function () {
@@ -81,6 +87,9 @@ var Ability = (function (_super) {
     Ability.prototype.validateAlliesOrSelf = function (caster, target) {
         return caster.team === target.team;
     };
+    Ability.prototype.validateNotSelf = function (caster, target) {
+        return caster !== target;
+    };
     Ability.prototype.setManaCost = function (manaCost) {
         this._manaCost = manaCost;
     };
@@ -92,6 +101,13 @@ var Ability = (function (_super) {
     };
     Ability.prototype.setRange = function (range) {
         this._range = range;
+    };
+    Ability.prototype.toListItem = function () {
+        return {
+            abilityName: this.formattedName,
+            name: this.name,
+            level: this.level
+        };
     };
     Object.defineProperty(Ability.prototype, "name", {
         get: function () {
@@ -149,6 +165,23 @@ var Ability = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Ability.prototype, "upgradeLevels", {
+        get: function () {
+            return Math.max(0, this._level - 1);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Ability.prototype, "formattedName", {
+        get: function () {
+            return Ability.formatName(this.name);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Ability.formatName = function (abilityName) {
+        return abilityName.toLowerCase().replace(/[\s_]/gi, "-");
+    };
     Ability.UPGRADE_CAP = 3;
     Ability.RANGE_CLOSE = 64;
     Ability.RANGE_MEDIUM = 128;

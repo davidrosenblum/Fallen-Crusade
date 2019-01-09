@@ -1,20 +1,23 @@
 import { GameClient } from "./GameClient";
-import { OpCode, Status } from "./Comm";
 import { Unit } from '../characters/Unit';
+import { AbilityFactory } from '../abilities/AbilityFactory';
+import { Ability, AbilityListItem } from '../abilities/Ability';
 
 export class GameAbilities{
+    // ability list requested
     public handleAbilityList(client:GameClient):void{
         if(!client.player){
-            client.respondAbilityList(null, "You do not have a player.");
+            client.respondAbilityList(null, 0, "You do not have a player.");
             return;
         }
 
         //let abilityList:{[abilityName:string]: number} = client.player.getAbilities();
-        let abilityList:{abilityName:string, level:number}[] = client.player.getAbilityList();
+        let abilityList:AbilityListItem[] = client.player.getAbilityList();
 
-        client.respondAbilityList(abilityList, null);
+        client.respondAbilityList(abilityList, client.player.abilityPoints, null);
     }
 
+    // abiltiy cast requested
     public handleAbilityCast(client:GameClient, data:{abilityName?:string, objectID?:string}):void{
         if(!client.player || !client.player.map){
             client.respondAbilityCast(null, "You are not in a room.");
@@ -37,6 +40,8 @@ export class GameAbilities{
             return;
         }
 
+        // attempt cast 
+        // err = error message (such as invalid target, not enough mana, etc)
         client.player.castAbility(abilityName, target, err => {
             if(!err){
                 client.respondAbilityCast("Success.", null);
@@ -47,9 +52,10 @@ export class GameAbilities{
         });
     }
 
+    // ability upgrade requested
     public handleAbilityUpgrade(client:GameClient, data:{abilityName?:string}):void{
         if(!client.player){
-            client.respondAbilityUpgrade(null, "You do not have a player.")
+            client.respondAbilityUpgrade(null, "You do not have a player.");
             return;
         }
 
@@ -58,7 +64,7 @@ export class GameAbilities{
 
         // enforce request parameters
         if(!abilityName){
-            client.send(OpCode.ABILITY_UPGRADE, "Bad request json.", Status.BAD);
+            client.respondAbilityUpgrade(null, "Bad request json.");
             return;
         }
         
@@ -66,19 +72,25 @@ export class GameAbilities{
         if(client.player.hasAbility(abilityName)){
             // upgrade
             if(client.player.upgradeAbility(abilityName)){
-                client.send(OpCode.ABILITY_UPGRADE, "Ability upgraded.", Status.GOOD);
+                client.respondAbilityUpgrade(client.player.getAbilityList(), null);
             }
             else{
-                client.send(OpCode.ABILITY_UPGRADE, "Unable to upgade ability.", Status.BAD);
+                client.respondAbilityUpgrade(null, "Unable to upgrade ability.");
             }
         }
         else{
             // learn
-            if(client.player.upgradeAbility(abilityName)){
-                client.send(OpCode.ABILITY_UPGRADE, "Ability learned.", Status.GOOD);
+            let ability:Ability = AbilityFactory.create(abilityName, 1);
+            if(ability){
+                if(client.player.learnAbility(ability)){
+                    client.respondAbilityUpgrade(client.player.getAbilityList(), null);
+                }
+                else{
+                    client.respondAbilityUpgrade(null, "Unable to learn ability." + abilityName + " " + JSON.stringify(client.player.getAbilities()));
+                }
             }
             else{
-                client.send(OpCode.ABILITY_UPGRADE, "Unable to learn ability.", Status.BAD);
+                client.respondAbilityUpgrade(null, "Invalid ability name.");
             }
         }
     }

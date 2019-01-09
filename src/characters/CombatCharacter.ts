@@ -76,6 +76,29 @@ export abstract class CombatCharacter extends Character{
         return this._currStats.mana >= manaNeeded;
     }
 
+    public drainMana(manaPercent:number):void{
+        let mana:number = this._baseStats.mana * manaPercent;
+
+        this._currStats.mana = Math.max(0, this._currStats.mana - mana);
+
+        this.emit("mana", {mana: -mana});
+    }
+
+    public heal(healthPercent:number):void{
+        let health:number = this._baseStats.health * healthPercent;
+        this.addHealth(health);
+    }
+
+    public addHealth(health:number):void{
+        this._currStats.health = Math.min(this._currStats.health + health, this._baseStats.health);
+        this.emit("health", {health});
+    }
+
+    public addMana(mana:number):void{
+        this._currStats.mana = Math.min(this._currStats.mana + mana, this._baseStats.mana);
+        this.emit("mana", {mana});
+    }
+
     public takeDamage(damage:number, defend:boolean=true, resist:boolean=true):boolean{
         // possibly dodge (based on defense)
         if(defend && this.rollDodge()){

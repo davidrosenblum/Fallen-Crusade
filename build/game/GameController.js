@@ -94,6 +94,9 @@ var GameController = (function () {
             case 26:
                 this._maps.handleMapPlayers(client);
                 break;
+            case 27:
+                this._maps.handleAvailablePlayers(client);
+                break;
             default:
                 client.send(99, "Bad request opcode.", "bad");
                 break;

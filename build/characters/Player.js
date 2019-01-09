@@ -27,7 +27,8 @@ var Player = (function (_super) {
             mana: 100,
             manaRegen: 0.02,
             defense: 0,
-            resistance: 0
+            resistance: 0,
+            abilities: saveData.abilities || {}
         }) || this;
         _this._level = Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));
         _this._xpNeeded = _this.calculateXPNeeded();
@@ -71,8 +72,10 @@ var Player = (function (_super) {
     };
     Player.prototype.upgradeAbility = function (abilityName) {
         if (this._abilityPoints > 0) {
-            this._abilityPoints--;
-            return _super.prototype.upgradeAbility.call(this, abilityName);
+            if (_super.prototype.upgradeAbility.call(this, abilityName)) {
+                this._abilityPoints--;
+                return true;
+            }
         }
         return false;
     };
@@ -89,7 +92,7 @@ var Player = (function (_super) {
             xpNeeded: this.xpNeeded,
             abilityPoints: this.abilityPoints,
             level: this.level,
-            abilities: _super.prototype.getAbilities.call(this)
+            abilities: this.getAbilities()
         };
     };
     Player.prototype.getDatabaseUpdate = function (field) {

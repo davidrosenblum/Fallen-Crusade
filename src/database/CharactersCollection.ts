@@ -36,8 +36,14 @@ export class CharactersCollection{
             // create the new character document (basically the default save)
             let characterDoc:CharacterDocument = {
                 account_id: accountID, name, skin,
-                level: 1, xp: 0, gold: 0, ability_points: 0, abilities: {},
-                last_map: "Village Center"
+                level: 1, xp: 0, gold: 0, ability_points: 0, last_map: "Village Center",
+                abilities: {
+                    "incinerate":       1,
+                    "fireball":         0,
+                    "lightning-storm":  0,
+                    "healing-touch":    0,
+                    "arcane-barrier":   0
+                }
             };
 
             // store the character 'save' in the database

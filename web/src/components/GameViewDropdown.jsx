@@ -62,8 +62,8 @@ export class GameViewDropdown extends React.Component{
         return Client.accessLevel > 1 ? [
             <DropdownItem key={0} divider/>,
             <DropdownItem key={1} header>Admin Commands</DropdownItem>,
-            <DropdownItem key={2}>Upgrades Menu</DropdownItem>,
-            <DropdownItem key={3}>Instances Menu</DropdownItem>
+            <DropdownItem key={2} onClick={() => ModalDispatcher.upgradesModal()}>Upgrades Menu</DropdownItem>,
+            <DropdownItem key={3} onClick={() => ModalDispatcher.instanceModal()}>Instances Menu</DropdownItem>
         ] : null;
     }
 

@@ -7,6 +7,8 @@ import { GameViewTarget } from "./GameViewTarget";
 import { GameViewPlayer } from "./GameViewPlayer";
 import { GameViewAbilities } from "./GameViewAbilities";
 import { GameViewDropdown } from "./GameViewDropdown";
+import { InstanceModal } from "./InstanceModal";
+import { UpgradesModal } from "./UpgradesModal";
 
 export class GameView extends React.Component{
     constructor(props){
@@ -54,6 +56,8 @@ export class GameView extends React.Component{
                 <GameViewPlayer/>
                 <GameViewAbilities/>
                 <GameViewDropdown/>
+                <InstanceModal/>
+                <UpgradesModal/>
             </div>
         );
     }

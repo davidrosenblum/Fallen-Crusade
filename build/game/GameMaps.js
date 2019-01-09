@@ -60,6 +60,7 @@ var GameMaps = (function () {
             player.map.bulkUpdate(GameClient_1.GameClient.createResponse(20, data));
             _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("skin"));
         });
+        player.on("ability-ready", function (evt) { return client.notifyAbilityReady(evt.abilityName); });
     };
     GameMaps.prototype.handleEnterMap = function (client, data) {
         var _this = this;
@@ -153,7 +154,7 @@ var GameMaps = (function () {
             client.respondCreateInstance(null, "You are not in a map.");
             return;
         }
-        var _a = data.instanceName, instanceName = _a === void 0 ? null : _a, _b = data.difficulty, difficulty = _b === void 0 ? 1 : _b;
+        var _a = data.instanceName, instanceName = _a === void 0 ? null : _a, _b = data.difficulty, difficulty = _b === void 0 ? 1 : _b, _c = data.objectIDs, objectIDs = _c === void 0 ? null : _c;
         if (!instanceName) {
             client.respondCreateInstance(null, "Bad request json.");
             return;
@@ -172,6 +173,10 @@ var GameMaps = (function () {
             instance = null;
         });
         this.handleEnterInstance(client, { instanceID: instance.instanceID });
+        if (objectIDs && objectIDs.length) {
+            this.forEachMap(function (map) {
+            });
+        }
     };
     GameMaps.prototype.handleMapPlayers = function (client) {
         if (!client.player || !client.player.map) {
@@ -180,6 +185,26 @@ var GameMaps = (function () {
         }
         var players = client.player.map.getPlayers();
         client.respondMapPlayers(players, null);
+    };
+    GameMaps.prototype.handleAvailablePlayers = function (client) {
+        if (!client.player) {
+            client.respondAvailablePlayers(null, "You do not have a player.");
+            return;
+        }
+        var players = [];
+        this.forEachMap(function (map) { return players.concat(map.getPlayers()); });
+        delete players[client.player.name];
+        client.respondAvailablePlayers(players, null);
+    };
+    GameMaps.prototype.forEachMap = function (fn) {
+        for (var mapName in this._maps) {
+            fn(this._maps[mapName]);
+        }
+    };
+    GameMaps.prototype.forEachInstance = function (fn) {
+        for (var instanceID in this._instances) {
+            fn(this._instances[instanceID]);
+        }
     };
     return GameMaps;
 }());

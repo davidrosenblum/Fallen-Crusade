@@ -77,10 +77,11 @@ export class GameChat{
 
     private adminCommandLearn(client:GameClient, split:string[]):void{
         // arg = ability name 
-        let arg:string = split[1] || null;
+        let abilityArg:string = split[1] || null;
+        let levelArg:number = parseInt(split[2] || "1") || 1;
 
         // create the ability
-        let ability:Ability = AbilityFactory.create(arg);
+        let ability:Ability = AbilityFactory.create(abilityArg, levelArg);
         if(ability){
             // ability created - attempt to learn
             if(!client.player.learnAbility(ability)){

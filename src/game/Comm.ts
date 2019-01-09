@@ -26,6 +26,7 @@ export const enum OpCode{
     INVITE_RESPONSE =           24,
     CREATE_INSTANCE =           25,
     MAP_PLAYERS =               26,
+    AVAILABLE_PLAYERS =         27,
     BAD_REQUEST =               99
 }
 

@@ -135,13 +135,17 @@ export class GameController{
             case OpCode.INVITE_REPLY:
                 this._invites.handleReplyInvite(client, data);
                 break;
-            // player is creating a new instance 
+            // player is creating a new instance
             case OpCode.CREATE_INSTANCE:
                 this._maps.handleCreateInstance(client, data);
                 break;
             // player requests all players in current map
             case OpCode.MAP_PLAYERS:
                 this._maps.handleMapPlayers(client);
+                break;
+            // player requests all possible players (for inviting reasons)
+            case OpCode.AVAILABLE_PLAYERS:
+                this._maps.handleAvailablePlayers(client);
                 break;
             // opcode not recognized 
             default:

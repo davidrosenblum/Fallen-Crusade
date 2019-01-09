@@ -27,7 +27,7 @@ export class NPC extends Unit{
         this._goldValue = config.goldValue || 0;
         this._bountyGiven = false;
 
-        this.on("death", () => this.giveBounty());
+        //  this.on("death", () => this.giveBounty()); map listens now
     }
 
     private giveBounty():void{

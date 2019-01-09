@@ -2,7 +2,7 @@ import { GameClient } from "./GameClient";
 import { OpCode, Status } from "./Comm";
 import { DatabaseController } from "../database/DatabaseController";
 import { Player } from '../characters/Player';
-import { MapInstance, MapState } from '../maps/MapInstance';
+import { MapInstance, MapState, PlayerListItem } from '../maps/MapInstance';
 import { CharacterUpdateState } from '../characters/Character';
 import { Unit } from '../characters/Unit';
 import { CharacterStats } from '../characters/CombatCharacter';
@@ -122,6 +122,8 @@ export class GameMaps{
             this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("skin"));
         });
 
+        // when a player ability recharges... notify the player 
+        player.on("ability-ready", evt => client.notifyAbilityReady(evt.abilityName));
     }
 
     public handleEnterMap(client:GameClient, data:{mapName?:string}):void{
@@ -252,7 +254,7 @@ export class GameMaps{
         client.respondObjectStats(stats, null);
     }
 
-    public handleCreateInstance(client:GameClient, data:{instanceName?:string, difficulty?:number}):void{
+    public handleCreateInstance(client:GameClient, data:{instanceName?:string, difficulty?:number, objectIDs?:string[]}):void{
         // must be in a room
         if(!client.player || !client.player.map){
             client.respondCreateInstance(null, "You are not in a map.");
@@ -260,7 +262,7 @@ export class GameMaps{
         }
 
         // extract request parameters
-        let {instanceName=null, difficulty=1} = data;
+        let {instanceName=null, difficulty=1, objectIDs=null} = data;
 
         // enforce request parameters (note: difficulty is optional)
         if(!instanceName){
@@ -290,6 +292,13 @@ export class GameMaps{
 
         // auto join creator 
         this.handleEnterInstance(client, {instanceID: instance.instanceID});
+
+        // invite players
+        if(objectIDs && objectIDs.length){
+            this.forEachMap(map => {
+
+            });
+        }
     }
 
     public handleMapPlayers(client:GameClient):void{
@@ -299,8 +308,40 @@ export class GameMaps{
             return;
         }
 
-        let players:{[name:string]: number} = client.player.map.getPlayers();
+        let players:PlayerListItem[] = client.player.map.getPlayers();
 
         client.respondMapPlayers(players, null);
+    }
+
+    public handleAvailablePlayers(client:GameClient):void{
+        // must have a player
+        if(!client.player){
+            client.respondAvailablePlayers(null, "You do not have a player.")
+            return;
+        }
+
+        // store players=level
+        let players:PlayerListItem[] = [];
+
+        // get each player in each room 
+        this.forEachMap(map => players.concat(map.getPlayers()));
+
+        // remove requesting client's player
+        delete players[client.player.name];
+
+        // send
+        client.respondAvailablePlayers(players, null);
+    }
+
+    private forEachMap(fn:(map:MapInstance)=>void):void{
+        for(let mapName in this._maps){
+            fn(this._maps[mapName]);
+        }
+    }
+
+    private forEachInstance(fn:(instanceMap:MapInstance)=>void):void{
+        for(let instanceID in this._instances){
+            fn(this._instances[instanceID]);
+        }
     }
 }

@@ -100,14 +100,17 @@ var GameClient = (function () {
     GameClient.prototype.respondObjectStats = function (stats, errMsg) {
         this.send(14, errMsg || { stats: stats }, errMsg ? "bad" : "ok");
     };
-    GameClient.prototype.respondAbilityList = function (abilityList, errMsg) {
-        this.send(18, errMsg || { abilityList: abilityList }, errMsg ? "bad" : "ok");
+    GameClient.prototype.respondAbilityList = function (abilityList, abilityPoints, errMsg) {
+        this.send(16, errMsg || { abilityList: abilityList, abilityPoints: abilityPoints }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondAbilityUpgrade = function (abilityList, errMsg) {
         this.send(17, errMsg || { abilityList: abilityList }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondAbilityCast = function (message, errMsg) {
         this.send(18, errMsg || message, errMsg ? "bad" : "ok");
+    };
+    GameClient.prototype.notifyAbilityReady = function (abilityName) {
+        this.send(Comm_1.OpCode.ABILITY_READY, { abilityName: abilityName }, "ok");
     };
     GameClient.prototype.respondInviteSend = function (message, errMsg) {
         this.send(21, errMsg || message, errMsg ? "bad" : "ok");
@@ -120,6 +123,9 @@ var GameClient = (function () {
     };
     GameClient.prototype.respondMapPlayers = function (players, errMsg) {
         this.send(26, errMsg || { players: players }, errMsg ? "bad" : "ok");
+    };
+    GameClient.prototype.respondAvailablePlayers = function (players, errMsg) {
+        this.send(27, errMsg || { players: players }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.notifyObjectCreate = function (spawnState) {
         this.send(11, { spawnState: spawnState }, "ok");

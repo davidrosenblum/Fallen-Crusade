@@ -14,6 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var CombatCharacter_1 = require("./CombatCharacter");
+var Ability_1 = require("../abilities/Ability");
 var AbilityFactory_1 = require("../abilities/AbilityFactory");
 var Unit = (function (_super) {
     __extends(Unit, _super);
@@ -21,34 +22,40 @@ var Unit = (function (_super) {
         var _this = _super.call(this, config) || this;
         _this._abilities = {};
         _this._map = null;
-        _this.learnInitialAbilities(config.abilities || {});
+        if (config.abilities)
+            _this.learnInitialAbilities(config.abilities);
         return _this;
     }
     Unit.prototype.learnInitialAbilities = function (abilities) {
         for (var abilityName in abilities) {
             var level = abilities[abilityName];
             var ability = AbilityFactory_1.AbilityFactory.create(abilityName, level);
+            console.log(ability ? ability.formattedName : "NO " + abilityName);
             if (ability) {
                 this.learnAbility(ability);
             }
         }
     };
     Unit.prototype.castAbility = function (abilityName, target, handleError) {
-        if (this.hasAbility(abilityName)) {
-            this._abilities[abilityName].cast(this, target, handleError);
+        var formattedName = Ability_1.Ability.formatName(abilityName);
+        if (this.hasAbility(formattedName)) {
+            this._abilities[formattedName].cast(this, target, handleError);
         }
     };
     Unit.prototype.learnAbility = function (ability) {
-        if (!this.hasAbility(ability.name)) {
-            this._abilities[ability.name] = ability;
+        var abilityName = Ability_1.Ability.formatName(ability.name);
+        if (!this.hasAbility(abilityName)) {
+            this._abilities[abilityName] = ability;
             this.emit("ability-learn", { abilityName: ability.name });
+            this.emit("ability-upgrade", { abilityName: ability.name, level: ability.level });
             return true;
         }
         return false;
     };
     Unit.prototype.upgradeAbility = function (abilityName) {
-        if (this.hasAbility(abilityName)) {
-            var ability = this._abilities[abilityName];
+        var formattedName = Ability_1.Ability.formatName(abilityName);
+        if (this.hasAbility(formattedName)) {
+            var ability = this._abilities[formattedName];
             if (ability.upgrade()) {
                 this.emit("ability-upgrade", { abilityName: ability.name, level: ability.level });
                 return true;
@@ -61,20 +68,12 @@ var Unit = (function (_super) {
     };
     Unit.prototype.getAbilities = function () {
         var abilities = {};
-        for (var abilityName in this._abilities) {
-            abilities[abilityName] = this._abilities[abilityName].level;
-        }
+        this.forEachAbility(function (ability, abilityName) { return abilities[abilityName] = ability.level; });
         return abilities;
     };
     Unit.prototype.getAbilityList = function () {
         var abilityList = [];
-        for (var abilityName in this._abilities) {
-            var ability = this._abilities[abilityName];
-            abilityList.push({
-                abilityName: abilityName,
-                level: ability.level
-            });
-        }
+        this.forEachAbility(function (ability) { return abilityList.push(ability.toListItem()); });
         return abilityList;
     };
     Unit.prototype.setMap = function (map) {
@@ -83,6 +82,11 @@ var Unit = (function (_super) {
             return true;
         }
         return false;
+    };
+    Unit.prototype.forEachAbility = function (fn) {
+        for (var abilityName in this._abilities) {
+            fn(this._abilities[abilityName], abilityName);
+        }
     };
     Object.defineProperty(Unit.prototype, "map", {
         get: function () {

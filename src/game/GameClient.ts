@@ -3,12 +3,12 @@ import { Status, OpCode, MSG_DELIM } from './Comm';
 import { AccountData } from '../database/AccountData';
 import { Player } from '../characters/Player';
 import { TokenGenerator } from '../utils/TokenGenerator';
-import { MapState } from '../maps/MapInstance';
+import { MapState, PlayerListItem } from '../maps/MapInstance';
 import { CharacterPreviewDocument } from '../database/CharactersCollection';
 import { CharacterSpawnState, CharacterUpdateState } from '../characters/Character';
 import { PendingInvite } from "./invites/PendingInvite";
-import { AbilityListItem } from "../characters/Unit";
 import { CharacterStats } from '../characters/CombatCharacter';
+import { AbilityListItem } from '../abilities/Ability';
 
 export interface GameClientRequest{
     opCode:OpCode,
@@ -151,16 +151,20 @@ export class GameClient{
         this.send(OpCode.OBJECT_STATS, errMsg || {stats}, errMsg ? Status.BAD : Status.GOOD);
     }
 
-    public respondAbilityList(abilityList:AbilityListItem[], errMsg:string):void{
-        this.send(OpCode.ABILITY_CAST, errMsg || {abilityList}, errMsg ? Status.BAD : Status.GOOD);
+    public respondAbilityList(abilityList:AbilityListItem[], abilityPoints:number, errMsg:string):void{
+        this.send(OpCode.ABILITY_LIST, errMsg || {abilityList, abilityPoints}, errMsg ? Status.BAD : Status.GOOD);
     }
 
-    public respondAbilityUpgrade(abilityList:{[name:string]: number}, errMsg:string):void{
+    public respondAbilityUpgrade(abilityList:AbilityListItem[], errMsg:string):void{
         this.send(OpCode.ABILITY_UPGRADE, errMsg || {abilityList}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondAbilityCast(message:string, errMsg:string):void{
         this.send(OpCode.ABILITY_CAST, errMsg || message, errMsg ? Status.BAD : Status.GOOD);
+    }
+
+    public notifyAbilityReady(abilityName:string):void{
+        this.send(OpCode.ABILITY_READY, {abilityName}, Status.GOOD);
     }
 
     public respondInviteSend(message:string, errMsg:string):void{
@@ -175,8 +179,12 @@ export class GameClient{
         this.send(OpCode.CREATE_INSTANCE, errMsg || message, errMsg ? Status.BAD : Status.GOOD);   
     }
 
-    public respondMapPlayers(players:{[name:string]: number}, errMsg:string):void{
+    public respondMapPlayers(players:PlayerListItem[], errMsg:string):void{
         this.send(OpCode.MAP_PLAYERS, errMsg || {players}, errMsg ? Status.BAD : Status.GOOD);
+    }
+
+    public respondAvailablePlayers(players:PlayerListItem[], errMsg:string):void{
+        this.send(OpCode.AVAILABLE_PLAYERS, errMsg || {players}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public notifyObjectCreate(spawnState:CharacterSpawnState):void{

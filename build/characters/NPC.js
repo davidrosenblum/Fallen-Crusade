@@ -22,7 +22,6 @@ var NPC = (function (_super) {
         _this._xpValue = config.xpValue || 0;
         _this._goldValue = config.goldValue || 0;
         _this._bountyGiven = false;
-        _this.on("death", function () { return _this.giveBounty(); });
         return _this;
     }
     NPC.prototype.giveBounty = function () {

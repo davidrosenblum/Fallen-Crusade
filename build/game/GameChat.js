@@ -55,8 +55,9 @@ var GameChat = (function () {
         }
     };
     GameChat.prototype.adminCommandLearn = function (client, split) {
-        var arg = split[1] || null;
-        var ability = AbilityFactory_1.AbilityFactory.create(arg);
+        var abilityArg = split[1] || null;
+        var levelArg = parseInt(split[2] || "1") || 1;
+        var ability = AbilityFactory_1.AbilityFactory.create(abilityArg, levelArg);
         if (ability) {
             if (!client.player.learnAbility(ability)) {
                 client.sendChatMessage("You already have that ability.");
