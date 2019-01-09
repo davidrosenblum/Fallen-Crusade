@@ -127,7 +127,7 @@ export class Server{
             // (missing file does NOT throw an error)
             console.log("Loading settings...");
             let settings:Settings = await SettingsUtils.load();
-
+            
             // settings file loaded and parsed
             console.log("Settings loaded.\n");
 
