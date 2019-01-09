@@ -108,44 +108,56 @@ var Server = (function () {
     };
     Server.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var settings, mongoUri, mongoDbName, client, npcs, port_1, err_1;
+            var settings, err_1, mongoUri, mongoDbName, client, npcs, port_1, err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 7, , 8]);
+                        _a.trys.push([0, 10, , 11]);
                         console.log("  ______________________");
                         console.log(" /                      \\");
                         console.log("| Fallen Crusade: Server | ");
                         console.log("| David Rosenblum, 2019  |");
                         console.log(" \\______________________/\n");
                         console.log("Loading settings...");
-                        return [4, SettingsUtils_1.SettingsUtils.load()];
+                        settings = null;
+                        _a.label = 1;
                     case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4, SettingsUtils_1.SettingsUtils.load()];
+                    case 2:
                         settings = _a.sent();
                         console.log("Settings loaded.\n");
+                        return [3, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        console.log("Settings file error.");
+                        console.log(err_1.message);
+                        console.log("Using defaults instead of crashing.\n");
+                        return [3, 4];
+                    case 4:
                         console.log("Connecting to MongoDB...");
                         mongoUri = process.env.MONGO_URI || settings.mongo_uri;
                         mongoDbName = mongoUri.split("/").pop();
                         return [4, mongodb_1.MongoClient.connect(mongoUri, { useNewUrlParser: true })];
-                    case 2:
+                    case 5:
                         client = _a.sent();
                         console.log("Connected to database.\n");
                         this._database = new DatabaseController_1.DatabaseController(client.db(mongoDbName));
                         this._mongo = client;
                         console.log("Loading game data...");
                         return [4, this._database.loadNPCs()];
-                    case 3:
+                    case 6:
                         npcs = _a.sent();
-                        if (!!npcs.length) return [3, 6];
+                        if (!!npcs.length) return [3, 9];
                         console.log(" - No NPCs found (creating defaults).");
                         return [4, this._database.insertDefaultNPCs()];
-                    case 4:
+                    case 7:
                         _a.sent();
                         return [4, this._database.loadNPCs()];
-                    case 5:
+                    case 8:
                         npcs = _a.sent();
-                        _a.label = 6;
-                    case 6:
+                        _a.label = 9;
+                    case 9:
                         NPCFactory_1.NPCFactory.setNPCTypes(npcs);
                         this._game = new GameController_1.GameController(this._database, settings);
                         console.log("Game data loaded.\n");
@@ -153,13 +165,13 @@ var Server = (function () {
                         this._httpServer.listen(port_1, function () {
                             console.log("Server listening on port " + port_1 + ".\n");
                         });
-                        return [3, 8];
-                    case 7:
-                        err_1 = _a.sent();
-                        console.log(err_1.message);
+                        return [3, 11];
+                    case 10:
+                        err_2 = _a.sent();
+                        console.log(err_2.message);
                         process.exit();
-                        return [3, 8];
-                    case 8: return [2];
+                        return [3, 11];
+                    case 11: return [2];
                 }
             });
         });

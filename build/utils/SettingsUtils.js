@@ -15,7 +15,7 @@ var SettingsUtils = (function () {
     SettingsUtils.load = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            fs.readFile(_this.getAbsolutePath(), function (err, buffer) {
+            fs.readFile(_this.PATH, function (err, buffer) {
                 if (!err) {
                     var json = null;
                     try {
@@ -41,13 +41,10 @@ var SettingsUtils = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var settingsCopy = _this.copyDefaultSettings();
-            fs.writeFile(_this.getAbsolutePath(), JSON.stringify(settingsCopy, null, 4), function (err) {
+            fs.writeFile(_this.PATH, JSON.stringify(settingsCopy, null, 4), function (err) {
                 err ? reject(err) : resolve(settingsCopy);
             });
         });
-    };
-    SettingsUtils.getAbsolutePath = function () {
-        return __dirname + "/" + this.PATH;
     };
     SettingsUtils.copyDefaultSettings = function () {
         return Object.assign({}, this.defaultSettings);
