@@ -1,5 +1,6 @@
 import React from "react";
-import { ABILITY_ICON_SIZE, EMPTY_ABILITY_ICON, MISSING_ABILITY_ICON,ABILITY_ICONS } from "../data/Data";
+import { ABILITY_ICON_SIZE } from "../data/Data";
+import { ABILITY_ICONS, MISSING_ABILITY_ICON, EMPTY_ABILITY_ICON } from "../data/AbilityIcons";
 import Client from "../game/Client";
 import Game from "../game/Game";
 
@@ -82,7 +83,7 @@ export class GameViewAbilities extends React.Component{
         // current abilities 
         let abilityList = this.state.abilityList || [];
 
-        // sort
+        // sort by display name
         abilityList = abilityList.sort((a, b) => a.name > b.name ? 1 : -1);
 
         // list of icons to render (there will always be 10 abilities)
@@ -92,42 +93,37 @@ export class GameViewAbilities extends React.Component{
         for(let i = 0; i < icons.length; i++){
             // find the corresponding ability
             let ability = abilityList[i] || null;
-            // prepare the icon <img>
-            let icon = null;
 
             // if an ability exists at that position (and is unlocked)
             if(ability && ability.level > 0){
-                let {abilityName, level} = ability;
+                let {abilityName, level, name} = ability;
 
                 // create an image that can be clicked
-                icon = (
+                icons[i] = (
                     <img
                         key={i}
                         src={ABILITY_ICONS[abilityName] || MISSING_ABILITY_ICON}
                         width={ABILITY_ICON_SIZE}
                         height={ABILITY_ICON_SIZE}
                         disabled={abilityName in this.state.disabledList}
-                        title={`${name} (${level})`}
+                        title={`${name} (Level ${level})`}
                         onClick={() => this.requestCast(abilityName)}
                     />
                 );
             }
             else{
                 // create an empty slot image (not interactable)
-                icon = (
+                icons[i] = (
                     <img
                         key={i}
                         src={EMPTY_ABILITY_ICON}
                         width={ABILITY_ICON_SIZE}
                         height={ABILITY_ICON_SIZE}
                         disabled={true}
-                        title={"(Empty ability slot)"}
+                        title={`(${ability ? ability.name : "Ability"} is not unlocked yet)`}
                     />
                 );
             }
-
-            // put the <img> in the current slot
-            icons[i] = icon;
         }
 
         // split the list into 5x2 tray 
