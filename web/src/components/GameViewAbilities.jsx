@@ -1,6 +1,5 @@
 import React from "react";
 import { ABILITY_ICON_SIZE, EMPTY_ABILITY_ICON, MISSING_ABILITY_ICON,ABILITY_ICONS } from "../data/Data";
-import { PrettyStrings } from "../utils/PrettyStrings";
 import Client from "../game/Client";
 import Game from "../game/Game";
 
@@ -84,7 +83,7 @@ export class GameViewAbilities extends React.Component{
         let abilityList = this.state.abilityList || [];
 
         // sort
-        abilityList.sort((a, b) => a.abilityName > b.abilityName);
+        abilityList = abilityList.sort((a, b) => a.name > b.name ? 1 : -1);
 
         // list of icons to render (there will always be 10 abilities)
         let icons = new Array(10);
@@ -108,7 +107,7 @@ export class GameViewAbilities extends React.Component{
                         width={ABILITY_ICON_SIZE}
                         height={ABILITY_ICON_SIZE}
                         disabled={abilityName in this.state.disabledList}
-                        title={`${PrettyStrings.toTitleCase(abilityName)} (${level})`}
+                        title={`${name} (${level})`}
                         onClick={() => this.requestCast(abilityName)}
                     />
                 );

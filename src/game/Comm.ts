@@ -27,6 +27,7 @@ export const enum OpCode{
     CREATE_INSTANCE =           25,
     MAP_PLAYERS =               26,
     AVAILABLE_PLAYERS =         27,
+    ABILITY_READY =             28,
     BAD_REQUEST =               99
 }
 

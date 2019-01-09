@@ -74,6 +74,7 @@ var Player = (function (_super) {
         if (this._abilityPoints > 0) {
             if (_super.prototype.upgradeAbility.call(this, abilityName)) {
                 this._abilityPoints--;
+                this.emit("ability-points", { abilityPoints: -1 });
                 return true;
             }
         }

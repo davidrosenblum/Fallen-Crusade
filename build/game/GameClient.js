@@ -110,7 +110,7 @@ var GameClient = (function () {
         this.send(18, errMsg || message, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.notifyAbilityReady = function (abilityName) {
-        this.send(Comm_1.OpCode.ABILITY_READY, { abilityName: abilityName }, "ok");
+        this.send(28, { abilityName: abilityName }, "ok");
     };
     GameClient.prototype.respondInviteSend = function (message, errMsg) {
         this.send(21, errMsg || message, errMsg ? "bad" : "ok");

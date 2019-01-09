@@ -93,6 +93,7 @@ export class Player extends Unit{
         if(this._abilityPoints > 0){
             if(super.upgradeAbility(abilityName)){
                 this._abilityPoints--;
+                this.emit("ability-points", {abilityPoints: -1});
                 return true;
             }
         }

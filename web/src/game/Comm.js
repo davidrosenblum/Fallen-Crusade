@@ -21,7 +21,6 @@ export const OpCode = {
     ABILITY_LIST:       16,
     ABILITY_UPGRADE:    17,
     ABILITY_CAST:       18,
-    ABILITY_READY:      28,
     SKIN_PURCHASE:      19,
     SKIN_CHANGE:        20,
     INVITE_SEND:        21,
@@ -31,6 +30,7 @@ export const OpCode = {
     CREATE_INSTANCE:    25,
     MAP_PLAYERS:        26,
     AVAILABLE_PLAYERS:  27,
+    ABILITY_READY:      28,
     BAD_REQUEST:        99
 }
 
