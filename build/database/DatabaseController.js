@@ -22,6 +22,12 @@ var DatabaseController = (function () {
     DatabaseController.prototype.getAccount = function (username, password) {
         return AccountsCollection_1.AccountsCollection.getAccount(this._database, username, password);
     };
+    DatabaseController.prototype.updateAccessLevel = function (username, accessLevel) {
+        return AccountsCollection_1.AccountsCollection.updateAccessLevel(this._database, username, accessLevel);
+    };
+    DatabaseController.prototype.updateAccountBan = function (username, ban) {
+        return AccountsCollection_1.AccountsCollection.updateAccountBan(this._database, username, ban);
+    };
     DatabaseController.prototype.createCharacter = function (accountID, name, skin) {
         return CharactersCollection_1.CharactersCollection.createCharacter(this._database, accountID, name, skin);
     };
@@ -34,7 +40,8 @@ var DatabaseController = (function () {
     DatabaseController.prototype.deleteCharacter = function (accountID, name) {
         return CharactersCollection_1.CharactersCollection.deleteCharacter(this._database, accountID, name);
     };
-    DatabaseController.prototype.updateCharacter = function () {
+    DatabaseController.prototype.updateCharacter = function (accountID, name, update) {
+        return CharactersCollection_1.CharactersCollection.updateCharacter(this._database, accountID, name, update);
     };
     DatabaseController.prototype.loadNPCs = function () {
         return NPCsCollection_1.NPCsCollection.loadNPCs(this._database);

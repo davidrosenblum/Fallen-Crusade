@@ -1,11 +1,13 @@
 import { GameClient } from "./GameClient";
 import { OpCode, Status } from "./Comm";
+import { AbilityFactory } from '../abilities/AbilityFactory';
+import { Ability } from '../abilities/Ability';
 
 export class GameChat{
     public handleChatMessage(client:GameClient, data:{chat?:string}):void{
         // must be in a map
         if(!client.player || !client.player.map){
-            client.respondChatMessage(null, null, "You must be in a map.");
+            client.sendChatMessage(null, null, "You must be in a map.");
             return;
         }
 
@@ -14,7 +16,7 @@ export class GameChat{
 
         // enforce request parameters
         if(!chat){
-            client.respondChatMessage(null, null, "Bad request json.");
+            client.sendChatMessage(null, null, "Bad request json.");
             return;
         }
 
@@ -44,8 +46,13 @@ export class GameChat{
             case "~add":
                 this.adminCommandAdd(client, split);
                 break;
+            // learn a new ability
+            case "~learn":
+                this.adminCommandLearn(client, split);
+                break;
+            // bad command
             default:
-                this.sendChat(client, "Invalid admin command.");
+                client.sendChatMessage("Invalid admin command.");
                 break;
 
         }
@@ -63,12 +70,27 @@ export class GameChat{
                 client.player.addGold(arg);
                 break;
             default:
-                this.sendChat(client, "Invalid add subcommand.");
+                client.sendChatMessage("Invalid add subcommand.");
                 break;
         }
     }
 
-    private sendChat(client:GameClient, chat:string, from?:string):void{
-        client.respondChatMessage(chat, from, null);
+    private adminCommandLearn(client:GameClient, split:string[]):void{
+        // arg = ability name 
+        let arg:string = split[1] || null;
+
+        // create the ability
+        let ability:Ability = AbilityFactory.create(arg);
+        if(ability){
+            // ability created - attempt to learn
+            if(!client.player.learnAbility(ability)){
+                // learned
+                client.sendChatMessage("You already have that ability.");
+            } // successful learn handled normally
+        }
+        else{
+            // ability not created
+            client.sendChatMessage("Invalid ability name.");
+        }
     }
 }

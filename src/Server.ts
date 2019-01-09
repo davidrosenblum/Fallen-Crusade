@@ -3,10 +3,12 @@ import * as http from "http";
 import * as websocket from "websocket";
 import { MongoClient } from "mongodb";
 import AccountCreateHandler from "./handlers/AccountCreateHandler";
-import { SettingsUtils, Settings } from './utils/SettingsUtils';
-import { DatabaseController } from './database/DatabaseController';
-import { GameController } from './game/GameController';
-import { NPCDocument } from './database/NPCsCollection';
+import BanSetHandler from "./handlers/BanSetHandler";
+import AdminSetHandler from "./handlers/AdminSetHandler";
+import { SettingsUtils, Settings } from "./utils/SettingsUtils";
+import { DatabaseController } from "./database/DatabaseController";
+import { GameController } from "./game/GameController";
+import { NPCDocument } from "./database/NPCsCollection";
 import { NPCFactory } from "./characters/NPCFactory";
 
 export class Server{
@@ -87,6 +89,28 @@ export class Server{
         this._app.post("/accounts/create", (req, res) => {
             AccountCreateHandler.post(req, res, this._database);
         });
+
+        // account admin set handler
+        this._app.options("/accounts/admin", (req, res) => {
+            AdminSetHandler.options(req, res);
+        });
+        this._app.get("/accounts/admin", (req, res) => {
+            AdminSetHandler.get(req, res, this._database);
+        });
+
+        // account ban set handler
+        this._app.options("/accounts/ban", (req, res) => {
+            BanSetHandler.options(req, res);
+        });
+        this._app.get("/accounts/ban", (req, res) => {
+            BanSetHandler.get(req, res, this._database);
+        });
+
+        // 404 page
+        this._app.use((req, res, next) => {
+            res.writeHead(404);
+            res.end("Page not found (cool 404 page coming eventually!).");
+        });
     }
 
     // initializes the server 
@@ -131,7 +155,7 @@ export class Server{
 
             // create NPCs if none are found! 
             if(!npcs.length){
-                console.log("\t(Creating default NPCs)");
+                console.log(" - No NPCs found (creating defaults).");
                 await this._database.insertDefaultNPCs();
                 npcs = await this._database.loadNPCs();
             }

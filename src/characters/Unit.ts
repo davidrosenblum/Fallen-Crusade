@@ -45,6 +45,10 @@ export class Unit extends CombatCharacter{
     public learnAbility(ability:Ability):boolean{
         if(!this.hasAbility(ability.name)){
             this._abilities[ability.name] = ability;
+
+            // trigger listeners 
+            this.emit("ability-learn", {abilityName: ability.name})
+
             return true;
         }
         return false;
@@ -52,7 +56,12 @@ export class Unit extends CombatCharacter{
 
     public upgradeAbility(abilityName:string):boolean{
         if(this.hasAbility(abilityName)){
-            return this._abilities[abilityName].upgrade();
+            let ability:Ability = this._abilities[abilityName];
+
+            if(ability.upgrade()){
+                this.emit("ability-upgrade", {abilityName: ability.name, level: ability.level});
+                return true;
+            }
         }
         return false;
     }

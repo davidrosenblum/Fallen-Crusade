@@ -66,6 +66,7 @@ export abstract class CombatCharacter extends Character{
     public useMana(mana:number):boolean{
         if(this.hasEnoughMana(mana)){
             this._currStats.mana -= mana;
+            this.emit("mana", {mana: -mana});
             return true;
         }
         return false;
@@ -88,7 +89,7 @@ export abstract class CombatCharacter extends Character{
 
         // lose hit points
         this._currStats.health -= actualDamage;
-        this.emit("hurt", {damage, actualDamage, resistAmount});
+        this.emit("health", {health: -actualDamage});
 
         // dead? 
         if(this._currStats.health <= 0){

@@ -50,7 +50,10 @@ export class Register extends React.Component{
 
         // enforce the passwords match 
         if(password !== confirm){
+            // they do not - display error
             ModalDispatcher.modal("Passwords Error", "Passwords do not match.");
+            // unlock UI
+            this.setState({pending: false});
             return;
         }
 

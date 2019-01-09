@@ -126,4 +126,37 @@ export class AccountsCollection{
                 .catch(err => reject(err)); // database error
         });
     }
+
+    // updates the access level for an account in the database
+    public static updateAccessLevel(database:Db, username:string, accessLevel:number=2):Promise<string>{
+        return new Promise((resolve, reject) => {
+            // between 1-5
+            accessLevel = Math.max(0, Math.min(accessLevel, 5));
+
+            // update the database
+            let access_level:number = accessLevel;
+            database.collection("accounts").findOneAndUpdate({username}, {"$set": {access_level: accessLevel}})
+                .then(result => {
+                    if(result.lastErrorObject.updatedExisting){
+                         resolve(`Account "${username}" access level is now ${accessLevel}.`);
+                    }
+                    else reject(new Error("No account was updated."))
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    // updates an account so it is banned or not (disabled or enabled)
+    public static updateAccountBan(database:Db, username:string, ban:boolean):Promise<string>{
+        return new Promise((resolve, reject) => {
+            database.collection("accounts").findOneAndUpdate({username}, {"$set": {enabled: !ban}})
+                .then(result => {
+                    if(result.lastErrorObject.updatedExisting){
+                        resolve(`Account "${username}" is now ${ban ? "disabled" : "enabled"}.`);
+                    }
+                    else reject(new Error("No account was updated"));
+                })
+                .catch(err => reject(err));
+        });
+    }
 }

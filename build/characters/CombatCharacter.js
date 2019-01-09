@@ -36,6 +36,7 @@ var CombatCharacter = (function (_super) {
     CombatCharacter.prototype.useMana = function (mana) {
         if (this.hasEnoughMana(mana)) {
             this._currStats.mana -= mana;
+            this.emit("mana", { mana: -mana });
             return true;
         }
         return false;
@@ -53,7 +54,7 @@ var CombatCharacter = (function (_super) {
         var resistAmount = resist ? (damage * this._currStats.resistance) : 0;
         var actualDamage = damage - resistAmount;
         this._currStats.health -= actualDamage;
-        this.emit("hurt", { damage: damage, actualDamage: actualDamage, resistAmount: resistAmount });
+        this.emit("health", { health: -actualDamage });
         if (this._currStats.health <= 0) {
             this.emit("death");
         }

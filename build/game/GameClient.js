@@ -34,6 +34,12 @@ var GameClient = (function () {
             status: status
         };
     };
+    GameClient.createChatResponse = function (chat, from) {
+        return this.createResponse(10, { chat: chat, from: from }, "ok");
+    };
+    GameClient.createStatsResponse = function (stats) {
+        return this.createResponse(14, { stats: stats }, "ok");
+    };
     GameClient.prototype.setPendingInvite = function (invite) {
         this._pendingInvite = invite;
     };
@@ -49,6 +55,9 @@ var GameClient = (function () {
                 this.player.map.removeClient(this);
                 this._player = null;
             }
+        }
+        else if (!player && this.player) {
+            this.player.removeAllListeners();
         }
         this._player = player;
     };
@@ -85,7 +94,7 @@ var GameClient = (function () {
     GameClient.prototype.respondEnterInstance = function (mapState, errMsg) {
         this.send(9, errMsg || { mapState: mapState }, errMsg ? "bad" : "ok");
     };
-    GameClient.prototype.respondChatMessage = function (chat, from, errMsg) {
+    GameClient.prototype.sendChatMessage = function (chat, from, errMsg) {
         this.send(10, errMsg || { chat: chat, from: from }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondObjectStats = function (stats, errMsg) {

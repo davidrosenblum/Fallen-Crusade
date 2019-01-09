@@ -31,7 +31,7 @@ var Player = (function (_super) {
         }) || this;
         _this._level = Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));
         _this._xpNeeded = _this.calculateXPNeeded();
-        _this._xp = Math.max(0, Math.min(saveData.xp, _this._xpNeeded));
+        _this._xp = Math.max(0, Math.min(saveData.xp, _this._xpNeeded - 1));
         _this._gold = Math.max(0, Math.min(saveData.gold, Player.GOLD_CAP));
         _this._abilityPoints = Math.max(0, Math.min(saveData.ability_points, Player.LEVEL_CAP - 1));
         _this._skin = Math.max(1, saveData.skin);
@@ -45,16 +45,17 @@ var Player = (function (_super) {
             this._xpNeeded = this.calculateXPNeeded();
             this._xp = 0;
             this._level++;
+            this.emit("level", { level: this.level });
             this.addAbilityPoints(1);
         }
     };
     Player.prototype.addXP = function (xp) {
+        this.emit("xp", { xp: xp });
         var xpRemaining = xp;
-        while (xpRemaining > this.xpToGo) {
+        while (xpRemaining >= this.xpToGo) {
             this.levelUp();
         }
         this._xp += xpRemaining;
-        this.emit("xp", { xp: xp });
     };
     Player.prototype.addGold = function (gold) {
         this._gold = Math.min(this.gold + gold, Player.GOLD_CAP);
@@ -91,9 +92,28 @@ var Player = (function (_super) {
             abilities: _super.prototype.getAbilities.call(this)
         };
     };
+    Player.prototype.getDatabaseUpdate = function (field) {
+        var $set = {
+            level: this.level,
+            xp: this.xp,
+            gold: this.gold,
+            ability_points: this.abilityPoints,
+            skin: this.skin,
+            abilities: this.getAbilities()
+        };
+        if (this.map) {
+            $set.last_map = this.map.name;
+        }
+        if (field && field in $set) {
+            var update = {};
+            update[field] = $set[field];
+            return { $set: update };
+        }
+        return { $set: $set };
+    };
     Object.defineProperty(Player.prototype, "xpToGo", {
         get: function () {
-            return this._xp - this._xpNeeded;
+            return this._xpNeeded - this._xp;
         },
         enumerable: true,
         configurable: true

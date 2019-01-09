@@ -229,19 +229,19 @@ class Client extends EventEmitter{
     // handles object stats response
     handleObjectStats(data, status){
         // extract response properties 
-        let {stats=null} = data;
+        let {message=null, stats=null} = data;
 
         // trigger object stats listeners 
-        this.emit("object-stats", {stats, status});
+        this.emit("object-stats", {message, stats, status});
     }
 
     // handles ability list response
     handleAbilityList(data, status){
         // extract response properties
-        let {message=null,abilityList=null} = data;
+        let {message=null, abilityList=null} = data;
 
         // trigger ability list listeners
-        this.emit("ability-list", {abilityList, status});
+        this.emit("ability-list", {message, abilityList, status});
     }
 
     // handles create instance reponse 

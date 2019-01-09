@@ -14,14 +14,52 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var Ability_1 = require("./Ability");
+var Incinerate = (function (_super) {
+    __extends(Incinerate, _super);
+    function Incinerate(level) {
+        if (level === void 0) { level = 1; }
+        return _super.call(this, {
+            name: "Incinerate",
+            manaCost: 5,
+            rechargeSec: 6,
+            range: Incinerate.RANGE_MEDIUM,
+            maxTargets: 1,
+            radius: 0,
+            level: level
+        }) || this;
+    }
+    Incinerate.prototype.effect = function (caster, target) {
+        var damage = Incinerate.BASE_DAMAGE + ((this.level - 1) * 1);
+        var tickDamage = Incinerate.BASE_TICK_DAMAGE + (this.level - 1) * 0.5;
+        target.takeDamageWithDOT(damage, tickDamage, Incinerate.BASE_NUM_TICKS);
+    };
+    Incinerate.prototype.validateTarget = function (caster, target) {
+        return this.validateEnemiesOnly(caster, target);
+    };
+    Incinerate.prototype.upgrade = function () {
+        if (_super.prototype.upgrade.call(this)) {
+            this.setManaCost(this.manaCost - 0.5);
+            this.setRecharge(this.recharge - 0.25);
+            return true;
+        }
+        return false;
+    };
+    Incinerate.BASE_DAMAGE = 15;
+    Incinerate.BASE_TICK_DAMAGE = 2;
+    Incinerate.BASE_NUM_TICKS = 2;
+    return Incinerate;
+}(Ability_1.Ability));
+exports.Incinerate = Incinerate;
 var Fireball = (function (_super) {
     __extends(Fireball, _super);
     function Fireball(level) {
+        if (level === void 0) { level = 1; }
         return _super.call(this, {
             name: "Fireball",
-            manaCost: 5,
-            rechargeSec: 4,
-            range: 128,
+            manaCost: 10,
+            rechargeSec: 12,
+            range: Fireball.RANGE_MEDIUM,
+            radius: Fireball.RADIUS_MEDIUM,
             maxTargets: 6,
             level: level
         }) || this;
@@ -43,7 +81,7 @@ var Fireball = (function (_super) {
         }
         return false;
     };
-    Fireball.BASE_DAMAGE = 25;
+    Fireball.BASE_DAMAGE = 20;
     Fireball.BASE_TICK_DAMAGE = 5;
     Fireball.BASE_NUM_TICKS = 2;
     return Fireball;

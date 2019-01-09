@@ -8,6 +8,7 @@ import { CharacterPreviewDocument } from '../database/CharactersCollection';
 import { CharacterSpawnState, CharacterUpdateState } from '../characters/Character';
 import { PendingInvite } from "./invites/PendingInvite";
 import { AbilityListItem } from "../characters/Unit";
+import { CharacterStats } from '../characters/CombatCharacter';
 
 export interface GameClientRequest{
     opCode:OpCode,
@@ -65,6 +66,14 @@ export class GameClient{
         };
     }
 
+    public static createChatResponse(chat:string, from?:string):GameClientResponse{
+        return this.createResponse(OpCode.CHAT_MESSAGE, {chat, from}, Status.GOOD);
+    }
+
+    public static createStatsResponse(stats:CharacterStats):GameClientResponse{
+        return this.createResponse(OpCode.OBJECT_STATS, {stats}, Status.GOOD);
+    }
+
     public setPendingInvite(invite:PendingInvite):void{
         this._pendingInvite = invite;
     }
@@ -83,6 +92,10 @@ export class GameClient{
                 this.player.map.removeClient(this);
                 this._player = null;
             }
+        }
+
+        else if(!player && this.player){
+            this.player.removeAllListeners();
         }
 
         this._player = player;
@@ -130,11 +143,11 @@ export class GameClient{
         this.send(OpCode.ENTER_INSTANCE, errMsg || {mapState}, errMsg ? Status.BAD : Status.GOOD);
     } 
 
-    public respondChatMessage(chat:string, from?:string, errMsg?:string):void{
+    public sendChatMessage(chat:string, from?:string, errMsg?:string):void{
         this.send(OpCode.CHAT_MESSAGE, errMsg || {chat, from}, errMsg ? Status.BAD : Status.GOOD);
     }
 
-    public respondObjectStats(stats, errMsg:string):void{
+    public respondObjectStats(stats:CharacterStats, errMsg:string):void{
         this.send(OpCode.OBJECT_STATS, errMsg || {stats}, errMsg ? Status.BAD : Status.GOOD);
     }
 

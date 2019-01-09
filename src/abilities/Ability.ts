@@ -9,18 +9,32 @@ export interface AbilityConfig{
     range:number;
     level?:number;
     maxTargets?:number
+    radius?:number;
 }
 
 
 export abstract class Ability extends EventEmitter{
     // how many times abilities can be ugraded (exclusive of first level)
-    public static readonly UPGRADE_CAP:number = 3;
+    public static readonly UPGRADE_CAP:number =     3;
+    // close range distance in pixels
+    public static readonly RANGE_CLOSE:number =     64;
+    // medium range distance in pixels
+    public static readonly RANGE_MEDIUM:number =    128;
+    // far range distance in pixels 
+    public static readonly RANGE_FAR:number =       256;
+    // small effect radius in pixels
+    public static readonly RADIUS_SMALL:number =    32;
+    // medium effect radius in pixels
+    public static readonly RADIUS_MEDIUM:number =   64;
+    // large effect radius in pixels
+    public static readonly RADIUS_LARGE:number =    128;
 
     private _name:string;           // name of the ability
     private _manaCost:number;       // how much mana the ability costs to cast
     private _recharge:number;       // cooldown time in milliseconds
     private _maxTargets:number;     // max amount of targets hit (inclusive of initial target)
     private _range:number;          // the range, in pixels, of how far away the caster can be from the target
+    private _radius:number;         // effect range from relative to targset
     private _level:number;          // upgrade level
     private _ready:boolean;         // ability ready to cast again or not 
 
@@ -35,6 +49,8 @@ export abstract class Ability extends EventEmitter{
         this._recharge = config.rechargeSec / 1000;
         // extract range
         this._range = config.range;
+        // effect range from target 
+        this._radius = config.radius || this._range;
         // extract amount of targets tha can be hit (default is 1, meaning single target)
         this._maxTargets = config.maxTargets || 1;
         // starts at level 1
@@ -54,6 +70,7 @@ export abstract class Ability extends EventEmitter{
     // what happens to a target when 'hit'
     public abstract effect(caster:Unit, target:Unit):void;
 
+    // 
     public cast(caster:Unit, target:Unit, handleError:(err?:Error)=>void):void{
         // ability ready? 
         if(!this.isReady){
@@ -155,6 +172,10 @@ export abstract class Ability extends EventEmitter{
 
     public get range():number{
         return this._range;
+    }
+
+    public get radius():number{
+        return this._radius;
     }
 
     public get maxTargets():number{

@@ -78,6 +78,35 @@ var AccountsCollection = (function () {
                 .catch(function (err) { return reject(err); });
         });
     };
+    AccountsCollection.updateAccessLevel = function (database, username, accessLevel) {
+        if (accessLevel === void 0) { accessLevel = 2; }
+        return new Promise(function (resolve, reject) {
+            accessLevel = Math.max(0, Math.min(accessLevel, 5));
+            var access_level = accessLevel;
+            database.collection("accounts").findOneAndUpdate({ username: username }, { "$set": { access_level: accessLevel } })
+                .then(function (result) {
+                if (result.lastErrorObject.updatedExisting) {
+                    resolve("Account \"" + username + "\" access level is now " + accessLevel + ".");
+                }
+                else
+                    reject(new Error("No account was updated."));
+            })
+                .catch(function (err) { return reject(err); });
+        });
+    };
+    AccountsCollection.updateAccountBan = function (database, username, ban) {
+        return new Promise(function (resolve, reject) {
+            database.collection("accounts").findOneAndUpdate({ username: username }, { "$set": { enabled: !ban } })
+                .then(function (result) {
+                if (result.lastErrorObject.updatedExisting) {
+                    resolve("Account \"" + username + "\" is now " + (ban ? "disabled" : "enabled") + ".");
+                }
+                else
+                    reject(new Error("No account was updated"));
+            })
+                .catch(function (err) { return reject(err); });
+        });
+    };
     AccountsCollection.PASSWORD_LENGTH = 64;
     return AccountsCollection;
 }());

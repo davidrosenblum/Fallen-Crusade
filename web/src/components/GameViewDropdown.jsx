@@ -60,10 +60,10 @@ export class GameViewDropdown extends React.Component{
     // renders special options based on client's access level 
     renderAdminItems(){
         return Client.accessLevel > 1 ? [
-            <DropdownItem divider/>,
-            <DropdownItem header>Admin Commands</DropdownItem>,
-            <DropdownItem>Upgrades Menu</DropdownItem>,
-            <DropdownItem>Instances Menu</DropdownItem>
+            <DropdownItem key={0} divider/>,
+            <DropdownItem key={1} header>Admin Commands</DropdownItem>,
+            <DropdownItem key={2}>Upgrades Menu</DropdownItem>,
+            <DropdownItem key={3}>Instances Menu</DropdownItem>
         ] : null;
     }
 

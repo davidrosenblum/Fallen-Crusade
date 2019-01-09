@@ -126,6 +126,74 @@ export class NPCsCollection{
                 abilities:      {},
                 gold_value:     2,
                 xp_value:       5
+            }),
+
+            this.insertNPC(database, {
+                type:           "animus",
+                name:           "Animus",
+                team:           "Undead",
+                tier:           NPCTier.STANDARD,
+                move_speed:     1,
+                health:         45,
+                health_regen:   0.02,
+                mana:           100,
+                mana_regen:     0.02,
+                defense:        0.15,
+                resistance:     0.00,
+                abilities:      {},
+                gold_value:     2,
+                xp_value:       5
+            }),
+
+            this.insertNPC(database, {
+                type:           "lich",
+                name:           "Lich",
+                team:           "Undead",
+                tier:           NPCTier.ELITE,
+                move_speed:     1,
+                health:         125,
+                health_regen:   0.02,
+                mana:           100,
+                mana_regen:     0.04,
+                defense:        0.20,
+                resistance:     0.25,
+                abilities:      {},
+                gold_value:     15,
+                xp_value:       20
+            }),
+
+            this.insertNPC(database, {
+                type:           "devourer",
+                name:           "Devourer",
+                team:           "Undead",
+                tier:           NPCTier.ELITE,
+                move_speed:     1,
+                health:         150,
+                health_regen:   0.03,
+                mana:           100,
+                mana_regen:     0.04,
+                defense:        0.25,
+                resistance:     0.50,
+                abilities:      {},
+                gold_value:     15,
+                xp_value:       20
+            }),
+
+            this.insertNPC(database, {
+                type:           "death-knight",
+                name:           "Death Knight",
+                team:           "Undead",
+                tier:           NPCTier.BOSS,
+                move_speed:     1,
+                health:         250,
+                health_regen:   0.03,
+                mana:           100,
+                mana_regen:     0.06,
+                defense:        0.20,
+                resistance:     0.75,
+                abilities:      {},
+                gold_value:     35,
+                xp_value:       50
             })
         ]);
     }
