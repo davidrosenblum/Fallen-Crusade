@@ -10,6 +10,8 @@ var MapInstanceFactory = (function () {
                 return new Maps_1.VillageCenter();
             case "Northern Keep":
                 return new Maps_1.NorthernKeep();
+            case "Graveyard":
+                return new Maps_1.Graveyard();
             default:
                 throw new Error("Invalid map type.");
         }

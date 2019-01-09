@@ -16,6 +16,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var TokenGenerator_1 = require("../utils/TokenGenerator");
 var TransportNode_1 = require("./TransportNode");
 var GameClient_1 = require("../game/GameClient");
+var Player_1 = require("../characters/Player");
+var NPC_1 = require("../characters/NPC");
 var NPCFactory_1 = require("../characters/NPCFactory");
 var events_1 = require("events");
 var MapInstance = (function (_super) {
@@ -168,6 +170,44 @@ var MapInstance = (function (_super) {
         });
         return players;
     };
+    MapInstance.prototype.getMapStats = function () {
+        var players = [];
+        var npcs = [];
+        this.forEachUnit(function (unit) {
+            if (unit instanceof Player_1.Player) {
+                players.push({
+                    name: unit.name,
+                    level: unit.level
+                });
+            }
+            else if (unit instanceof NPC_1.NPC) {
+                npcs.push({
+                    name: unit.name,
+                    team: unit.team,
+                    xpValue: unit.xpValue,
+                    goldValue: unit.goldValue,
+                    tier: unit.tier
+                });
+            }
+        });
+        return { players: players, npcs: npcs };
+    };
+    MapInstance.prototype.getMapState = function () {
+        var units = [];
+        this.forEachUnit(function (unit) {
+            units.push(unit.getSpawnState());
+        });
+        var transportNodes = [];
+        this.forEachTransportNode(function (tnode) {
+            transportNodes.push(tnode.getTransportNodeState());
+        });
+        return {
+            name: this.name,
+            mapData: this._mapData,
+            transportNodes: transportNodes,
+            units: units
+        };
+    };
     MapInstance.prototype.forEachUnit = function (fn) {
         for (var id in this._units) {
             fn(this._units[id], id);
@@ -189,22 +229,6 @@ var MapInstance = (function (_super) {
                 fn(client);
             }
         });
-    };
-    MapInstance.prototype.getMapState = function () {
-        var units = [];
-        this.forEachUnit(function (unit) {
-            units.push(unit.getSpawnState());
-        });
-        var transportNodes = [];
-        this.forEachTransportNode(function (tnode) {
-            transportNodes.push(tnode.getTransportNodeState());
-        });
-        return {
-            name: this.name,
-            mapData: this._mapData,
-            transportNodes: transportNodes,
-            units: units
-        };
     };
     Object.defineProperty(MapInstance.prototype, "isEmpty", {
         get: function () {

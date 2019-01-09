@@ -1,16 +1,16 @@
 import * as express from "express";
 import { DatabaseController } from "../database/DatabaseController";
 
-class BanSetHandler{
+class AccountAccessHandler{
     // http headers
     private static httpHeaders:{[header:string]: string} = {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Fallen-Crusade-Key",
     };
 
-    // handle http OPTIONS requests
+    // handle http OPTIONS requets
     public options(req:express.Request, res:express.Response):void{
-        res.writeHead(204, BanSetHandler.httpHeaders);
+        res.writeHead(204, AccountAccessHandler.httpHeaders);
         res.end();
     }
 
@@ -19,43 +19,36 @@ class BanSetHandler{
         // validate auth key 
         let secretKey:string = req.query["key"];
         if(secretKey !== "crucible33"){
-            res.writeHead(403, BanSetHandler.httpHeaders);
+            res.writeHead(403, AccountAccessHandler.httpHeaders);
             res.end("Unauthorized access (bad auth).");
             return;
         }
 
         // extract parameters from query string 
+        let accessLevel:number = parseInt(req.query["access_level"]) || 2;
         let username:string = req.query["username"] || null;
+
+        // enforce parameters
         if(!username){
-            res.writeHead(400, BanSetHandler.httpHeaders);
+            res.writeHead(400, AccountAccessHandler.httpHeaders);
             res.end("Please provide a username.");
             return;
         }
 
-        // validate ban is 'true' or 'false'
-        if(req.query["ban"] !== "true" && req.query["ban"] !== "false"){
-            res.writeHead(400, BanSetHandler.httpHeaders);
-            res.end("Please specify ban=true or ban=false.");
-            return;
-        }
-
-        // convert ban to boolean 
-        let ban:boolean = req.query["ban"] === "true";
-
         // update the database
-        dbc.updateAccountBan(username, ban)
+        dbc.updateAccessLevel(username, accessLevel)
             .then(response => {
                 // success
-                res.writeHead(200, BanSetHandler.httpHeaders);
+                res.writeHead(200, AccountAccessHandler.httpHeaders);
                 res.end(response);
             })
             .catch(err => {
                 // error
-                res.writeHead(400, BanSetHandler.httpHeaders);
+                res.writeHead(400, AccountAccessHandler.httpHeaders);
                 res.end(`Database error: ${err.message}`);
             });
     }
 }
 
 // export singleton
-export default new BanSetHandler();
+export default new AccountAccessHandler();

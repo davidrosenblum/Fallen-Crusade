@@ -82,7 +82,7 @@ var Ability = (function (_super) {
         return caster.team !== target.team;
     };
     Ability.prototype.validateAlliesOnly = function (caster, target) {
-        return target === caster || this.validateAlliesOrSelf(caster, target);
+        return target !== caster && caster.team === target.team;
     };
     Ability.prototype.validateAlliesOrSelf = function (caster, target) {
         return caster.team === target.team;

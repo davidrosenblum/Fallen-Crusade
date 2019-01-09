@@ -196,6 +196,14 @@ var GameMaps = (function () {
         delete players[client.player.name];
         client.respondAvailablePlayers(players, null);
     };
+    GameMaps.prototype.getMapStats = function () {
+        var stats = {
+            maps: {}, instances: {}
+        };
+        this.forEachMap(function (map) { return stats.maps[map.name] = map.getMapStats(); });
+        this.forEachInstance(function (instance) { return stats.instances[instance.instanceID] = instance.getMapStats(); });
+        return stats;
+    };
     GameMaps.prototype.forEachMap = function (fn) {
         for (var mapName in this._maps) {
             fn(this._maps[mapName]);

@@ -3,13 +3,15 @@ import * as http from "http";
 import * as websocket from "websocket";
 import { MongoClient } from "mongodb";
 import AccountCreateHandler from "./handlers/AccountCreateHandler";
-import BanSetHandler from "./handlers/BanSetHandler";
-import AdminSetHandler from "./handlers/AdminSetHandler";
+import AccountBanHandler from "./handlers/AccountBanHandler";
+import MapStatsHandler from "./handlers/MapStatsHandler";
 import { SettingsUtils, Settings } from "./utils/SettingsUtils";
 import { DatabaseController } from "./database/DatabaseController";
 import { GameController } from "./game/GameController";
 import { NPCDocument } from "./database/NPCsCollection";
 import { NPCFactory } from "./characters/NPCFactory";
+import AccountAccessHandler from "./handlers/AccountAccessHandler";
+
 
 export class Server{
     private _app:express.Application;       // express application helps to handle http requests
@@ -83,28 +85,20 @@ export class Server{
         });
 
         // account creation handler 
-        this._app.options("/accounts/create", (req, res) => {
-            AccountCreateHandler.options(req, res);
-        });
-        this._app.post("/accounts/create", (req, res) => {
-            AccountCreateHandler.post(req, res, this._database);
-        });
+        this._app.options("/accounts/create", (req, res) => AccountCreateHandler.options(req, res));
+        this._app.post("/accounts/create", (req, res) => AccountCreateHandler.post(req, res, this._database));
 
-        // account admin set handler
-        this._app.options("/accounts/admin", (req, res) => {
-            AdminSetHandler.options(req, res);
-        });
-        this._app.get("/accounts/admin", (req, res) => {
-            AdminSetHandler.get(req, res, this._database);
-        });
+        // account access level handler
+        this._app.options("/accounts/admin", (req, res) => AccountAccessHandler.options(req, res));
+        this._app.get("/accounts/admin", (req, res) => AccountAccessHandler.get(req, res, this._database));
 
-        // account ban set handler
-        this._app.options("/accounts/ban", (req, res) => {
-            BanSetHandler.options(req, res);
-        });
-        this._app.get("/accounts/ban", (req, res) => {
-            BanSetHandler.get(req, res, this._database);
-        });
+        // account banning handler
+        this._app.options("/accounts/ban", (req, res) => AccountBanHandler.options(req, res));
+        this._app.get("/accounts/ban", (req, res) => AccountBanHandler.get(req, res, this._database));
+
+        // map stats handler
+        this._app.options("/world/stats", (req, res) => MapStatsHandler.options(req, res));
+        this._app.get("/world/stats", (req, res) => MapStatsHandler.get(req, res, this._game));
 
         // 404 page
         this._app.use((req, res, next) => {

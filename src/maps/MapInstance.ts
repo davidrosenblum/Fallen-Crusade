@@ -30,6 +30,11 @@ export interface PlayerListItem{
     objectID:string;
 }
 
+export interface MapStats{
+    players:{name:string, level:number}[];
+    npcs:{name:string, team:string, xpValue:number, goldValue:number, tier:string}[];
+}
+
 export class MapInstance extends EventEmitter{
     private static tokenGen:TokenGenerator = new TokenGenerator(16);
 
@@ -235,6 +240,50 @@ export class MapInstance extends EventEmitter{
         return players;
     }
 
+    public getMapStats():MapStats{
+        let players:{name:string, level:number}[] = [];
+        let npcs:{name:string, team:string, xpValue:number, goldValue:number, tier:string}[] = [];
+
+        this.forEachUnit(unit => {
+            if(unit instanceof Player){
+                players.push({
+                    name:   unit.name,
+                    level:  unit.level
+                })
+            }
+            else if(unit instanceof NPC){
+                npcs.push({
+                    name:       unit.name,
+                    team:       unit.team,
+                    xpValue:    unit.xpValue,
+                    goldValue:  unit.goldValue,
+                    tier:       unit.tier
+                });
+            }
+        })
+
+        return {players, npcs};
+    }
+
+    public getMapState():MapState{
+        let units:CharacterSpawnState[] = [];
+        this.forEachUnit(unit => {
+            units.push(unit.getSpawnState());
+        });
+
+        let transportNodes:TransportNodeState[] = [];
+        this.forEachTransportNode(tnode => {
+            transportNodes.push(tnode.getTransportNodeState());
+        });
+
+        return {
+            name:       this.name,
+            mapData:    this._mapData, // dangerous
+            transportNodes,
+            units
+        };
+    }
+
     private forEachUnit(fn:(unit:Unit, id?:string)=>void):void{
         for(let id in this._units){
             fn(this._units[id], id);
@@ -259,25 +308,6 @@ export class MapInstance extends EventEmitter{
                 fn(client);
             }
         });
-    }
-
-    public getMapState():MapState{
-        let units:CharacterSpawnState[] = [];
-        this.forEachUnit(unit => {
-            units.push(unit.getSpawnState());
-        });
-
-        let transportNodes:TransportNodeState[] = [];
-        this.forEachTransportNode(tnode => {
-            transportNodes.push(tnode.getTransportNodeState());
-        });
-
-        return {
-            name:       this.name,
-            mapData:    this._mapData, // dangerous
-            transportNodes,
-            units
-        };
     }
 
     public get isEmpty():boolean{

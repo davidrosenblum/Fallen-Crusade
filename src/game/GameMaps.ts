@@ -2,11 +2,16 @@ import { GameClient } from "./GameClient";
 import { OpCode, Status } from "./Comm";
 import { DatabaseController } from "../database/DatabaseController";
 import { Player } from '../characters/Player';
-import { MapInstance, MapState, PlayerListItem } from '../maps/MapInstance';
+import { MapInstance, MapState, PlayerListItem, MapStats } from '../maps/MapInstance';
 import { CharacterUpdateState } from '../characters/Character';
 import { Unit } from '../characters/Unit';
 import { CharacterStats } from '../characters/CombatCharacter';
 import { MapInstanceFactory } from "../maps/MapInstanceFactory";
+
+export interface WorldMapStats{
+    maps:{[name:string]: MapStats};
+    instances:{[id:string]: MapStats};
+}
 
 export class GameMaps{
     private _maps:{[mapName:string]: MapInstance};
@@ -331,6 +336,17 @@ export class GameMaps{
 
         // send
         client.respondAvailablePlayers(players, null);
+    }
+
+    public getMapStats():WorldMapStats{
+        let stats:WorldMapStats = {
+            maps: {}, instances: {}
+        };
+
+        this.forEachMap(map => stats.maps[map.name] = map.getMapStats());
+        this.forEachInstance(instance => stats.instances[instance.instanceID] = instance.getMapStats());
+
+        return stats;
     }
 
     private forEachMap(fn:(map:MapInstance)=>void):void{

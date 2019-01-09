@@ -33,6 +33,7 @@ var GameAbilities = (function () {
             }
             else {
                 client.respondAbilityCast(null, err.message);
+                client.sendChatMessage(err.message);
             }
         });
     };

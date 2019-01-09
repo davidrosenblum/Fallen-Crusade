@@ -40,12 +40,13 @@ var http = require("http");
 var websocket = require("websocket");
 var mongodb_1 = require("mongodb");
 var AccountCreateHandler_1 = require("./handlers/AccountCreateHandler");
-var BanSetHandler_1 = require("./handlers/BanSetHandler");
-var AdminSetHandler_1 = require("./handlers/AdminSetHandler");
+var AccountBanHandler_1 = require("./handlers/AccountBanHandler");
+var MapStatsHandler_1 = require("./handlers/MapStatsHandler");
 var SettingsUtils_1 = require("./utils/SettingsUtils");
 var DatabaseController_1 = require("./database/DatabaseController");
 var GameController_1 = require("./game/GameController");
 var NPCFactory_1 = require("./characters/NPCFactory");
+var AccountAccessHandler_1 = require("./handlers/AccountAccessHandler");
 var Server = (function () {
     function Server() {
         this._app = express().use(express.static(__dirname + "/../web/build"));
@@ -83,24 +84,14 @@ var Server = (function () {
                 setTimeout(function () { return _this.close(); }, 1000 * s);
             }
         });
-        this._app.options("/accounts/create", function (req, res) {
-            AccountCreateHandler_1.default.options(req, res);
-        });
-        this._app.post("/accounts/create", function (req, res) {
-            AccountCreateHandler_1.default.post(req, res, _this._database);
-        });
-        this._app.options("/accounts/admin", function (req, res) {
-            AdminSetHandler_1.default.options(req, res);
-        });
-        this._app.get("/accounts/admin", function (req, res) {
-            AdminSetHandler_1.default.get(req, res, _this._database);
-        });
-        this._app.options("/accounts/ban", function (req, res) {
-            BanSetHandler_1.default.options(req, res);
-        });
-        this._app.get("/accounts/ban", function (req, res) {
-            BanSetHandler_1.default.get(req, res, _this._database);
-        });
+        this._app.options("/accounts/create", function (req, res) { return AccountCreateHandler_1.default.options(req, res); });
+        this._app.post("/accounts/create", function (req, res) { return AccountCreateHandler_1.default.post(req, res, _this._database); });
+        this._app.options("/accounts/admin", function (req, res) { return AccountAccessHandler_1.default.options(req, res); });
+        this._app.get("/accounts/admin", function (req, res) { return AccountAccessHandler_1.default.get(req, res, _this._database); });
+        this._app.options("/accounts/ban", function (req, res) { return AccountBanHandler_1.default.options(req, res); });
+        this._app.get("/accounts/ban", function (req, res) { return AccountBanHandler_1.default.get(req, res, _this._database); });
+        this._app.options("/world/stats", function (req, res) { return MapStatsHandler_1.default.options(req, res); });
+        this._app.get("/world/stats", function (req, res) { return MapStatsHandler_1.default.get(req, res, _this._game); });
         this._app.use(function (req, res, next) {
             res.writeHead(404);
             res.end("Page not found (cool 404 page coming eventually!).");

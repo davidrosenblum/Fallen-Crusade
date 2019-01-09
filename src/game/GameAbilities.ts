@@ -48,6 +48,9 @@ export class GameAbilities{
             }
             else{
                 client.respondAbilityCast(null, err.message);
+
+                // also send chat message
+                client.sendChatMessage(err.message);
             }
         });
     }

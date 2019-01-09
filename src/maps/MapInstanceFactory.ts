@@ -1,5 +1,5 @@
 import { MapInstance } from './MapInstance';
-import { NorthernKeep, VillageCenter } from './Maps';
+import { NorthernKeep, VillageCenter, Graveyard } from './Maps';
 
 export class MapInstanceFactory{
     public static create(type:string):MapInstance{
@@ -8,6 +8,8 @@ export class MapInstanceFactory{
                 return new VillageCenter();
             case "Northern Keep":
                 return new NorthernKeep();
+            case "Graveyard":
+                return new Graveyard();
             default:
                 throw new Error("Invalid map type.");
         }

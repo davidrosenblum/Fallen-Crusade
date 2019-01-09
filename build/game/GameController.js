@@ -102,6 +102,9 @@ var GameController = (function () {
                 break;
         }
     };
+    GameController.prototype.getMapStats = function () {
+        return this._maps.getMapStats();
+    };
     Object.defineProperty(GameController.prototype, "invites", {
         get: function () {
             return this._invites;

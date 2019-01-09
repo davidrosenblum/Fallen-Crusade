@@ -5,7 +5,7 @@ import { DatabaseController } from '../database/DatabaseController';
 import { Settings } from '../utils/SettingsUtils';
 import { GameAccounts } from './GameAccounts';
 import { GameCharacters } from './GameCharacters';
-import { GameMaps } from './GameMaps';
+import { GameMaps, WorldMapStats } from './GameMaps';
 import { GameChat } from './GameChat';
 import { GameAbilities } from './GameAbilities';
 import { GameInvites } from './GameInvites';
@@ -152,6 +152,10 @@ export class GameController{
                 client.send(OpCode.BAD_REQUEST, "Bad request opcode.", Status.BAD);
                 break;
         }
+    }
+
+    public getMapStats():WorldMapStats{
+        return this._maps.getMapStats();
     }
 
     public get invites():GameInvites{
