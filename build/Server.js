@@ -132,7 +132,9 @@ var Server = (function () {
                         err_1 = _a.sent();
                         console.log("Settings file error.");
                         console.log(err_1.message);
-                        console.log("Using defaults instead of crashing.\n");
+                        settings = SettingsUtils_1.SettingsUtils.copyDefaultSettings();
+                        console.log("Using defaults instead of crashing.");
+                        console.log("Use command line args to override settings if neccessary.");
                         return [3, 4];
                     case 4:
                         console.log("Connecting to MongoDB...");
