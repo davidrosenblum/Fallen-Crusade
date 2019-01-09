@@ -143,7 +143,7 @@ export class Server{
                 // use defaults
                 settings = SettingsUtils.copyDefaultSettings();
                 console.log("Using defaults instead of crashing.");
-                console.log("Use command line args to override settings if neccessary.");
+                console.log("Use command line args to override settings if neccessary.\n");
             }
 
             // step 2: connect to the database
