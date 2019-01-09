@@ -139,7 +139,11 @@ export class Server{
                 // load or parse error
                 console.log("Settings file error.");
                 console.log(err.message);
-                console.log("Using defaults instead of crashing.\n");
+
+                // use defaults
+                settings = SettingsUtils.copyDefaultSettings();
+                console.log("Using defaults instead of crashing.");
+                console.log("Use command line args to override settings if neccessary.");
             }
 
             // step 2: connect to the database
