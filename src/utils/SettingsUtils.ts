@@ -29,7 +29,7 @@ export class SettingsUtils{
     // loads and parses the settings file, automatically looks for invalid/missing properties 
     public static load():Promise<Settings>{
         return new Promise((resolve, reject) => {
-            fs.readFile(this.getAbsolutePath(), (err, buffer) => {
+            fs.readFile(this.PATH, (err, buffer) => {
                 if(!err){
                     let json:Settings = null;
 
@@ -58,15 +58,10 @@ export class SettingsUtils{
     public static writeDefault():Promise<Settings>{
         return new Promise((resolve, reject) => {
             let settingsCopy:Settings = this.copyDefaultSettings();
-            fs.writeFile(this.getAbsolutePath(), JSON.stringify(settingsCopy, null, 4), err => {
+            fs.writeFile(this.PATH, JSON.stringify(settingsCopy, null, 4), err => {
                 err ? reject(err) : resolve(settingsCopy);
             });
         });
-    }
-
-    // returns the absolute file path for the settings file
-    public static getAbsolutePath():string{
-        return `${__dirname}/${this.PATH}`;
     }
 
     // creates a copy the default settings object

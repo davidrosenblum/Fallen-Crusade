@@ -126,10 +126,21 @@ export class Server{
             // step 1: load settings file
             // (missing file does NOT throw an error)
             console.log("Loading settings...");
-            let settings:Settings = await SettingsUtils.load();
-            
-            // settings file loaded and parsed
-            console.log("Settings loaded.\n");
+            let settings:Settings = null;
+
+            // try to load/parse
+            try{
+                settings  = await SettingsUtils.load();
+                
+                // settings file loaded and parsed
+                console.log("Settings loaded.\n");
+            }
+            catch(err){
+                // load or parse error
+                console.log("Settings file error.");
+                console.log(err.message);
+                console.log("Using defaults instead of crashing.\n");
+            }
 
             // step 2: connect to the database
             console.log("Connecting to MongoDB...");
