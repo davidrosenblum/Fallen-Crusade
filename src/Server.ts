@@ -21,8 +21,8 @@ export class Server{
     private _shuttingDown:boolean;          // server shutdown started or not 
 
     constructor(){
-        // create the express handler app, also serves static files from the /web folder
-        this._app = express().use(express.static(`${__dirname}/../../web`));
+        // create the express handler app, also serves static files from the compiled react folder
+        this._app = express().use(express.static(`${__dirname}/../web/build`));
         // create the http server, use the express app as the handler
         this._httpServer = http.createServer(this._app);
         // create the websocket server, uses the existing http server

@@ -48,7 +48,7 @@ var GameController_1 = require("./game/GameController");
 var NPCFactory_1 = require("./characters/NPCFactory");
 var Server = (function () {
     function Server() {
-        this._app = express().use(express.static(__dirname + "/../../web"));
+        this._app = express().use(express.static(__dirname + "/../web/build"));
         this._httpServer = http.createServer(this._app);
         this._wsServer = new websocket.server({ httpServer: this._httpServer });
         this._mongo = null;
