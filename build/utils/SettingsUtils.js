@@ -5,16 +5,17 @@ var SettingsUtils = (function () {
     function SettingsUtils() {
     }
     SettingsUtils.provideDefaultOpts = function (settings) {
-        for (var opt in SettingsUtils.defaultSettings) {
-            if (typeof settings[opt] !== typeof SettingsUtils.defaultSettings[opt]) {
-                settings[opt] = SettingsUtils.defaultSettings[opt];
+        for (var opt in this.defaultSettings) {
+            if (typeof settings[opt] !== typeof this.defaultSettings[opt]) {
+                settings[opt] = this.defaultSettings[opt];
             }
         }
         return settings;
     };
     SettingsUtils.load = function () {
+        var _this = this;
         return new Promise(function (resolve, reject) {
-            fs.readFile(SettingsUtils.PATH, function (err, buffer) {
+            fs.readFile(_this.getAbsolutePath(), function (err, buffer) {
                 if (!err) {
                     var json = null;
                     try {
@@ -24,10 +25,10 @@ var SettingsUtils = (function () {
                         reject(err);
                         return;
                     }
-                    resolve(SettingsUtils.provideDefaultOpts(json));
+                    resolve(_this.provideDefaultOpts(json));
                 }
                 else if (err.errno === -4058) {
-                    SettingsUtils.writeDefault()
+                    _this.writeDefault()
                         .then(function (settings) { return resolve(settings); })
                         .catch(function (err) { return reject(err); });
                 }
@@ -37,12 +38,19 @@ var SettingsUtils = (function () {
         });
     };
     SettingsUtils.writeDefault = function () {
+        var _this = this;
         return new Promise(function (resolve, reject) {
-            fs.writeFile(SettingsUtils.PATH, JSON.stringify(SettingsUtils.defaultSettings, null, 4), function (err) {
-                var settingsCopy = Object.assign({}, SettingsUtils.defaultSettings);
+            var settingsCopy = _this.copyDefaultSettings();
+            fs.writeFile(_this.getAbsolutePath(), JSON.stringify(settingsCopy, null, 4), function (err) {
                 err ? reject(err) : resolve(settingsCopy);
             });
         });
+    };
+    SettingsUtils.getAbsolutePath = function () {
+        return __dirname + "/" + this.PATH;
+    };
+    SettingsUtils.copyDefaultSettings = function () {
+        return Object.assign({}, this.defaultSettings);
     };
     SettingsUtils.PATH = "settings.json";
     SettingsUtils.defaultSettings = {

@@ -18,9 +18,9 @@ export class SettingsUtils{
     // fills out any missing or wrong (datatype) in the settings object
     // overrides parameter object
     private static provideDefaultOpts(settings:Settings):Settings{
-        for(let opt in SettingsUtils.defaultSettings){
-            if(typeof settings[opt] !== typeof SettingsUtils.defaultSettings[opt]){
-                settings[opt] = SettingsUtils.defaultSettings[opt];
+        for(let opt in this.defaultSettings){
+            if(typeof settings[opt] !== typeof this.defaultSettings[opt]){
+                settings[opt] = this.defaultSettings[opt];
             }
         }
         return settings;
@@ -29,7 +29,7 @@ export class SettingsUtils{
     // loads and parses the settings file, automatically looks for invalid/missing properties 
     public static load():Promise<Settings>{
         return new Promise((resolve, reject) => {
-            fs.readFile(SettingsUtils.PATH, (err, buffer) => {
+            fs.readFile(this.getAbsolutePath(), (err, buffer) => {
                 if(!err){
                     let json:Settings = null;
 
@@ -37,14 +37,15 @@ export class SettingsUtils{
                         json = JSON.parse(buffer.toString());
                     }
                     catch(err){
+                        // json parse error
                         reject(err);
                         return;
                     }
 
-                    resolve(SettingsUtils.provideDefaultOpts(json));
+                    resolve(this.provideDefaultOpts(json));
                 }
                 else if(err.errno === -4058){
-                    SettingsUtils.writeDefault()
+                    this.writeDefault()
                         .then(settings => resolve(settings))
                         .catch(err => reject(err));
                 }
@@ -56,10 +57,20 @@ export class SettingsUtils{
     // writes the default settings json file 
     public static writeDefault():Promise<Settings>{
         return new Promise((resolve, reject) => {
-            fs.writeFile(SettingsUtils.PATH, JSON.stringify(SettingsUtils.defaultSettings, null, 4), err => {
-                let settingsCopy:Settings = Object.assign({}, SettingsUtils.defaultSettings);
+            let settingsCopy:Settings = this.copyDefaultSettings();
+            fs.writeFile(this.getAbsolutePath(), JSON.stringify(settingsCopy, null, 4), err => {
                 err ? reject(err) : resolve(settingsCopy);
             });
         });
+    }
+
+    // returns the absolute file path for the settings file
+    public static getAbsolutePath():string{
+        return `${__dirname}/${this.PATH}`;
+    }
+
+    // creates a copy the default settings object
+    public static copyDefaultSettings():Settings{
+        return Object.assign({}, this.defaultSettings);
     }
 }
