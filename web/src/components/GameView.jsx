@@ -6,6 +6,7 @@ import { GameViewChat } from "./GameViewChat";
 import { GameViewTarget } from "./GameViewTarget";
 import { GameViewPlayer } from "./GameViewPlayer";
 import { GameViewAbilities } from "./GameViewAbilities";
+import { GameViewDropdown } from "./GameViewDropdown";
 
 export class GameView extends React.Component{
     constructor(props){
@@ -52,6 +53,7 @@ export class GameView extends React.Component{
                 <GameViewTarget/>
                 <GameViewPlayer/>
                 <GameViewAbilities/>
+                <GameViewDropdown/>
             </div>
         );
     }

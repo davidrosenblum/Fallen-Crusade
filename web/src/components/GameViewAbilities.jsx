@@ -16,6 +16,7 @@ export class GameViewAbilities extends React.Component{
             // must be a successful response
             if(evt.status === "ok"){
                 // update the UI 
+                console.log(evt);
                 this.setState({abilityList: evt.abilityList});
             }
         };
@@ -37,7 +38,7 @@ export class GameViewAbilities extends React.Component{
         let abilityList = this.state.abilityList || [];
         // list of icons to render (there will always be 10 abilities)
         let icons = new Array(10);
-
+        
         // for each icon slot...
         for(let i = 0; i < icons.length; i++){
             // find the corresponding ability
@@ -55,6 +56,7 @@ export class GameViewAbilities extends React.Component{
                         width={ABILITY_ICON_SIZE}
                         height={ABILITY_ICON_SIZE}
                         disabled={false}
+                        title={ability.abilityName}
                         onClick={() => Game.castAbility(ability.abilityName)}
                     />
                 );

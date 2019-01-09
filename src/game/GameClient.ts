@@ -8,6 +8,7 @@ import { CharacterPreviewDocument } from '../database/CharactersCollection';
 import { CharacterSpawnState, CharacterUpdateState } from '../characters/Character';
 import { PendingInvite } from "./invites/PendingInvite";
 import { AbilityListItem } from "../characters/Unit";
+import { CharacterStats } from '../characters/CombatCharacter';
 
 export interface GameClientRequest{
     opCode:OpCode,
@@ -65,6 +66,14 @@ export class GameClient{
         };
     }
 
+    public static createChatResponse(chat:string, from?:string):GameClientResponse{
+        return this.createResponse(OpCode.CHAT_MESSAGE, {chat, from}, Status.GOOD);
+    }
+
+    public static createStatsResponse(stats:CharacterStats):GameClientResponse{
+        return this.createResponse(OpCode.OBJECT_STATS, {stats}, Status.GOOD);
+    }
+
     public setPendingInvite(invite:PendingInvite):void{
         this._pendingInvite = invite;
     }
@@ -85,6 +94,10 @@ export class GameClient{
             }
         }
 
+        else if(!player && this.player){
+            this.player.removeAllListeners();
+        }
+
         this._player = player;
     }
 
@@ -98,8 +111,8 @@ export class GameClient{
         this._conn.send(str + MSG_DELIM);
     }
 
-    public respondLogin(clientID:string, errMsg:string):void{
-        this.send(OpCode.ACCOUNT_LOGIN, errMsg || {clientID}, errMsg ? Status.BAD : Status.GOOD);
+    public respondLogin(clientID:string, accessLevel:number, errMsg:string):void{
+        this.send(OpCode.ACCOUNT_LOGIN, errMsg || {clientID, accessLevel}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public respondLogout(message:string, errMsg:string):void{
@@ -130,11 +143,11 @@ export class GameClient{
         this.send(OpCode.ENTER_INSTANCE, errMsg || {mapState}, errMsg ? Status.BAD : Status.GOOD);
     } 
 
-    public respondChatMessage(chat:string, from?:string, errMsg?:string):void{
+    public sendChatMessage(chat:string, from?:string, errMsg?:string):void{
         this.send(OpCode.CHAT_MESSAGE, errMsg || {chat, from}, errMsg ? Status.BAD : Status.GOOD);
     }
 
-    public respondObjectStats(stats, errMsg:string):void{
+    public respondObjectStats(stats:CharacterStats, errMsg:string):void{
         this.send(OpCode.OBJECT_STATS, errMsg || {stats}, errMsg ? Status.BAD : Status.GOOD);
     }
 
@@ -156,6 +169,14 @@ export class GameClient{
 
     public respondInviteReply(message:string, errMsg:string):void{
         this.send(OpCode.INVITE_REPLY, errMsg || message, errMsg ? Status.BAD : Status.GOOD);
+    }
+
+    public respondCreateInstance(message:string, errMsg:string):void{
+        this.send(OpCode.CREATE_INSTANCE, errMsg || message, errMsg ? Status.BAD : Status.GOOD);   
+    }
+
+    public respondMapPlayers(players:{[name:string]: number}, errMsg:string):void{
+        this.send(OpCode.MAP_PLAYERS, errMsg || {players}, errMsg ? Status.BAD : Status.GOOD);
     }
 
     public notifyObjectCreate(spawnState:CharacterSpawnState):void{

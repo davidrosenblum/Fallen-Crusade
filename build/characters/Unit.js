@@ -41,13 +41,18 @@ var Unit = (function (_super) {
     Unit.prototype.learnAbility = function (ability) {
         if (!this.hasAbility(ability.name)) {
             this._abilities[ability.name] = ability;
+            this.emit("ability-learn", { abilityName: ability.name });
             return true;
         }
         return false;
     };
     Unit.prototype.upgradeAbility = function (abilityName) {
         if (this.hasAbility(abilityName)) {
-            return this._abilities[abilityName].upgrade();
+            var ability = this._abilities[abilityName];
+            if (ability.upgrade()) {
+                this.emit("ability-upgrade", { abilityName: ability.name, level: ability.level });
+                return true;
+            }
         }
         return false;
     };

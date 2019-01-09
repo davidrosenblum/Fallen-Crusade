@@ -61,7 +61,15 @@ var CharactersCollection = (function () {
                 .catch(function (err) { return reject(err); });
         });
     };
-    CharactersCollection.updateCharacter = function () {
+    CharactersCollection.updateCharacter = function (database, accountID, name, update) {
+        return new Promise(function (resolve, reject) {
+            var filter = { account_id: accountID, name: name };
+            database.collection("characters").findOneAndUpdate(filter, update)
+                .then(function (result) {
+                result.lastErrorObject ? reject(new Error("Update error.")) : resolve("Update successful.");
+            })
+                .catch(function (err) { return reject(err); });
+        });
     };
     return CharactersCollection;
 }());

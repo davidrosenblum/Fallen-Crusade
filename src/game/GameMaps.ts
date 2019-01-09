@@ -19,12 +19,109 @@ export class GameMaps{
         this._database = database;
     }
 
-    private loadPlayer(client:GameClient):Promise<Player>{
+    private loadPlayer(client:GameClient):Promise<{player:Player, lastMap:string}>{
         return new Promise((resolve, reject) => {
             this._database.getCharacter(client.accountID, client.selectedPlayer)
-                .then(save => resolve(new Player(save, client.clientID)))
+                .then(save => {
+                    let player:Player = new Player(save, client.clientID);
+
+                    this.setPlayerListeners(client, player);
+                    
+                    resolve({player, lastMap: save.last_map});
+                })
                 .catch(err => reject(err));
         });
+    }
+
+    // attaches event handlers to the player (observes events like leveling up, earning xp, etc)
+    private setPlayerListeners(client:GameClient, player:Player):void{
+        let accountID:string = client.accountID;
+        let name:string = player.name;
+
+        // when the player levels up...
+        player.on("level", evt => {
+            // inform the player with a chat message
+            client.sendChatMessage(`You have reached level ${evt.level}.`);
+
+            // update client state
+            client.respondObjectStats(player.getPlayerStats(), null);
+
+            // update the database 
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("level"));
+        });
+
+        // when the player earns xp...
+        player.on("xp", evt => {
+            // inform the player with a chat message
+            client.sendChatMessage(`You gained ${evt.xp} XP.`);
+
+            // update client state
+            client.respondObjectStats(player.getPlayerStats(), null);
+
+            // update the database
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("xp"));
+        });
+
+        // when the player earns gold...
+        player.on("gold", evt => {
+            // inform the player with a chat message
+            client.sendChatMessage(`You earned ${evt.gold} gold.`);
+
+            // update client state
+            client.respondObjectStats(player.getPlayerStats(), null);
+
+            // update the database with actual amount of gold 
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("gold"));
+        });
+
+        // when the player gains ability point(s)...
+        player.on("ability-points", evt => {
+            // get the amount of ability points added
+            // (note: doesn't mean you actual get them all as limit is enforced)
+            let points:number = evt.abilityPoints;
+            // create the text based on ability points 
+            let message:string = points > 1 ? `You gained ${points} ability points` : `You gained an ability point.`;
+
+            // send the message to the player only 
+            client.sendChatMessage(message);
+
+            // update client state
+            client.respondObjectStats(player.getPlayerStats(), null);
+
+            // update the database with the actual amount of ability points 
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("ability_points"));
+        });
+
+        // when the player learns a new ability...
+        player.on("ability-learn", evt => {
+            // inform the player with a chat message
+            client.sendChatMessage(`You have acquired the ability "${evt.abilityName}".`);
+
+            // update the database
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"));
+        });
+
+        // when the player upgades an existing ability...
+        player.on("ability-upgrade", evt => {
+            // inform the player with a chat message
+            client.sendChatMessage(`${evt.abilityName} upgraded to level ${evt.level}.`);
+
+            // update the database
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"));
+        });
+
+        // when the player's skin changes...
+        player.on("skin-change", evt => {
+            // create update json for the map
+            let data:any = {skin: evt.skin, objectID: player.objectID};
+
+            // update the map
+            player.map.bulkUpdate(GameClient.createResponse(OpCode.SKIN_CHANGE, data));
+
+            // save the skin change 
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("skin"));
+        });
+
     }
 
     public handleEnterMap(client:GameClient, data:{mapName?:string}):void{
@@ -52,10 +149,16 @@ export class GameMaps{
 
         // reload player data
         this.loadPlayer(client)
-            .then(player => {
+            .then(result => {
                 // auto leaves room 
-                client.setPlayer(player);
+                client.setPlayer(result.player);
                 map.addClient(client);
+
+                // update 'last_map' location if the map changed
+                // (if statement prevents updating db if spawning for the first time)
+                if(result.lastMap !== map.name){
+                    this._database.updateCharacter(client.accountID, client.player.name, client.player.getDatabaseUpdate("last_map"));
+                }
 
                 let mapState:MapState = map.getMapState();
                 client.respondEnterMap(mapState, null);
@@ -90,9 +193,9 @@ export class GameMaps{
 
         // reload player data
         this.loadPlayer(client)
-            .then(player => {
+            .then(result => {
                 // auto leaves room 
-                client.setPlayer(player);
+                client.setPlayer(result.player);
                 map.addClient(client);
 
                 let mapState:MapState = map.getMapState();
@@ -106,7 +209,7 @@ export class GameMaps{
     public handleObjectUpdate(client:GameClient, data:CharacterUpdateState):void{
         // player must be in a room
         if(!client.player || !client.player.map){
-            client.send(OpCode.OBJECT_UPDATE, "You are not in a room.", Status.BAD);
+            //client.send(OpCode.OBJECT_UPDATE, "You are not in a map.", Status.BAD);
             return;
         }
 
@@ -147,5 +250,57 @@ export class GameMaps{
         }
          
         client.respondObjectStats(stats, null);
+    }
+
+    public handleCreateInstance(client:GameClient, data:{instanceName?:string, difficulty?:number}):void{
+        // must be in a room
+        if(!client.player || !client.player.map){
+            client.respondCreateInstance(null, "You are not in a map.");
+            return;
+        }
+
+        // extract request parameters
+        let {instanceName=null, difficulty=1} = data;
+
+        // enforce request parameters (note: difficulty is optional)
+        if(!instanceName){
+            client.respondCreateInstance(null, "Bad request json.");
+            return;
+        }
+
+        // create the instance
+        let instance:MapInstance = null;
+        try{
+            // attempt to create
+            instance = MapInstanceFactory.create(instanceName);
+        }
+        catch(err){
+            // invalid instance type 
+            client.respondCreateInstance(null, `Invalid instance name "${instanceName}".`);
+            return;
+        }
+        
+        // successfully created - store instance by id 
+        this._instances[instance.instanceID] = instance;
+        // destroy when empty
+        instance.on("empty", () => {
+            delete this._instances[instance.instanceID];
+            instance = null;
+        });
+
+        // auto join creator 
+        this.handleEnterInstance(client, {instanceID: instance.instanceID});
+    }
+
+    public handleMapPlayers(client:GameClient):void{
+        // must be in a room
+        if(!client.player || !client.player.map){
+            client.respondMapPlayers(null, "You are not in a map.")
+            return;
+        }
+
+        let players:{[name:string]: number} = client.player.map.getPlayers();
+
+        client.respondMapPlayers(players, null);
     }
 }

@@ -22,6 +22,7 @@ var Ability = (function (_super) {
         _this._manaCost = config.manaCost;
         _this._recharge = config.rechargeSec / 1000;
         _this._range = config.range;
+        _this._radius = config.radius || _this._range;
         _this._maxTargets = config.maxTargets || 1;
         _this._level = 1;
         _this._ready = true;
@@ -120,6 +121,13 @@ var Ability = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Ability.prototype, "radius", {
+        get: function () {
+            return this._radius;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Ability.prototype, "maxTargets", {
         get: function () {
             return this._maxTargets;
@@ -142,6 +150,12 @@ var Ability = (function (_super) {
         configurable: true
     });
     Ability.UPGRADE_CAP = 3;
+    Ability.RANGE_CLOSE = 64;
+    Ability.RANGE_MEDIUM = 128;
+    Ability.RANGE_FAR = 256;
+    Ability.RADIUS_SMALL = 32;
+    Ability.RADIUS_MEDIUM = 64;
+    Ability.RADIUS_LARGE = 128;
     return Ability;
 }(events_1.EventEmitter));
 exports.Ability = Ability;

@@ -1,3 +1,4 @@
+// operation codes 
 export const enum OpCode{
     RESERVED =                  1,
     ACCOUNT_LOGIN =             2,
@@ -23,12 +24,18 @@ export const enum OpCode{
     INVITE_NOTIFY =             22,
     INVITE_REPLY =              23,
     INVITE_RESPONSE =           24,
+    CREATE_INSTANCE =           25,
+    MAP_PLAYERS =               26,
     BAD_REQUEST =               99
 }
 
+// resposne status codes
 export const enum Status{
     GOOD = "ok",
     BAD = "bad",
 }
 
+// websocket message delimiter
+// (responses can be sent together, esentailly concatenated...
+// so always split data based on predefined delimiter) 
 export const MSG_DELIM:string = "?&?";

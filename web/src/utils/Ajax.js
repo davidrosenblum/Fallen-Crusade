@@ -1,10 +1,10 @@
 export class Ajax{
     // sends an http request (returns a promise)
     static request(options){
-        // extract request parameters 
-        let {url, method="GET", headers=null, query=null, data=null} = options;
-
         return new Promise((resolve, reject) => {
+            // extract request parameters 
+            let {url, method="GET", headers=null, query=null, data=null} = options;
+
             // create the request
             let xhr = new XMLHttpRequest();
             // handle

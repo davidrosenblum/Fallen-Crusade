@@ -9,6 +9,7 @@ import { PlayerStats, Player } from '../characters/Player';
 import { NPC, NPCTier } from '../characters/NPC';
 import { NPCFactory, NPCOptions } from '../characters/NPCFactory';
 import { EventEmitter } from "events";
+import { CharacterStats } from '../characters/CombatCharacter';
 
 export interface MapState{
     name:string;
@@ -47,10 +48,23 @@ export class MapInstance extends EventEmitter{
     }
 
     public broadcastChat(chat:string, from?:string, ignoreClient?:GameClient):void{
+        this.bulkUpdate(GameClient.createChatResponse(chat, from));
+    }
+
+    private broadcastUnitStats(unit:Unit):void{
+        let stats:CharacterStats = unit.getCharacterStats();
+        this.bulkUpdate(GameClient.createStatsResponse(stats));
+    }
+
+    public bulkUpdate(update:GameClientResponse, ignoreClient?:GameClient):void{
+        // don't keep re-stringifying the same thing each iteration 
+        let json:string = JSON.stringify(update);
+
         this.forEachClientIgnoring(ignoreClient, client => {
             if(client !== ignoreClient){
-                client.respondChatMessage(chat, from)}
-        });
+                client.sendString(json);
+            }
+        })
     }
 
     public addClient(client:GameClient):boolean{
@@ -72,7 +86,7 @@ export class MapInstance extends EventEmitter{
 
             this.removeUnit(client.player);
 
-            this.broadcastChat(`${client.selectedPlayer} disconneced.`, null, client);
+            this.broadcastChat(`${client.selectedPlayer} disconnected.`, null, client);
 
             if(this.isEmpty) this.emit("empty");
 
@@ -132,6 +146,10 @@ export class MapInstance extends EventEmitter{
 
         let npc:NPC = NPCFactory.create(npcOpts);
         if(npc){
+            npc.on("health", () => this.broadcastUnitStats(npc));
+            npc.on("mana", () => this.broadcastUnitStats(npc));
+            npc.on("death", () => this.removeUnit(npc));
+            
             this.addUnit(npc);
         }
     }
@@ -188,6 +206,18 @@ export class MapInstance extends EventEmitter{
 
     public getUnit(objectID:string):Unit{
         return this._units[objectID] || null;
+    }
+
+    public getPlayers():{[name:string]: number}{
+        let players:{[name:string]: number} = {};
+
+        this.forEachClient(client => {
+            if(client.player){
+                players[client.player.name] = client.player.level;
+            }
+        });
+
+        return players;
     }
 
     private forEachUnit(fn:(unit:Unit, id?:string)=>void):void{

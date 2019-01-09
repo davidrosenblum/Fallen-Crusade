@@ -31,6 +31,14 @@ export class DatabaseController{
         return AccountsCollection.getAccount(this._database, username, password);
     }
 
+    public updateAccessLevel(username:string, accessLevel?:number):Promise<string>{
+        return AccountsCollection.updateAccessLevel(this._database, username, accessLevel);
+    }
+
+    public updateAccountBan(username:string, ban:boolean):Promise<string>{
+        return AccountsCollection.updateAccountBan(this._database, username, ban);
+    }
+
     public createCharacter(accountID:string, name:string, skin?:number):Promise<string>{
         return CharactersCollection.createCharacter(this._database, accountID, name, skin);
     }
@@ -47,8 +55,8 @@ export class DatabaseController{
         return CharactersCollection.deleteCharacter(this._database, accountID, name);
     }
 
-    public updateCharacter():void{
-
+    public updateCharacter(accountID:string, name:string, update:{[field:string]: any}):Promise<string>{
+        return CharactersCollection.updateCharacter(this._database, accountID, name, update);
     }
 
     public loadNPCs():Promise<NPCDocument[]>{

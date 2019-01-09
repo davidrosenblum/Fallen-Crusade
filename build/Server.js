@@ -40,6 +40,8 @@ var http = require("http");
 var websocket = require("websocket");
 var mongodb_1 = require("mongodb");
 var AccountCreateHandler_1 = require("./handlers/AccountCreateHandler");
+var BanSetHandler_1 = require("./handlers/BanSetHandler");
+var AdminSetHandler_1 = require("./handlers/AdminSetHandler");
 var SettingsUtils_1 = require("./utils/SettingsUtils");
 var DatabaseController_1 = require("./database/DatabaseController");
 var GameController_1 = require("./game/GameController");
@@ -87,6 +89,22 @@ var Server = (function () {
         this._app.post("/accounts/create", function (req, res) {
             AccountCreateHandler_1.default.post(req, res, _this._database);
         });
+        this._app.options("/accounts/admin", function (req, res) {
+            AdminSetHandler_1.default.options(req, res);
+        });
+        this._app.get("/accounts/admin", function (req, res) {
+            AdminSetHandler_1.default.get(req, res, _this._database);
+        });
+        this._app.options("/accounts/ban", function (req, res) {
+            BanSetHandler_1.default.options(req, res);
+        });
+        this._app.get("/accounts/ban", function (req, res) {
+            BanSetHandler_1.default.get(req, res, _this._database);
+        });
+        this._app.use(function (req, res, next) {
+            res.writeHead(404);
+            res.end("Page not found (cool 404 page coming eventually!).");
+        });
     };
     Server.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -95,6 +113,11 @@ var Server = (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 7, , 8]);
+                        console.log("  ______________________");
+                        console.log(" /                      \\");
+                        console.log("| Fallen Crusade: Server | ");
+                        console.log("| David Rosenblum, 2019  |");
+                        console.log(" \\______________________/\n");
                         console.log("Loading settings...");
                         return [4, SettingsUtils_1.SettingsUtils.load()];
                     case 1:
@@ -114,7 +137,7 @@ var Server = (function () {
                     case 3:
                         npcs = _a.sent();
                         if (!!npcs.length) return [3, 6];
-                        console.log("\t(Creating default NPCs)");
+                        console.log(" - No NPCs found (creating defaults).");
                         return [4, this._database.insertDefaultNPCs()];
                     case 4:
                         _a.sent();

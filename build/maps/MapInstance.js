@@ -15,6 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var TokenGenerator_1 = require("../utils/TokenGenerator");
 var TransportNode_1 = require("./TransportNode");
+var GameClient_1 = require("../game/GameClient");
 var NPCFactory_1 = require("../characters/NPCFactory");
 var events_1 = require("events");
 var MapInstance = (function (_super) {
@@ -31,9 +32,17 @@ var MapInstance = (function (_super) {
         return _this;
     }
     MapInstance.prototype.broadcastChat = function (chat, from, ignoreClient) {
+        this.bulkUpdate(GameClient_1.GameClient.createChatResponse(chat, from));
+    };
+    MapInstance.prototype.broadcastUnitStats = function (unit) {
+        var stats = unit.getCharacterStats();
+        this.bulkUpdate(GameClient_1.GameClient.createStatsResponse(stats));
+    };
+    MapInstance.prototype.bulkUpdate = function (update, ignoreClient) {
+        var json = JSON.stringify(update);
         this.forEachClientIgnoring(ignoreClient, function (client) {
             if (client !== ignoreClient) {
-                client.respondChatMessage(chat, from);
+                client.sendString(json);
             }
         });
     };
@@ -50,7 +59,7 @@ var MapInstance = (function (_super) {
         if (this.hasClient(client)) {
             delete this._clients[client.clientID];
             this.removeUnit(client.player);
-            this.broadcastChat(client.selectedPlayer + " disconneced.", null, client);
+            this.broadcastChat(client.selectedPlayer + " disconnected.", null, client);
             if (this.isEmpty)
                 this.emit("empty");
             return true;
@@ -85,6 +94,7 @@ var MapInstance = (function (_super) {
         }
     };
     MapInstance.prototype.createNPC = function (options) {
+        var _this = this;
         var type = options.type, row = options.row, col = options.col, name = options.name, team = options.team, anim = options.anim, tier = options.tier;
         var npcOpts = {
             ownerID: "server",
@@ -97,6 +107,9 @@ var MapInstance = (function (_super) {
         };
         var npc = NPCFactory_1.NPCFactory.create(npcOpts);
         if (npc) {
+            npc.on("health", function () { return _this.broadcastUnitStats(npc); });
+            npc.on("mana", function () { return _this.broadcastUnitStats(npc); });
+            npc.on("death", function () { return _this.removeUnit(npc); });
             this.addUnit(npc);
         }
     };
@@ -137,6 +150,15 @@ var MapInstance = (function (_super) {
     };
     MapInstance.prototype.getUnit = function (objectID) {
         return this._units[objectID] || null;
+    };
+    MapInstance.prototype.getPlayers = function () {
+        var players = {};
+        this.forEachClient(function (client) {
+            if (client.player) {
+                players[client.player.name] = client.player.level;
+            }
+        });
+        return players;
     };
     MapInstance.prototype.forEachUnit = function (fn) {
         for (var id in this._units) {

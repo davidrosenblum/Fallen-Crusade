@@ -34,6 +34,12 @@ var GameClient = (function () {
             status: status
         };
     };
+    GameClient.createChatResponse = function (chat, from) {
+        return this.createResponse(10, { chat: chat, from: from }, "ok");
+    };
+    GameClient.createStatsResponse = function (stats) {
+        return this.createResponse(14, { stats: stats }, "ok");
+    };
     GameClient.prototype.setPendingInvite = function (invite) {
         this._pendingInvite = invite;
     };
@@ -50,6 +56,9 @@ var GameClient = (function () {
                 this._player = null;
             }
         }
+        else if (!player && this.player) {
+            this.player.removeAllListeners();
+        }
         this._player = player;
     };
     GameClient.prototype.send = function (opCode, data, status) {
@@ -61,8 +70,8 @@ var GameClient = (function () {
     GameClient.prototype.sendString = function (str) {
         this._conn.send(str + Comm_1.MSG_DELIM);
     };
-    GameClient.prototype.respondLogin = function (clientID, errMsg) {
-        this.send(2, errMsg || { clientID: clientID }, errMsg ? "bad" : "ok");
+    GameClient.prototype.respondLogin = function (clientID, accessLevel, errMsg) {
+        this.send(2, errMsg || { clientID: clientID, accessLevel: accessLevel }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondLogout = function (message, errMsg) {
         this.send(3, errMsg || message, errMsg ? "bad" : "ok");
@@ -85,7 +94,7 @@ var GameClient = (function () {
     GameClient.prototype.respondEnterInstance = function (mapState, errMsg) {
         this.send(9, errMsg || { mapState: mapState }, errMsg ? "bad" : "ok");
     };
-    GameClient.prototype.respondChatMessage = function (chat, from, errMsg) {
+    GameClient.prototype.sendChatMessage = function (chat, from, errMsg) {
         this.send(10, errMsg || { chat: chat, from: from }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.respondObjectStats = function (stats, errMsg) {
@@ -105,6 +114,12 @@ var GameClient = (function () {
     };
     GameClient.prototype.respondInviteReply = function (message, errMsg) {
         this.send(23, errMsg || message, errMsg ? "bad" : "ok");
+    };
+    GameClient.prototype.respondCreateInstance = function (message, errMsg) {
+        this.send(25, errMsg || message, errMsg ? "bad" : "ok");
+    };
+    GameClient.prototype.respondMapPlayers = function (players, errMsg) {
+        this.send(26, errMsg || { players: players }, errMsg ? "bad" : "ok");
     };
     GameClient.prototype.notifyObjectCreate = function (spawnState) {
         this.send(11, { spawnState: spawnState }, "ok");

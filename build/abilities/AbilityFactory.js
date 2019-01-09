@@ -7,6 +7,8 @@ var AbilityFactory = (function () {
     AbilityFactory.create = function (abilityName, level) {
         if (level === void 0) { level = 1; }
         switch (abilityName) {
+            case "incinerate":
+                return new Abilities_1.Incinerate(level);
             case "fireball":
                 return new Abilities_1.Fireball(level);
             default:

@@ -30,13 +30,12 @@ var AccountCreateHandler = (function () {
         })
             .catch(function (err) {
             res.writeHead(400, AccountCreateHandler.httpHeaders);
-            res.end("Error parsing request json.");
+            res.end(err.message);
         });
     };
     AccountCreateHandler.httpHeaders = {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Content-Type",
-        "Content-Type": "json"
+        "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Access-Control-Allow-Origin"
     };
     return AccountCreateHandler;
 }());

@@ -98,7 +98,17 @@ export class CharactersCollection{
         });
     }
 
-    public static updateCharacter():void{
+    public static updateCharacter(database:Db, accountID:string, name:string, update:{[field:string]: any}):Promise<string>{
+        return new Promise((resolve, reject) => {
+            // find one by account ID and name
+            let filter:{account_id:string, name:string} = {account_id: accountID, name};
 
+            // send the query 
+            database.collection("characters").findOneAndUpdate(filter, update)
+                .then(result => {
+                    result.lastErrorObject ? reject(new Error("Update error.")) : resolve("Update successful.");
+                })
+                .catch(err => reject(err));
+        });
     }
 }

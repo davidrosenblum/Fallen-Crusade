@@ -38,7 +38,7 @@ export class Player extends Unit{
 
         this._level =           Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));
         this._xpNeeded =        this.calculateXPNeeded(); 
-        this._xp =              Math.max(0, Math.min(saveData.xp, this._xpNeeded));
+        this._xp =              Math.max(0, Math.min(saveData.xp, this._xpNeeded - 1));
         this._gold =            Math.max(0, Math.min(saveData.gold, Player.GOLD_CAP));
         this._abilityPoints =   Math.max(0, Math.min(saveData.ability_points, Player.LEVEL_CAP - 1));
         this._skin =            Math.max(1, saveData.skin);
@@ -55,20 +55,21 @@ export class Player extends Unit{
             this._xp = 0;
             this._level++;
 
+            this.emit("level", {level: this.level});
             this.addAbilityPoints(1);
         }
     }
 
     public addXP(xp:number):void{
+        this.emit("xp", {xp});
+
         let xpRemaining:number = xp;
 
-        while(xpRemaining > this.xpToGo){
+        while(xpRemaining >= this.xpToGo){
             this.levelUp();
         }
 
         this._xp += xpRemaining;
-
-        this.emit("xp", {xp});
     }
 
     public addGold(gold:number):void{
@@ -113,8 +114,35 @@ export class Player extends Unit{
         }
     }
 
+    public getDatabaseUpdate(field?:"level"|"xp"|"gold"|"skin"|"ability_points"|"abilities"|"last_map"):{[field:string]: any}{
+        // get the entire update query object 
+        let $set:{[field:string]: any} = {
+            level:          this.level,
+            xp:             this.xp,
+            gold:           this.gold,
+            ability_points: this.abilityPoints,
+            skin:           this.skin,
+            abilities:      this.getAbilities()
+        };
+
+        // only can update map if currently in one
+        if(this.map){
+            $set.last_map = this.map.name;
+        }
+
+        // optional update only one field - extract and return from update
+        if(field && field in $set){
+            let update:{[field:string]: any} = {};
+            update[field] = $set[field];
+            return {$set: update};
+        }
+
+        // update all
+        return {$set};
+    }
+
     public get xpToGo():number{
-        return this._xp - this._xpNeeded;
+        return this._xpNeeded - this._xp;
     }
 
     public get xp():number{

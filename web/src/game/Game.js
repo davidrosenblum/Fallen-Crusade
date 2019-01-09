@@ -196,6 +196,11 @@ class Game extends EventEmitter{
         if(object){
             object.remove();
             this.objects.removeObject(object);
+
+            // selected target just deleted?
+            if(Game.selectedTarget && Game.selectedTarget.objectID === objectID){
+                Game.unselectTarget();
+            }
         }
     }
 

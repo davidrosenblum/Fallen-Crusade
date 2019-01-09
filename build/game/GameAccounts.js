@@ -9,21 +9,21 @@ var GameAccounts = (function () {
         var _this = this;
         var _a = data.username, username = _a === void 0 ? null : _a, _b = data.password, password = _b === void 0 ? null : _b, _c = data.version, version = _c === void 0 ? null : _c;
         if (version !== GameAccounts.CLIENT_VERSION) {
-            client.respondLogin(null, "Wrong client version.");
+            client.respondLogin(null, -1, "Wrong client version.");
             return;
         }
         if (username in this._accounts) {
-            client.respondLogin(null, "Account \"" + username + "\" is already online.");
+            client.respondLogin(null, -1, "Account \"" + username + "\" is already online.");
             return;
         }
         this._database.getAccount(username, password)
             .then(function (accountData) {
             _this._accounts[username] = client;
             client.setAccountData(accountData);
-            client.respondLogin(client.clientID, null);
+            client.respondLogin(client.clientID, client.accessLevel, null);
         })
             .catch(function (err) {
-            client.respondLogin(null, err.message);
+            client.respondLogin(null, -1, err.message);
         });
     };
     GameAccounts.prototype.handleLogout = function (client) {
@@ -37,6 +37,8 @@ var GameAccounts = (function () {
         if (client.player && client.player.map) {
             client.player.map.removeClient(client);
         }
+        client.setPlayer(null);
+        client.setSelectedPlayer(null);
         if (client.hasPendingInvite) {
             client.pendingInvite.from.notifyInviteResponse(false);
         }
