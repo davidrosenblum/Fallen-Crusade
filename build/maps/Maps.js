@@ -61,30 +61,22 @@ var VillageCenter = (function (_super) {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
         }) || this;
-        _this.createTransportNode({
-            type: "airship",
-            text: "<Northern Keep Airship>",
-            col: 3,
-            row: 3,
-            outMapName: "Northern Keep",
-            outCol: 1,
-            outRow: 1
-        });
-        _this.createNPC({
-            type: "blacksmith",
-            name: "<Blacksmith Burd>",
-            col: 5,
-            row: 5,
-            team: "Crusaders",
-            anim: null
-        });
         _this.createNPC({
             type: "paragon",
             name: "<Paragon>",
             col: 7,
             row: 5,
-            team: "Crusaders",
             anim: null
+        });
+        _this.createNPC({
+            type: "templar",
+            col: 9,
+            row: 5
+        });
+        _this.createNPC({
+            type: "templar",
+            col: 5,
+            row: 5
         });
         return _this;
     }
@@ -145,7 +137,7 @@ exports.NorthernKeep = NorthernKeep;
 var Graveyard = (function (_super) {
     __extends(Graveyard, _super);
     function Graveyard() {
-        return _super.call(this, "Graveyard", {
+        var _this = _super.call(this, "Graveyard", {
             background: [
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -196,6 +188,17 @@ var Graveyard = (function (_super) {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
         }) || this;
+        _this.createNPC({
+            type: "grave-knight",
+            col: 3,
+            row: 3,
+        });
+        _this.createNPC({
+            type: "animus",
+            col: 4,
+            row: 3,
+        });
+        return _this;
     }
     return Graveyard;
 }(MapInstance_1.MapInstance));

@@ -3,7 +3,7 @@ import { OpCode, Status } from "./Comm";
 import { DatabaseController } from "../database/DatabaseController";
 import { Player } from '../characters/Player';
 import { MapInstance, MapState, PlayerListItem, MapStats } from '../maps/MapInstance';
-import { CharacterUpdateState } from '../characters/Character';
+import { CharacterUpdateState, SpawnLocation } from '../characters/Character';
 import { Unit } from '../characters/Unit';
 import { CharacterStats } from '../characters/CombatCharacter';
 import { MapInstanceFactory } from "../maps/MapInstanceFactory";
@@ -24,11 +24,11 @@ export class GameMaps{
         this._database = database;
     }
 
-    private loadPlayer(client:GameClient):Promise<{player:Player, lastMap:string}>{
+    private loadPlayer(client:GameClient, spawnLocation?:SpawnLocation):Promise<{player:Player, lastMap:string}>{
         return new Promise((resolve, reject) => {
             this._database.getCharacter(client.accountID, client.selectedPlayer)
                 .then(save => {
-                    let player:Player = new Player(save, client.clientID);
+                    let player:Player = new Player(save, client.clientID, spawnLocation);
 
                     this.setPlayerListeners(client, player);
                     
@@ -155,7 +155,7 @@ export class GameMaps{
         }
 
         // reload player data
-        this.loadPlayer(client)
+        this.loadPlayer(client, map.getPlayerSpawn())
             .then(result => {
                 // auto leaves room 
                 client.setPlayer(result.player);
@@ -199,7 +199,7 @@ export class GameMaps{
         }
 
         // reload player data
-        this.loadPlayer(client)
+        this.loadPlayer(client, map.getPlayerSpawn())
             .then(result => {
                 // auto leaves room 
                 client.setPlayer(result.player);
@@ -295,11 +295,16 @@ export class GameMaps{
             instance = null;
         });
 
+        // inform success
+        client.respondCreateInstance("Success.", null);
+
         // auto join creator 
         this.handleEnterInstance(client, {instanceID: instance.instanceID});
 
         // invite players
         if(objectIDs && objectIDs.length){
+            client.sendChatMessage(`${objectIDs.length} invites to join were just sent.`);
+
             this.forEachMap(map => {
 
             });

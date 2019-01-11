@@ -29,7 +29,8 @@ export class CharacterSelect extends React.Component{
             }
         };
 
-        // handler for when the client receives the enter map OR enter instance signal 
+        // handler for when the client receives the enter map OR enter instance signal
+        // (should always be map since you cant first enter into an instance?)
         this.onEnterMap = evt => {
             // must be successful to continue to game
             if(evt.status === "ok"){

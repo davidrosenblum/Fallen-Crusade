@@ -3,9 +3,8 @@ import { Unit } from '../characters/Unit';
 import { Ability } from '../abilities/Ability';
 import { TransportNode, TransportNodeState } from './TransportNode';
 import { GameClient, GameClientResponse } from '../game/GameClient';
-import { OpCode, Status } from "../game/Comm";
-import { CharacterUpdateState, CharacterSpawnState } from '../characters/Character';
-import { PlayerStats, Player } from '../characters/Player';
+import { CharacterUpdateState, CharacterSpawnState, SpawnLocation } from '../characters/Character';
+import { Player } from '../characters/Player';
 import { NPC, NPCTier } from '../characters/NPC';
 import { NPCFactory, NPCOptions } from '../characters/NPCFactory';
 import { EventEmitter } from "events";
@@ -31,6 +30,7 @@ export interface PlayerListItem{
 }
 
 export interface MapStats{
+    name:string;
     players:{name:string, level:number}[];
     npcs:{name:string, team:string, xpValue:number, goldValue:number, tier:string}[];
 }
@@ -41,17 +41,19 @@ export class MapInstance extends EventEmitter{
     private _instanceID:string;
     private _name:string;
     private _mapData:MapData;
+    private _playerSpawn:SpawnLocation;
     private _units:{[id:string]: Unit};
     private _transportNodes;
     private _clients;
     private _numClients:number;
 
-    constructor(name:string, mapData:MapData){
+    constructor(name:string, mapData:MapData, playerSpawn?:SpawnLocation){
         super();
         
         this._instanceID = MapInstance.tokenGen.nextToken();
         this._name = name;
         this._mapData = mapData;
+        this._playerSpawn = playerSpawn ? {col: playerSpawn.col, row: playerSpawn.row} : {col: 1, row: 1};
         this._units = {};
         this._transportNodes = {};
         this._clients = {};
@@ -262,7 +264,7 @@ export class MapInstance extends EventEmitter{
             }
         })
 
-        return {players, npcs};
+        return {name: this.name, players, npcs};
     }
 
     public getMapState():MapState{
@@ -281,6 +283,13 @@ export class MapInstance extends EventEmitter{
             mapData:    this._mapData, // dangerous
             transportNodes,
             units
+        };
+    }
+
+    public getPlayerSpawn():SpawnLocation{
+        return {
+            col: this._playerSpawn.col,
+            row: this._playerSpawn.row
         };
     }
 

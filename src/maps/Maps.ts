@@ -47,7 +47,7 @@ export class VillageCenter extends MapInstance{
             ]
         });
 
-        this.createTransportNode({
+        /*this.createTransportNode({
             type:       "airship",
             text:       "<Northern Keep Airship>",
             col:        3,
@@ -55,25 +55,36 @@ export class VillageCenter extends MapInstance{
             outMapName: "Northern Keep",
             outCol:     1,
             outRow:     1
-        });
+        });*/
 
-        this.createNPC({
+        /*this.createNPC({
             type:   "blacksmith",
             name:   "<Blacksmith Burd>",
             col:    5,
             row:    5,
             team:   "Crusaders",
             anim:   null
-        });
+        });*/
 
         this.createNPC({
             type:   "paragon",
             name:   "<Paragon>",
             col:    7,
             row:    5,
-            team:   "Crusaders",
             anim:   null
         });
+
+        this.createNPC({
+            type:   "templar",
+            col:    9,
+            row:    5
+        })
+
+        this.createNPC({
+            type:   "templar",
+            col:    5,
+            row:    5
+        })
     }
 }
 
@@ -178,6 +189,18 @@ export class Graveyard extends MapInstance{
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
-        })
+        });
+
+        this.createNPC({
+            type:   "grave-knight",
+            col:    3,
+            row:    3,
+        });
+
+        this.createNPC({
+            type:   "animus",
+            col:    4,
+            row:    3,
+        });
     }
 }

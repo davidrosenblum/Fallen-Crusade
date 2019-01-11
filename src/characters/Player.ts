@@ -1,6 +1,7 @@
 import { Unit } from "./Unit";
 import { CharacterDocument } from '../database/CharactersCollection';
 import { CharacterStats } from './CombatCharacter';
+import { SpawnLocation } from './Character';
 
 export interface PlayerStats extends CharacterStats{ 
     gold:number;
@@ -22,7 +23,7 @@ export class Player extends Unit{
     private _abilityPoints:number;
     private _skin:number;
 
-    constructor(saveData:CharacterDocument, ownerID?:string){
+    constructor(saveData:CharacterDocument, ownerID?:string, spawnLocation?:SpawnLocation){
         super({
             name:           saveData.name,
             type:           "player",
@@ -34,7 +35,8 @@ export class Player extends Unit{
             manaRegen:      0.02,
             defense:        0,
             resistance:     0,
-            abilities:      saveData.abilities || {}
+            abilities:      saveData.abilities || {},
+            spawnLocation:  spawnLocation
         });
 
         this._level =           Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));

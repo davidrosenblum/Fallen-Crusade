@@ -22,11 +22,12 @@ var NPCFactory_1 = require("../characters/NPCFactory");
 var events_1 = require("events");
 var MapInstance = (function (_super) {
     __extends(MapInstance, _super);
-    function MapInstance(name, mapData) {
+    function MapInstance(name, mapData, playerSpawn) {
         var _this = _super.call(this) || this;
         _this._instanceID = MapInstance.tokenGen.nextToken();
         _this._name = name;
         _this._mapData = mapData;
+        _this._playerSpawn = playerSpawn ? { col: playerSpawn.col, row: playerSpawn.row } : { col: 1, row: 1 };
         _this._units = {};
         _this._transportNodes = {};
         _this._clients = {};
@@ -190,7 +191,7 @@ var MapInstance = (function (_super) {
                 });
             }
         });
-        return { players: players, npcs: npcs };
+        return { name: this.name, players: players, npcs: npcs };
     };
     MapInstance.prototype.getMapState = function () {
         var units = [];
@@ -206,6 +207,12 @@ var MapInstance = (function (_super) {
             mapData: this._mapData,
             transportNodes: transportNodes,
             units: units
+        };
+    };
+    MapInstance.prototype.getPlayerSpawn = function () {
+        return {
+            col: this._playerSpawn.col,
+            row: this._playerSpawn.row
         };
     };
     MapInstance.prototype.forEachUnit = function (fn) {

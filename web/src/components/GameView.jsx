@@ -23,6 +23,9 @@ export class GameView extends React.Component{
         this.onObjectDelete = evt => Game.removeObject(evt.objectID);
         // handler for when the client receives an update object notification
         this.onObjectUpdate = evt => Game.updateObject(evt.updateState);
+        // handler for when the client is notified of a map change 
+        this.oEnterMap = evt => Game.loadMap(evt.mapState);
+
     }
 
     componentDidMount(){
@@ -32,6 +35,11 @@ export class GameView extends React.Component{
         Client.on("object-delete", this.onObjectDelete);
         // listen for when the client receives an object update notification
         Client.on("object-update", this.onObjectUpdate);
+        // listen for when the client receives a map change notification
+        Client.on("enter-map", this.oEnterMap);
+        // listen for when the client enters an instance
+        Client.on("enter-instance", this.oEnterMap);
+
 
         // insert the game <canvas> element into the DOM
         // (not very reactful - but whatever)
@@ -45,6 +53,10 @@ export class GameView extends React.Component{
         Client.removeListener("object-delete", this.onObjectDelete);
         // stop listening for client receives an object update notification (prevents leak)
         Client.removeListener("object-update", this.onObjectUpdate);
+        // stop listening for when the client receives a map change notification
+        Client.removeListener("enter-map", this.oEnterMap);
+        // stop listening for when the client enters an instance
+        Client.removeListener("enter-instance", this.oEnterMap);
     }
 
     render(){

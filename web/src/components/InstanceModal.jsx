@@ -47,7 +47,7 @@ export class InstanceModal extends React.Component{
         // when the modal is activated...
         this.onInstanceModal = () => {
             // show the modal and reset players (force reload)
-            this.setState({isOpen: true, players: null});
+            this.setState({isOpen: true, players: null, pending: false});
             // request players
             Client.getAvailablePlayers();
         };
