@@ -9,12 +9,12 @@ var GameMaps = (function () {
         this._instances = {};
         this._database = database;
     }
-    GameMaps.prototype.loadPlayer = function (client, spawnLocation) {
+    GameMaps.prototype.loadPlayer = function (client) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             _this._database.getCharacter(client.accountID, client.selectedPlayer)
                 .then(function (save) {
-                var player = new Player_1.Player(save, client.clientID, spawnLocation);
+                var player = new Player_1.Player(save, client.clientID);
                 _this.setPlayerListeners(client, player);
                 resolve({ player: player, lastMap: save.last_map });
             })
@@ -85,7 +85,7 @@ var GameMaps = (function () {
             client.respondEnterMap(null, "Map not found.");
             return;
         }
-        this.loadPlayer(client, map.getPlayerSpawn())
+        this.loadPlayer(client)
             .then(function (result) {
             client.setPlayer(result.player);
             map.addClient(client);
@@ -114,7 +114,7 @@ var GameMaps = (function () {
             client.respondEnterInstance(null, "Instance not found.");
             return;
         }
-        this.loadPlayer(client, map.getPlayerSpawn())
+        this.loadPlayer(client)
             .then(function (result) {
             client.setPlayer(result.player);
             map.addClient(client);
