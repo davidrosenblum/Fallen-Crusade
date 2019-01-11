@@ -146,25 +146,15 @@ class Game extends EventEmitter{
         }
 
         // extract possible location of object
-        let {x, y, spawnLocation} = data;
+        let {x, y} = data;
         // create the object 
         let object = GameObjectFactory.create(data);
 
         // if the object was created and successfully added...
         if(object && this.objects.addObject(object)){
             // position the object
-            // use spawn location (col-row), fallback to pixel position (x-y)
-            if(spawnLocation){
-                // extract column & row
-                let {col, row} = spawnLocation;
-                // place the object
-                this.layers.addAt(object, col, row);
-            }
-            else{
-                // no col-row provided, position at current x-y point 
-                this.layers.add(object);
-                object.setPosition(x, y);
-            }
+            this.layers.add(object);
+            object.setPosition(x, y - object.height);
 
             // select any object when it is clicked 
             object.on("click", () => this.selectTarget(object));
@@ -173,11 +163,13 @@ class Game extends EventEmitter{
             if(data.type === "player" && data.ownerID === Client.clientID){
                 // player found!
                 this.player = object;
-                // update the server on validated movements 
-                object.on("move", () => Client.playerUpdate(object.getData()));
+                
                 // load the current stats and abilities 
                 Client.getObjectStats(object.objectID);
                 Client.getAbilityList();
+
+                // update the server on validated movements 
+                object.on("move", () => Client.playerUpdate(object.getData()));
             }
         }
     }

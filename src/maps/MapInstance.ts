@@ -3,7 +3,7 @@ import { Unit } from '../characters/Unit';
 import { Ability } from '../abilities/Ability';
 import { TransportNode, TransportNodeState } from './TransportNode';
 import { GameClient, GameClientResponse } from '../game/GameClient';
-import { CharacterUpdateState, CharacterSpawnState, SpawnLocation } from '../characters/Character';
+import { CharacterUpdateState, CharacterSpawnState } from '../characters/Character';
 import { Player } from '../characters/Player';
 import { NPC, NPCTier } from '../characters/NPC';
 import { NPCFactory, NPCOptions } from '../characters/NPCFactory';
@@ -33,6 +33,12 @@ export interface MapStats{
     name:string;
     players:{name:string, level:number}[];
     npcs:{name:string, team:string, xpValue:number, goldValue:number, tier:string}[];
+}
+
+// spawn location schema (game uses coordinate grid)
+export interface SpawnLocation{
+    col:number;
+    row:number;
 }
 
 export class MapInstance extends EventEmitter{
@@ -88,12 +94,12 @@ export class MapInstance extends EventEmitter{
 
             this.broadcastChat(`${client.selectedPlayer} connected.`, null, client);
 
-            this.addUnit(client.player);
-
             if(this._playerSpawn){
                 client.player.x = this._playerSpawn.col * this._tileSize;
-                client.player.y = this._playerSpawn.col * this._tileSize;
+                client.player.y = this._playerSpawn.row * this._tileSize;
             }
+
+            this.addUnit(client.player);
 
             return true;
         }
@@ -123,6 +129,9 @@ export class MapInstance extends EventEmitter{
             let data:CharacterSpawnState = unit.getSpawnState();
 
             this.forEachClient(client => client.notifyObjectCreate(data));
+
+            unit.on("health", () => this.broadcastUnitStats(unit));
+            unit.on("mana", () => this.broadcastUnitStats(unit));
 
             return true;
         }
@@ -156,7 +165,8 @@ export class MapInstance extends EventEmitter{
 
         let npcOpts:NPCOptions = {
             ownerID:    "server",
-            spawnLocation: {col, row},
+            x:          col * this.tileSize,
+            y:          row * this.tileSize,
             tier,
             type,
             name,
@@ -165,10 +175,7 @@ export class MapInstance extends EventEmitter{
         };
 
         let npc:NPC = NPCFactory.create(npcOpts);
-        if(npc){
-            npc.on("health", () => this.broadcastUnitStats(npc));
-            npc.on("mana", () => this.broadcastUnitStats(npc));
-            
+        if(npc){ 
             npc.on("death", () => {
                 this.giveBounty(npc.xpValue, npc.goldValue);
                 this.removeUnit(npc);

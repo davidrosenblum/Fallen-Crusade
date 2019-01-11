@@ -1,11 +1,11 @@
 import { NPC, NPCTier } from './NPC';
 import { NPCDocument } from '../database/NPCsCollection';
-import { SpawnLocation } from './Character';
 
 export interface NPCOptions{
     type:string;
     ownerID:string;
-    spawnLocation:SpawnLocation;
+    x?:number;
+    y?:number;
     tier?:NPCTier;
     anim?:string;
     name?:string;
@@ -16,7 +16,7 @@ export class NPCFactory{
     private static npcTypes:{[type:string]: NPCDocument} = {};
 
     public static create(options:NPCOptions):NPC{
-        let {type, ownerID, spawnLocation, anim=null, name=null, team=null, tier=null} = options;
+        let {type, ownerID, x, y, anim=null, name=null, team=null, tier=null} = options;
 
         if(type in this.npcTypes){
             let doc:NPCDocument = this.npcTypes[type];
@@ -37,7 +37,8 @@ export class NPCFactory{
                 resistance:     doc.resistance,
                 xpValue:        doc.xp_value,
                 goldValue:      doc.gold_value,
-                spawnLocation
+                x,
+                y
             });
         }
         else throw new Error("Invalid NPC type.");

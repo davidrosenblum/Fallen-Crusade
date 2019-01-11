@@ -3,7 +3,7 @@ import { OpCode, Status } from "./Comm";
 import { DatabaseController } from "../database/DatabaseController";
 import { Player } from '../characters/Player';
 import { MapInstance, MapState, PlayerListItem, MapStats } from '../maps/MapInstance';
-import { CharacterUpdateState, SpawnLocation } from '../characters/Character';
+import { CharacterUpdateState } from '../characters/Character';
 import { Unit } from '../characters/Unit';
 import { CharacterStats } from '../characters/CombatCharacter';
 import { MapInstanceFactory } from "../maps/MapInstanceFactory";

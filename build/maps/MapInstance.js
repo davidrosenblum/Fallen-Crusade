@@ -55,11 +55,11 @@ var MapInstance = (function (_super) {
         if (!this.hasClient(client)) {
             this._clients[client.clientID] = client;
             this.broadcastChat(client.selectedPlayer + " connected.", null, client);
-            this.addUnit(client.player);
             if (this._playerSpawn) {
                 client.player.x = this._playerSpawn.col * this._tileSize;
-                client.player.y = this._playerSpawn.col * this._tileSize;
+                client.player.y = this._playerSpawn.row * this._tileSize;
             }
+            this.addUnit(client.player);
             return true;
         }
         return false;
@@ -76,11 +76,14 @@ var MapInstance = (function (_super) {
         return false;
     };
     MapInstance.prototype.addUnit = function (unit) {
+        var _this = this;
         if (!this.hasUnit(unit)) {
             this._units[unit.objectID] = unit;
             unit.setMap(this);
             var data_1 = unit.getSpawnState();
             this.forEachClient(function (client) { return client.notifyObjectCreate(data_1); });
+            unit.on("health", function () { return _this.broadcastUnitStats(unit); });
+            unit.on("mana", function () { return _this.broadcastUnitStats(unit); });
             return true;
         }
         return false;
@@ -107,7 +110,8 @@ var MapInstance = (function (_super) {
         var type = options.type, row = options.row, col = options.col, name = options.name, team = options.team, anim = options.anim, tier = options.tier;
         var npcOpts = {
             ownerID: "server",
-            spawnLocation: { col: col, row: row },
+            x: col * this.tileSize,
+            y: row * this.tileSize,
             tier: tier,
             type: type,
             name: name,
@@ -116,8 +120,6 @@ var MapInstance = (function (_super) {
         };
         var npc = NPCFactory_1.NPCFactory.create(npcOpts);
         if (npc) {
-            npc.on("health", function () { return _this.broadcastUnitStats(npc); });
-            npc.on("mana", function () { return _this.broadcastUnitStats(npc); });
             npc.on("death", function () {
                 _this.giveBounty(npc.xpValue, npc.goldValue);
                 _this.removeUnit(npc);
