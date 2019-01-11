@@ -2,7 +2,7 @@ import * as fs from "fs";
 
 export interface Settings{
     port:number;
-    mongo_uri:string;
+    mongodb_uri:string;
 }
 
 export class SettingsUtils{
@@ -12,7 +12,7 @@ export class SettingsUtils{
     // default settings 
     private static defaultSettings:Settings = {
         port: 8080,
-        mongo_uri: "mongodb://localhost:27017/fallen_crusade"
+        mongodb_uri: "mongodb://localhost:27017/fallen_crusade"
     };
 
     // fills out any missing or wrong (datatype) in the settings object

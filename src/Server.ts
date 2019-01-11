@@ -144,7 +144,7 @@ export class Server{
             console.log("Connecting to MongoDB...");
             
             // get database variables - check for command line argument, fallback to settings file 
-            let mongoUri:string = process.env.MONGO_URI || settings.mongo_uri;
+            let mongoUri:string = process.env.MONGO_URI || settings.mongodb_uri;
             let mongoDbName:string = mongoUri.split("/").pop();
 
             // begin connection 
