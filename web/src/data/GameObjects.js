@@ -1,8 +1,9 @@
 import * as fw from "@davidrosenblum/frostwork";
 import blacksmith from "../img/red.png";
-import paragon from "../img/red.png";
-import templar from "../img/red.png";
-import player from "../img/blue.png";
+import paragon from "../img/npcs/paragon.png";
+import templar from "../img/npcs/templar.png";
+import player1 from "../img/player_skins/skin1.png";
+import player2 from "../img/player_skins/skin1.png";
 
 export class GameObject extends fw.MPGameEntity{
     constructor(imgAlias, width, height, name, objectID, team, anim){
@@ -13,19 +14,24 @@ export class GameObject extends fw.MPGameEntity{
     }
 }
 
+// game skins start at 1 - so keep 0 as a dupe 
+export const PlayerSkins = [
+    "player1", "player2", "player3"
+];
+
 export const GameObjectFactory = {
     create(data){
-        let {type, name, anim, objectID, team} = data;
+        let {type, name, anim, objectID, team, skin=1} = data;
 
         switch(type){
             case "blacksmith":
-                return new GameObject("blacksmith", 100, 100, name, objectID, team, anim);
+                return new GameObject("blacksmith", 64, 128, name, objectID, team, anim);
             case "paragon":
-                return new GameObject("paragon", 100, 100, name, objectID, team, anim);
+                return new GameObject("paragon", 64, 128, name, objectID, team, anim);
             case "templar":
-                return new GameObject("templar", 100, 100, name, objectID, team, anim);
+                return new GameObject("templar", 64, 128, name, objectID, team, anim);
             case "player":
-                return new GameObject("player", 100, 100, name, objectID, team, anim);
+                return new GameObject(PlayerSkins[skin], 64, 128, name, objectID, team, anim);
             default:
                 return null;
         }
@@ -33,5 +39,5 @@ export const GameObjectFactory = {
 };
 
 fw.AssetUtils.setImageAliasMany({
-    blacksmith, paragon, templar, player
+    blacksmith, paragon, templar, player1, player2
 })

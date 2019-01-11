@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, FormGroup, Label, Input, Button, Row, Col } from "reactstrap";
+import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 import { BUTTON_WIDTH, INPUT_MAX_LENGTH } from "../data/Data";
 import { Banner } from "./Banner";
 import { Footer } from "./Footer";

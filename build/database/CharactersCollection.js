@@ -72,7 +72,11 @@ var CharactersCollection = (function () {
             var filter = { account_id: accountID, name: name };
             database.collection("characters").findOneAndUpdate(filter, update)
                 .then(function (result) {
-                result.lastErrorObject ? reject(new Error("Update error.")) : resolve("Update successful.");
+                if (result.lastErrorObject.n > 0) {
+                    resolve("Update successful.");
+                }
+                else
+                    reject(new Error("Nothing updated."));
             })
                 .catch(function (err) { return reject(err); });
         });

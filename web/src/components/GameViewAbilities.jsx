@@ -107,6 +107,7 @@ export class GameViewAbilities extends React.Component{
                         height={ABILITY_ICON_SIZE}
                         disabled={abilityName in this.state.disabledList}
                         title={`${name} (Level ${level})`}
+                        alt={`${name} (Level ${level})`}
                         onClick={() => this.requestCast(abilityName)}
                     />
                 );
@@ -121,6 +122,7 @@ export class GameViewAbilities extends React.Component{
                         height={ABILITY_ICON_SIZE}
                         disabled={true}
                         title={`(${ability ? ability.name : "Ability"} is not unlocked yet)`}
+                        alt={`(${ability ? ability.name : "Ability"} is not unlocked yet)`}
                     />
                 );
             }

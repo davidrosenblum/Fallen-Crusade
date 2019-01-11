@@ -28,37 +28,44 @@ var GameMaps = (function () {
         player.on("level", function (evt) {
             client.sendChatMessage("You have reached level " + evt.level + ".");
             client.respondObjectStats(player.getPlayerStats(), null);
-            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("level"));
+            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("level"))
+                .catch(function (err) { return console.log("Level update error: " + err.message); });
         });
         player.on("xp", function (evt) {
             client.sendChatMessage("You gained " + evt.xp + " XP.");
             client.respondObjectStats(player.getPlayerStats(), null);
-            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("xp"));
+            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("xp"))
+                .catch(function (err) { return console.log("XP update error: " + err.message); });
         });
         player.on("gold", function (evt) {
             client.sendChatMessage("You earned " + evt.gold + " gold.");
             client.respondObjectStats(player.getPlayerStats(), null);
-            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("gold"));
+            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("gold"))
+                .catch(function (err) { return console.log("Gold update error: " + err.message); });
         });
         player.on("ability-points", function (evt) {
             var points = evt.abilityPoints;
             var message = points > 1 ? "You gained " + points + " ability points" : "You gained an ability point.";
             client.sendChatMessage(message);
             client.respondObjectStats(player.getPlayerStats(), null);
-            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("ability_points"));
+            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("ability_points"))
+                .catch(function (err) { return console.log("Ability update error: " + err.message); });
         });
         player.on("ability-learn", function (evt) {
             client.sendChatMessage("You have acquired the ability \"" + evt.abilityName + "\".");
-            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"));
+            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"))
+                .catch(function (err) { return console.log("Ability update error: " + err.message); });
         });
         player.on("ability-upgrade", function (evt) {
             client.sendChatMessage(evt.abilityName + " upgraded to level " + evt.level + ".");
-            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"));
+            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"))
+                .catch(function (err) { return console.log("Ability update error: " + err.message); });
         });
         player.on("skin-change", function (evt) {
             var data = { skin: evt.skin, objectID: player.objectID };
             player.map.bulkUpdate(GameClient_1.GameClient.createResponse(20, data));
-            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("skin"));
+            _this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("skin"))
+                .catch(function (err) { return console.log("Skin update error: " + err.message); });
         });
         player.on("ability-ready", function (evt) { return client.notifyAbilityReady(evt.abilityName); });
     };

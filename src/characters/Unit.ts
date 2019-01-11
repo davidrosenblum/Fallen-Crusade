@@ -24,7 +24,7 @@ export class Unit extends CombatCharacter{
         for(let abilityName in abilities){
             let level:number = abilities[abilityName];
             let ability:Ability = AbilityFactory.create(abilityName, level);
-            console.log(ability ? ability.formattedName : "NO " + abilityName);
+
             if(ability){
                 this.learnAbility(ability);
             }

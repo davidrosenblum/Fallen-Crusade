@@ -139,6 +139,8 @@ class Client extends EventEmitter{
             case OpCode.ABILITY_READY:
                 this.handleAbilityReady(data, status);
                 break;
+            default:
+                break;
         }
     }
 
@@ -289,7 +291,7 @@ class Client extends EventEmitter{
         let {message=null, players=null} = data;
 
         // trigger map players listeners
-        this.emit("map-players", {players, status});
+        this.emit("map-players", {players, message, status});
     }
 
     // handles all possible players to invite response
@@ -298,7 +300,7 @@ class Client extends EventEmitter{
         let {message=null, players=null} = data;
 
         // trigger available player listenres
-        this.emit("available-players", {players, status});
+        this.emit("available-players", {players, message, status});
     }
 
     // handles ability ready notifications

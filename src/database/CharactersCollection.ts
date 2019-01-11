@@ -112,7 +112,10 @@ export class CharactersCollection{
             // send the query 
             database.collection("characters").findOneAndUpdate(filter, update)
                 .then(result => {
-                    result.lastErrorObject ? reject(new Error("Update error.")) : resolve("Update successful.");
+                    if(result.lastErrorObject.n > 0){
+                        resolve("Update successful.")
+                    }
+                    else reject(new Error("Nothing updated."));
                 })
                 .catch(err => reject(err));
         });

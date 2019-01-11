@@ -53,8 +53,9 @@ class Game extends EventEmitter{
         // destroy existing map
         this.unloadMap();
 
-        // extract response data 
-        let {name, mapData, transportNodes, units} = mapState;
+        // extract response data
+        // ({name} also in mapState)
+        let {mapData, transportNodes, units} = mapState;
         
         // asychronously load all assets (wait for this to complete)
         let report = await this.loadAssets();

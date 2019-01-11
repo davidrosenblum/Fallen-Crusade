@@ -64,8 +64,6 @@ export class Player extends Unit{
     }
 
     public addXP(xp:number):void{
-        this.emit("xp", {xp});
-
         let xpRemaining:number = xp;
 
         while(xpRemaining >= this.xpToGo){
@@ -73,6 +71,8 @@ export class Player extends Unit{
         }
 
         this._xp += xpRemaining;
+        
+        this.emit("xp", {xp});
     }
 
     public addGold(gold:number):void{
