@@ -52,7 +52,8 @@ export class GameMaps{
             client.respondObjectStats(player.getPlayerStats(), null);
 
             // update the database 
-            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("level"));
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("level"))
+                .catch(err => console.log(`Level update error: ${err.message}`));
         });
 
         // when the player earns xp...
@@ -64,7 +65,8 @@ export class GameMaps{
             client.respondObjectStats(player.getPlayerStats(), null);
 
             // update the database
-            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("xp"));
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("xp"))
+                .catch(err => console.log(`XP update error: ${err.message}`));
         });
 
         // when the player earns gold...
@@ -76,7 +78,8 @@ export class GameMaps{
             client.respondObjectStats(player.getPlayerStats(), null);
 
             // update the database with actual amount of gold 
-            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("gold"));
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("gold"))
+                .catch(err => console.log(`Gold update error: ${err.message}`));
         });
 
         // when the player gains ability point(s)...
@@ -94,7 +97,8 @@ export class GameMaps{
             client.respondObjectStats(player.getPlayerStats(), null);
 
             // update the database with the actual amount of ability points 
-            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("ability_points"));
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("ability_points"))
+                .catch(err => console.log(`Ability update error: ${err.message}`));
         });
 
         // when the player learns a new ability...
@@ -103,7 +107,8 @@ export class GameMaps{
             client.sendChatMessage(`You have acquired the ability "${evt.abilityName}".`);
 
             // update the database
-            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"));
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"))
+                .catch(err => console.log(`Ability update error: ${err.message}`));
         });
 
         // when the player upgades an existing ability...
@@ -112,7 +117,8 @@ export class GameMaps{
             client.sendChatMessage(`${evt.abilityName} upgraded to level ${evt.level}.`);
 
             // update the database
-            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"));
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("abilities"))
+                .catch(err => console.log(`Ability update error: ${err.message}`));
         });
 
         // when the player's skin changes...
@@ -124,7 +130,8 @@ export class GameMaps{
             player.map.bulkUpdate(GameClient.createResponse(OpCode.SKIN_CHANGE, data));
 
             // save the skin change 
-            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("skin"));
+            this._database.updateCharacter(accountID, name, player.getDatabaseUpdate("skin"))
+                .catch(err => console.log(`Skin update error: ${err.message}`));
         });
 
         // when a player ability recharges... notify the player 

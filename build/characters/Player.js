@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -52,12 +52,12 @@ var Player = (function (_super) {
         }
     };
     Player.prototype.addXP = function (xp) {
-        this.emit("xp", { xp: xp });
         var xpRemaining = xp;
         while (xpRemaining >= this.xpToGo) {
             this.levelUp();
         }
         this._xp += xpRemaining;
+        this.emit("xp", { xp: xp });
     };
     Player.prototype.addGold = function (gold) {
         this._gold = Math.min(this.gold + gold, Player.GOLD_CAP);

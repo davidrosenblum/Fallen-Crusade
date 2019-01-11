@@ -1,7 +1,6 @@
 import React from "react";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Table, Button, Form, FormGroup, Label } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Table, Button } from "reactstrap";
 import { BUTTON_WIDTH } from "../data/Data";
-import { PrettyStrings } from "../utils/PrettyStrings";
 import Client from "../game/Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
 
