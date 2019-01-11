@@ -17,10 +17,19 @@ export class GameViewDropdown extends React.Component{
         this.onMapPlayers = evt => {
             // dropdown must be active and successful response 
             if(evt.status === "ok"){
+                // get players array
+                let {players=[]} = evt;
+
+                // sort alphabetically by name
+                let sortedPlayers = players.sort((a, b) => a.name > b.name ? 1 : -1);
+
+                // conver to string
+                let playerStrings = sortedPlayers.map(player => `${player.name} (Level ${player.level})`);
+
                 // display the players 
                 ModalDispatcher.modal(
                     "Nearby Players",
-                    Object.keys(evt.players).map(name => `${name} (Level ${evt.players[name]})`).join(", ")
+                    playerStrings.join(", ")
                 );
             }
         }

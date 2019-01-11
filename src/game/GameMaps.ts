@@ -24,11 +24,11 @@ export class GameMaps{
         this._database = database;
     }
 
-    private loadPlayer(client:GameClient, spawnLocation?:SpawnLocation):Promise<{player:Player, lastMap:string}>{
+    private loadPlayer(client:GameClient):Promise<{player:Player, lastMap:string}>{
         return new Promise((resolve, reject) => {
             this._database.getCharacter(client.accountID, client.selectedPlayer)
                 .then(save => {
-                    let player:Player = new Player(save, client.clientID, spawnLocation);
+                    let player:Player = new Player(save, client.clientID);
 
                     this.setPlayerListeners(client, player);
                     
@@ -162,7 +162,7 @@ export class GameMaps{
         }
 
         // reload player data
-        this.loadPlayer(client, map.getPlayerSpawn())
+        this.loadPlayer(client)
             .then(result => {
                 // auto leaves room 
                 client.setPlayer(result.player);
@@ -206,7 +206,7 @@ export class GameMaps{
         }
 
         // reload player data
-        this.loadPlayer(client, map.getPlayerSpawn())
+        this.loadPlayer(client)
             .then(result => {
                 // auto leaves room 
                 client.setPlayer(result.player);

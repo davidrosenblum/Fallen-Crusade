@@ -42,17 +42,19 @@ export class MapInstance extends EventEmitter{
     private _name:string;
     private _mapData:MapData;
     private _playerSpawn:SpawnLocation;
+    private _tileSize:number;
     private _units:{[id:string]: Unit};
     private _transportNodes;
     private _clients;
     private _numClients:number;
 
-    constructor(name:string, mapData:MapData, playerSpawn?:SpawnLocation){
+    constructor(name:string, mapData:MapData, tileSize:number=64, playerSpawn?:SpawnLocation){
         super();
         
         this._instanceID = MapInstance.tokenGen.nextToken();
         this._name = name;
         this._mapData = mapData;
+        this._tileSize = tileSize;
         this._playerSpawn = playerSpawn ? {col: playerSpawn.col, row: playerSpawn.row} : {col: 1, row: 1};
         this._units = {};
         this._transportNodes = {};
@@ -61,7 +63,7 @@ export class MapInstance extends EventEmitter{
     }
 
     public broadcastChat(chat:string, from?:string, ignoreClient?:GameClient):void{
-        this.bulkUpdate(GameClient.createChatResponse(chat, from));
+        this.bulkUpdate(GameClient.createChatResponse(chat, from), ignoreClient);
     }
 
     private broadcastUnitStats(unit:Unit):void{
@@ -87,6 +89,11 @@ export class MapInstance extends EventEmitter{
             this.broadcastChat(`${client.selectedPlayer} connected.`, null, client);
 
             this.addUnit(client.player);
+
+            if(this._playerSpawn){
+                client.player.x = this._playerSpawn.col * this._tileSize;
+                client.player.y = this._playerSpawn.col * this._tileSize;
+            }
 
             return true;
         }
@@ -329,6 +336,10 @@ export class MapInstance extends EventEmitter{
 
     public get name():string{
         return this._name;
+    }
+
+    public get tileSize():number{
+        return this._tileSize;
     }
 
     public get numClients():number{

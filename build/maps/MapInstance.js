@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    };
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -22,11 +22,13 @@ var NPCFactory_1 = require("../characters/NPCFactory");
 var events_1 = require("events");
 var MapInstance = (function (_super) {
     __extends(MapInstance, _super);
-    function MapInstance(name, mapData, playerSpawn) {
+    function MapInstance(name, mapData, tileSize, playerSpawn) {
+        if (tileSize === void 0) { tileSize = 64; }
         var _this = _super.call(this) || this;
         _this._instanceID = MapInstance.tokenGen.nextToken();
         _this._name = name;
         _this._mapData = mapData;
+        _this._tileSize = tileSize;
         _this._playerSpawn = playerSpawn ? { col: playerSpawn.col, row: playerSpawn.row } : { col: 1, row: 1 };
         _this._units = {};
         _this._transportNodes = {};
@@ -35,7 +37,7 @@ var MapInstance = (function (_super) {
         return _this;
     }
     MapInstance.prototype.broadcastChat = function (chat, from, ignoreClient) {
-        this.bulkUpdate(GameClient_1.GameClient.createChatResponse(chat, from));
+        this.bulkUpdate(GameClient_1.GameClient.createChatResponse(chat, from), ignoreClient);
     };
     MapInstance.prototype.broadcastUnitStats = function (unit) {
         var stats = unit.getCharacterStats();
@@ -54,6 +56,10 @@ var MapInstance = (function (_super) {
             this._clients[client.clientID] = client;
             this.broadcastChat(client.selectedPlayer + " connected.", null, client);
             this.addUnit(client.player);
+            if (this._playerSpawn) {
+                client.player.x = this._playerSpawn.col * this._tileSize;
+                client.player.y = this._playerSpawn.col * this._tileSize;
+            }
             return true;
         }
         return false;
@@ -254,6 +260,13 @@ var MapInstance = (function (_super) {
     Object.defineProperty(MapInstance.prototype, "name", {
         get: function () {
             return this._name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MapInstance.prototype, "tileSize", {
+        get: function () {
+            return this._tileSize;
         },
         enumerable: true,
         configurable: true
