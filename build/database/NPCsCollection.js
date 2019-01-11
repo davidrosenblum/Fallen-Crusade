@@ -167,6 +167,22 @@ var NPCsCollection = (function () {
                 abilities: {},
                 gold_value: 35,
                 xp_value: 50
+            }),
+            this.insertNPC(database, {
+                type: "meehan",
+                name: "Meehan",
+                team: "Ancients",
+                tier: "boss",
+                move_speed: 1,
+                health: 900,
+                health_regen: 0.02,
+                mana: 100,
+                mana_regen: 0.05,
+                defense: 0.15,
+                resistance: 0.90,
+                abilities: {},
+                gold_value: 150,
+                xp_value: 100
             })
         ]);
     };
