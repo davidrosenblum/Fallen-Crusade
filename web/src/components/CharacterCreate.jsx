@@ -1,5 +1,7 @@
 import React from "react";
 import { Form, FormGroup, Label, Input, Button, Row, Col } from "reactstrap";
+import { Footer } from "./Footer";
+import { Banner } from "./Banner";
 import { NAME_MAX_LENGTH, BUTTON_WIDTH } from "../data/Data";
 import Client from "../game/Client";
 import NavDispatcher from "../dispatchers/NavDispatcher";
@@ -66,7 +68,10 @@ export class CharacterCreate extends React.Component{
         return (
             <div>
                 <br/>
+                <Banner/>
+                <br/>
                 <div className="app-menu">
+                    <h2 className="text-center">Create Your Hero</h2>
                     <Form onSubmit={this.onSubmit.bind(this)}>
                         <FormGroup>
                             <Label>Name</Label>
@@ -93,7 +98,12 @@ export class CharacterCreate extends React.Component{
                                     </Input>
                                 </Col>
                                 <Col lg={6}>
-                                    (Preview)
+                                    <img 
+                                        src={null}
+                                        width={64}
+                                        height={128}
+                                        title="Preview"
+                                    />
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -107,6 +117,7 @@ export class CharacterCreate extends React.Component{
                             </Button>
                         </div>
                     </Form>
+                    <Footer/>
                 </div>
             </div>
         );

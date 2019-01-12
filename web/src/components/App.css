@@ -1,10 +1,14 @@
-body{
-    
+@font-face{
     font-family: electrolize;
+    src: url("/electrolize.woff2"), format("woff2");
+}
+
+body{
+    font-family: electrolize !important;
 }
 
 .app-menu{
-    width: 350px;
+    width: 375px;
     margin: auto;
 }
 
