@@ -1,5 +1,5 @@
 import { TokenGenerator } from "../utils/TokenGenerator";
-import { SpawnLocation } from '../characters/Character';
+import { SpawnLocation } from '../maps/MapInstance';
 
 export interface TransportNodeState{
     nodeID:string;

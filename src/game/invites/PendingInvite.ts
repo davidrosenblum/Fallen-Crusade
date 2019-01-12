@@ -11,10 +11,11 @@ export abstract class PendingInvite{
     private _from:GameClient;   
     private _pending:boolean;
 
-    constructor(type:string, message:string, to:GameClient, from:GameClient, declineTimeout:number=6000){
+    constructor(type:string, message:string, to:GameClient, from:GameClient, declineTimeout:number=15000){
         this._inviteID = PendingInvite.tokenGen.nextToken();
         this._type = type;
         this._message = message;
+        this._to = to;
         this._from = from;
         this._pending = true;
 
@@ -27,7 +28,7 @@ export abstract class PendingInvite{
         }
     }
 
-    public abstract onAccept():void;
+    protected abstract onAccept():void;
 
     public resolve(accept:boolean):void{
         if(this.isPending){

@@ -83,13 +83,19 @@ var GameController = (function () {
                 this._abilities.handleAbilityCast(client, data);
                 break;
             case 21:
-                this._invites.handleInviteSend(client, data);
+                this._invites.handleInviteSend(client, data, function (objectID) {
+                    return _this._maps.findClientByPlayerID(objectID);
+                });
                 break;
             case 23:
                 this._invites.handleReplyInvite(client, data);
                 break;
             case 25:
-                this._maps.handleCreateInstance(client, data);
+                this._maps.handleCreateInstance(client, data, function (objectID) {
+                    _this.invites.handleInviteSend(client, { objectID: objectID, inviteType: "instance" }, function (id) {
+                        return _this._maps.findClientByPlayerID(id);
+                    });
+                });
                 break;
             case 26:
                 this._maps.handleMapPlayers(client);

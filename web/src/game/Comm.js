@@ -24,7 +24,7 @@ export const OpCode = {
     SKIN_PURCHASE:      19,
     SKIN_CHANGE:        20,
     INVITE_SEND:        21,
-    INVITE_NOTIFY:      22,
+    INVITE_RECEIVE:     22,
     INVITE_REPLY:       23,
     INVITE_RESPONSE:    24,
     CREATE_INSTANCE:    25,

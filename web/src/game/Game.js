@@ -7,7 +7,7 @@ import Client from "./Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
 
 // how big each tile square is for the game (game is tile-based)
-export const TILE_SIZE = 64;
+export const TILE_SIZE = 96;
 
 // default font for each unit's nametag and any floating game text 
 fw.TextField.defaultFont = "15px electrolize";
@@ -17,7 +17,7 @@ class Game extends EventEmitter{
     constructor(){
         super();
 
-        this.renderer = new fw.Renderer(1280, 720);     // the renderer (has the canvas)
+        this.renderer = new fw.Renderer(1920, 1080);     // the renderer (has the canvas)
         this.layers = new fw.MapLayers();               // map layers (background, midground, foreground)
         this.objects = new fw.MPEntityStorage();        // game object updater
         this.keys = null;                               // keyboard input listener
@@ -80,7 +80,7 @@ class Game extends EventEmitter{
             },
             midground: {
                 tileLayout: mapData.midground,
-                tileTypes:  [null]
+                tileTypes:  [null, MapTiles.StoneWall]
             },
             foreground: {
                 tileLayout: mapData.foreground,
@@ -146,25 +146,15 @@ class Game extends EventEmitter{
         }
 
         // extract possible location of object
-        let {x, y, spawnLocation} = data;
+        let {x, y} = data;
         // create the object 
         let object = GameObjectFactory.create(data);
 
         // if the object was created and successfully added...
         if(object && this.objects.addObject(object)){
             // position the object
-            // use spawn location (col-row), fallback to pixel position (x-y)
-            if(spawnLocation){
-                // extract column & row
-                let {col, row} = spawnLocation;
-                // place the object
-                this.layers.addAt(object, col, row);
-            }
-            else{
-                // no col-row provided, position at current x-y point 
-                this.layers.add(object);
-                object.setPosition(x, y);
-            }
+            this.layers.add(object);
+            object.setPosition(x, y - object.height);
 
             // select any object when it is clicked 
             object.on("click", () => this.selectTarget(object));
@@ -173,11 +163,13 @@ class Game extends EventEmitter{
             if(data.type === "player" && data.ownerID === Client.clientID){
                 // player found!
                 this.player = object;
-                // update the server on validated movements 
-                object.on("move", () => Client.playerUpdate(object.getData()));
+                
                 // load the current stats and abilities 
                 Client.getObjectStats(object.objectID);
                 Client.getAbilityList();
+
+                // update the server on validated movements 
+                object.on("move", () => Client.playerUpdate(object.getData()));
             }
         }
     }

@@ -10,13 +10,6 @@ export interface CharacterConfig{
     y?:number;
     anim?:string;
     moveSpeed?:number;
-    spawnLocation?:SpawnLocation;
-}
-
-// spawn location schema (game uses coordinate grid)
-export interface SpawnLocation{
-    col?:number;
-    row?:number;
 }
 
 export interface CharacterSpawnState{
@@ -29,7 +22,6 @@ export interface CharacterSpawnState{
     y:number;
     anim:string;
     moveSpeed:number;
-    spawnLocation:SpawnLocation;
 }
 
 export interface CharacterUpdateState{
@@ -51,7 +43,6 @@ export abstract class Character extends EventEmitter{
     private _y:number;
     private _anim:string;
     private _moveSpeed:number;
-    private _spawnLocation:SpawnLocation;
 
     constructor(config:CharacterConfig){
         super();
@@ -65,11 +56,7 @@ export abstract class Character extends EventEmitter{
         this._y = config.y || 0;
         this._anim = config.anim || null;
         this._moveSpeed = Math.abs(config.moveSpeed) || 1;
-        this._spawnLocation = config.spawnLocation || null;
     }
-
-    protected onDeath():void{ }
-
 
     public inRange(target:Character, range:number):boolean{
         if(this.x + range  < target.x + range && target.x + range < this.x + range){
@@ -117,8 +104,7 @@ export abstract class Character extends EventEmitter{
             x:              this.x,
             y:              this.y,
             anim:           this.anim,
-            moveSpeed:      this.moveSpeed,
-            spawnLocation:  this._spawnLocation
+            moveSpeed:      this.moveSpeed
         };
     }
 

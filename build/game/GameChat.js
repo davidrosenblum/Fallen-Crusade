@@ -5,7 +5,7 @@ var GameChat = (function () {
     function GameChat() {
     }
     GameChat.prototype.handleChatMessage = function (client, data) {
-        if (!client.player || !client.player.map) {
+        if (!client.map) {
             client.sendChatMessage(null, null, "You must be in a map.");
             return;
         }
@@ -18,7 +18,7 @@ var GameChat = (function () {
             this.handleAdminCommand(client, chat);
         }
         else {
-            client.player.map.broadcastChat(chat, client.selectedPlayer);
+            client.map.broadcastChat(chat, client.selectedPlayer);
         }
     };
     GameChat.prototype.handleAdminCommand = function (client, chat) {
@@ -33,6 +33,9 @@ var GameChat = (function () {
                 break;
             case "~learn":
                 this.adminCommandLearn(client, split);
+                break;
+            case "~map":
+                this.adminCommandMap(client, split);
                 break;
             default:
                 client.sendChatMessage("Invalid admin command.");
@@ -65,6 +68,20 @@ var GameChat = (function () {
         }
         else {
             client.sendChatMessage("Invalid ability name.");
+        }
+    };
+    GameChat.prototype.adminCommandMap = function (client, split) {
+        var subcommand = split[1] || null;
+        switch (subcommand) {
+            case "players":
+                client.sendChatMessage(client.map.getPlayers().map(function (player) { return player.name; }).join(", "));
+                break;
+            case "pop":
+                client.sendChatMessage(client.map.numClients + " connected players.");
+                break;
+            default:
+                client.sendChatMessage("Invalid map subcommand.");
+                break;
         }
     };
     return GameChat;

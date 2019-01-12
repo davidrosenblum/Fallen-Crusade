@@ -52,8 +52,16 @@ export class Login extends React.Component{
         // listen for the client to receive a login response 
         Client.on("login", this.onLogin);
 
-        // restore last successful login username from local storage
-        this.usernameInput.value = this.getSavedUsername() || "";
+        // url query strings 
+        let query = new URL(window.location).searchParams;
+        let username = query.get("username");
+        let password = query.get("password");
+
+        // optional restore from query, fallback to last successful login username from local storage or empty
+        this.usernameInput.value = username || (this.getSavedUsername() || "");
+
+        // optional restore password from query
+        this.passwordInput.value = password || "";
 
         // if the socket is not connected
         if(!Client.isConnected){

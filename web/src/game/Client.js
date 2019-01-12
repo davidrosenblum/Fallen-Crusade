@@ -139,6 +139,8 @@ class Client extends EventEmitter{
             case OpCode.ABILITY_READY:
                 this.handleAbilityReady(data, status);
                 break;
+            case OpCode.INVITE_RECEIVE:
+                this.handleInviteReceive(data);
             default:
                 break;
         }
@@ -276,6 +278,15 @@ class Client extends EventEmitter{
         this.emit("ability-cast", {message, status});
     }
 
+    // handles invite notification
+    handleInviteReceive(data){
+        // extract notification property 
+        let {message=null} = data;
+
+        // triger invite listeners
+        this.emit("invite-receive", {message});
+    }
+
     // handles create instance reponse 
     handleCreateInstance(data, status){
         // extract response properties
@@ -378,6 +389,11 @@ class Client extends EventEmitter{
     // gives the ability's name and the target's objectID 
     castAbility(abilityName, objectID){
         this.send(OpCode.ABILITY_CAST, {abilityName, objectID});
+    }
+
+    // sends a response to the pending invite
+    replyToInvite(accept){
+        this.send(OpCode.INVITE_REPLY, {accept});
     }
 
     // requests an instance to be generated

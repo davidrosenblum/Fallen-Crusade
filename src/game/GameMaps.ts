@@ -3,7 +3,7 @@ import { OpCode, Status } from "./Comm";
 import { DatabaseController } from "../database/DatabaseController";
 import { Player } from '../characters/Player';
 import { MapInstance, MapState, PlayerListItem, MapStats } from '../maps/MapInstance';
-import { CharacterUpdateState, SpawnLocation } from '../characters/Character';
+import { CharacterUpdateState } from '../characters/Character';
 import { Unit } from '../characters/Unit';
 import { CharacterStats } from '../characters/CombatCharacter';
 import { MapInstanceFactory } from "../maps/MapInstanceFactory";
@@ -138,7 +138,7 @@ export class GameMaps{
         player.on("ability-ready", evt => client.notifyAbilityReady(evt.abilityName));
     }
 
-    public handleEnterMap(client:GameClient, data:{mapName?:string}):void{
+    public handleEnterMap(client:GameClient, data:{mapName?:string}, done?:()=>void):void{
         // must have a selected player
         if(!client.selectedPlayer){
             client.respondEnterMap(null, "You must have a selected character.");
@@ -179,10 +179,13 @@ export class GameMaps{
             })
             .catch(err => {
                 client.respondEnterMap(null, err.message);
+            })
+            .then(() => {
+                if(done) done();
             });
     }
 
-    public handleEnterInstance(client:GameClient, data:{instanceID:string}):void{
+    public handleEnterInstance(client:GameClient, data:{instanceID:string}, done?:()=>void):void{
         // must have a selected player
         if(!client.selectedPlayer){
             client.respondEnterInstance(null, "You must have a selected character.");
@@ -217,7 +220,10 @@ export class GameMaps{
             })
             .catch(err => {
                 client.respondEnterInstance(null, err.message);
-            });  
+            })
+            .then(() => {
+                if(done) done();
+            });
     }
 
     public handleObjectUpdate(client:GameClient, data:CharacterUpdateState):void{
@@ -232,7 +238,7 @@ export class GameMaps{
     }
 
     public handeObjectStats(client:GameClient, data:{objectID?:string}):void{
-        if(!client.player || !client.player.map){
+        if(!client.map){
             client.respondObjectStats(null, "You are not in a map.");
             return;
         }
@@ -266,9 +272,9 @@ export class GameMaps{
         client.respondObjectStats(stats, null);
     }
 
-    public handleCreateInstance(client:GameClient, data:{instanceName?:string, difficulty?:number, objectIDs?:string[]}):void{
-        // must be in a room
-        if(!client.player || !client.player.map){
+    public handleCreateInstance(client:GameClient, data:{instanceName?:string, difficulty?:number, objectIDs?:string[]}, callback:(objectID:string)=>void):void{
+        // must be in a map
+        if(!client.map){
             client.respondCreateInstance(null, "You are not in a map.");
             return;
         }
@@ -306,21 +312,21 @@ export class GameMaps{
         client.respondCreateInstance("Success.", null);
 
         // auto join creator 
-        this.handleEnterInstance(client, {instanceID: instance.instanceID});
-
-        // invite players
-        if(objectIDs && objectIDs.length){
+        this.handleEnterInstance(client, {instanceID: instance.instanceID}, () => {
+            // (callback because enter instance is async)
+            // invite players by their player's object id
+            if(objectIDs && objectIDs.length){
+                // callback = send invite to player
+            objectIDs.forEach(objectID => callback(objectID))
+            // inform player
             client.sendChatMessage(`${objectIDs.length} invites to join were just sent.`);
-
-            this.forEachMap(map => {
-
-            });
         }
+        });
     }
 
     public handleMapPlayers(client:GameClient):void{
-        // must be in a room
-        if(!client.player || !client.player.map){
+        // must be in a map
+        if(!client.map){
             client.respondMapPlayers(null, "You are not in a map.")
             return;
         }
@@ -341,13 +347,24 @@ export class GameMaps{
         let players:PlayerListItem[] = [];
 
         // get each player in each room 
-        this.forEachMap(map => players.concat(map.getPlayers()));
+        this.forEachMap(map => players = players.concat(map.getPlayers()));
 
-        // remove requesting client's player
-        delete players[client.player.name];
+        // remove requesting client's player 
+        players = players.filter(player => player.name !== client.player.name);
 
         // send
         client.respondAvailablePlayers(players, null);
+    }
+
+    public findClientByPlayerID(objectID:string):GameClient{
+        let unit:Unit = null;
+        for(let mapName in this._maps){
+            unit = this._maps[mapName].getUnit(objectID);
+            
+            if(unit){
+                return unit.map.getClient(unit.ownerID);
+            }
+        }
     }
 
     public getMapStats():WorldMapStats{

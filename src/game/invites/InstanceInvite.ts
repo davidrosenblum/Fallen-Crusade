@@ -1,6 +1,6 @@
 import { PendingInvite } from './PendingInvite';
 import { GameClient } from '../GameClient';
-import { MapInstance } from '../../maps/MapInstance';
+import { MapInstance, MapState } from '../../maps/MapInstance';
 
 export class InstanceInvite extends PendingInvite{ 
     private _map:MapInstance;
@@ -18,9 +18,10 @@ export class InstanceInvite extends PendingInvite{
         this._map = from.player.map;
     }
 
-    public onAccept():void{
-        if(this._map){
-            this._map.addClient(this.to);
+    protected onAccept():void{
+        if(this._map && this._map.addClient(this.to)){
+            let mapState:MapState = this._map.getMapState();
+            this.to.respondEnterInstance(mapState, null);
         }
     }
 }

@@ -16,7 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Unit_1 = require("./Unit");
 var Player = (function (_super) {
     __extends(Player, _super);
-    function Player(saveData, ownerID, spawnLocation) {
+    function Player(saveData, ownerID) {
         var _this = _super.call(this, {
             name: saveData.name,
             type: "player",
@@ -29,7 +29,6 @@ var Player = (function (_super) {
             defense: 0,
             resistance: 0,
             abilities: saveData.abilities || {},
-            spawnLocation: spawnLocation
         }) || this;
         _this._level = Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));
         _this._xpNeeded = _this.calculateXPNeeded();

@@ -28,10 +28,8 @@ var Character = (function (_super) {
         _this._y = config.y || 0;
         _this._anim = config.anim || null;
         _this._moveSpeed = Math.abs(config.moveSpeed) || 1;
-        _this._spawnLocation = config.spawnLocation || null;
         return _this;
     }
-    Character.prototype.onDeath = function () { };
     Character.prototype.inRange = function (target, range) {
         if (this.x + range < target.x + range && target.x + range < this.x + range) {
             if (this.y + range < target.y + range && target.y + range < this.y + range) {
@@ -71,8 +69,7 @@ var Character = (function (_super) {
             x: this.x,
             y: this.y,
             anim: this.anim,
-            moveSpeed: this.moveSpeed,
-            spawnLocation: this._spawnLocation
+            moveSpeed: this.moveSpeed
         };
     };
     Object.defineProperty(Character.prototype, "x", {

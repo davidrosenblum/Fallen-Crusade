@@ -3,7 +3,7 @@ import { Unit } from '../characters/Unit';
 import { Ability } from '../abilities/Ability';
 import { TransportNode, TransportNodeState } from './TransportNode';
 import { GameClient, GameClientResponse } from '../game/GameClient';
-import { CharacterUpdateState, CharacterSpawnState, SpawnLocation } from '../characters/Character';
+import { CharacterUpdateState, CharacterSpawnState } from '../characters/Character';
 import { Player } from '../characters/Player';
 import { NPC, NPCTier } from '../characters/NPC';
 import { NPCFactory, NPCOptions } from '../characters/NPCFactory';
@@ -35,6 +35,12 @@ export interface MapStats{
     npcs:{name:string, team:string, xpValue:number, goldValue:number, tier:string}[];
 }
 
+// spawn location schema (game uses coordinate grid)
+export interface SpawnLocation{
+    col:number;
+    row:number;
+}
+
 export class MapInstance extends EventEmitter{
     private static tokenGen:TokenGenerator = new TokenGenerator(16);
 
@@ -48,7 +54,7 @@ export class MapInstance extends EventEmitter{
     private _clients;
     private _numClients:number;
 
-    constructor(name:string, mapData:MapData, tileSize:number=64, playerSpawn?:SpawnLocation){
+    constructor(name:string, mapData:MapData, playerSpawn?:SpawnLocation, tileSize:number=96){
         super();
         
         this._instanceID = MapInstance.tokenGen.nextToken();
@@ -85,15 +91,19 @@ export class MapInstance extends EventEmitter{
     public addClient(client:GameClient):boolean{
         if(!this.hasClient(client)){
             this._clients[client.clientID] = client;
+            client.setMap(this); // removes current map
+
+            this.emit("add-client", {client});
+            this._numClients++;
 
             this.broadcastChat(`${client.selectedPlayer} connected.`, null, client);
 
-            this.addUnit(client.player);
-
             if(this._playerSpawn){
                 client.player.x = this._playerSpawn.col * this._tileSize;
-                client.player.y = this._playerSpawn.col * this._tileSize;
+                client.player.y = this._playerSpawn.row * this._tileSize;
             }
+
+            this.addUnit(client.player);
 
             return true;
         }
@@ -103,6 +113,10 @@ export class MapInstance extends EventEmitter{
     public removeClient(client:GameClient):boolean{
         if(this.hasClient(client)){
             delete this._clients[client.clientID];
+            client.setMap(null);
+
+            this.emit("remove-client", {client});
+            this._numClients--;
 
             this.removeUnit(client.player);
 
@@ -124,6 +138,11 @@ export class MapInstance extends EventEmitter{
 
             this.forEachClient(client => client.notifyObjectCreate(data));
 
+            unit.on("health", () => this.broadcastUnitStats(unit));
+            unit.on("mana", () => this.broadcastUnitStats(unit));
+
+            this.emit("add-unit", {unit});
+
             return true;
         }
         return false;
@@ -135,6 +154,8 @@ export class MapInstance extends EventEmitter{
             unit.setMap(null);
 
             this.forEachClient(client => client.notifyObjectDelete(unit.objectID));
+
+            this.emit("remove-unit", {unit});
 
             return true;
         }
@@ -156,7 +177,8 @@ export class MapInstance extends EventEmitter{
 
         let npcOpts:NPCOptions = {
             ownerID:    "server",
-            spawnLocation: {col, row},
+            x:          col * this.tileSize,
+            y:          row * this.tileSize,
             tier,
             type,
             name,
@@ -165,10 +187,7 @@ export class MapInstance extends EventEmitter{
         };
 
         let npc:NPC = NPCFactory.create(npcOpts);
-        if(npc){
-            npc.on("health", () => this.broadcastUnitStats(npc));
-            npc.on("mana", () => this.broadcastUnitStats(npc));
-            
+        if(npc){ 
             npc.on("death", () => {
                 this.giveBounty(npc.xpValue, npc.goldValue);
                 this.removeUnit(npc);

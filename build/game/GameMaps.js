@@ -69,7 +69,7 @@ var GameMaps = (function () {
         });
         player.on("ability-ready", function (evt) { return client.notifyAbilityReady(evt.abilityName); });
     };
-    GameMaps.prototype.handleEnterMap = function (client, data) {
+    GameMaps.prototype.handleEnterMap = function (client, data, done) {
         var _this = this;
         if (!client.selectedPlayer) {
             client.respondEnterMap(null, "You must have a selected character.");
@@ -97,9 +97,13 @@ var GameMaps = (function () {
         })
             .catch(function (err) {
             client.respondEnterMap(null, err.message);
+        })
+            .then(function () {
+            if (done)
+                done();
         });
     };
-    GameMaps.prototype.handleEnterInstance = function (client, data) {
+    GameMaps.prototype.handleEnterInstance = function (client, data, done) {
         if (!client.selectedPlayer) {
             client.respondEnterInstance(null, "You must have a selected character.");
             return;
@@ -123,6 +127,10 @@ var GameMaps = (function () {
         })
             .catch(function (err) {
             client.respondEnterInstance(null, err.message);
+        })
+            .then(function () {
+            if (done)
+                done();
         });
     };
     GameMaps.prototype.handleObjectUpdate = function (client, data) {
@@ -132,7 +140,7 @@ var GameMaps = (function () {
         client.player.map.updateUnit(data);
     };
     GameMaps.prototype.handeObjectStats = function (client, data) {
-        if (!client.player || !client.player.map) {
+        if (!client.map) {
             client.respondObjectStats(null, "You are not in a map.");
             return;
         }
@@ -155,9 +163,9 @@ var GameMaps = (function () {
         }
         client.respondObjectStats(stats, null);
     };
-    GameMaps.prototype.handleCreateInstance = function (client, data) {
+    GameMaps.prototype.handleCreateInstance = function (client, data, callback) {
         var _this = this;
-        if (!client.player || !client.player.map) {
+        if (!client.map) {
             client.respondCreateInstance(null, "You are not in a map.");
             return;
         }
@@ -180,15 +188,15 @@ var GameMaps = (function () {
             instance = null;
         });
         client.respondCreateInstance("Success.", null);
-        this.handleEnterInstance(client, { instanceID: instance.instanceID });
-        if (objectIDs && objectIDs.length) {
-            client.sendChatMessage(objectIDs.length + " invites to join were just sent.");
-            this.forEachMap(function (map) {
-            });
-        }
+        this.handleEnterInstance(client, { instanceID: instance.instanceID }, function () {
+            if (objectIDs && objectIDs.length) {
+                objectIDs.forEach(function (objectID) { return callback(objectID); });
+                client.sendChatMessage(objectIDs.length + " invites to join were just sent.");
+            }
+        });
     };
     GameMaps.prototype.handleMapPlayers = function (client) {
-        if (!client.player || !client.player.map) {
+        if (!client.map) {
             client.respondMapPlayers(null, "You are not in a map.");
             return;
         }
@@ -201,9 +209,18 @@ var GameMaps = (function () {
             return;
         }
         var players = [];
-        this.forEachMap(function (map) { return players.concat(map.getPlayers()); });
-        delete players[client.player.name];
+        this.forEachMap(function (map) { return players = players.concat(map.getPlayers()); });
+        players = players.filter(function (player) { return player.name !== client.player.name; });
         client.respondAvailablePlayers(players, null);
+    };
+    GameMaps.prototype.findClientByPlayerID = function (objectID) {
+        var unit = null;
+        for (var mapName in this._maps) {
+            unit = this._maps[mapName].getUnit(objectID);
+            if (unit) {
+                return unit.map.getClient(unit.ownerID);
+            }
+        }
     };
     GameMaps.prototype.getMapStats = function () {
         var stats = {

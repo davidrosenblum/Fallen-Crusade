@@ -5,7 +5,7 @@ var NPCFactory = (function () {
     function NPCFactory() {
     }
     NPCFactory.create = function (options) {
-        var type = options.type, ownerID = options.ownerID, spawnLocation = options.spawnLocation, _a = options.anim, anim = _a === void 0 ? null : _a, _b = options.name, name = _b === void 0 ? null : _b, _c = options.team, team = _c === void 0 ? null : _c, _d = options.tier, tier = _d === void 0 ? null : _d;
+        var type = options.type, ownerID = options.ownerID, x = options.x, y = options.y, _a = options.anim, anim = _a === void 0 ? null : _a, _b = options.name, name = _b === void 0 ? null : _b, _c = options.team, team = _c === void 0 ? null : _c, _d = options.tier, tier = _d === void 0 ? null : _d;
         if (type in this.npcTypes) {
             var doc = this.npcTypes[type];
             return new NPC_1.NPC({
@@ -24,7 +24,8 @@ var NPCFactory = (function () {
                 resistance: doc.resistance,
                 xpValue: doc.xp_value,
                 goldValue: doc.gold_value,
-                spawnLocation: spawnLocation
+                x: x,
+                y: y
             });
         }
         else

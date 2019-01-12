@@ -89,11 +89,20 @@ export class Unit extends CombatCharacter{
     }
 
     public setMap(map:MapInstance):boolean{
-        if(!map || map.hasUnit(this) || map.addUnit(this)){
-            this._map = map;
-            return true;
+        if(this.map){
+            if(this.map.hasUnit(this) && !this.map.removeUnit(this)){
+                return false;
+            }
         }
-        return false;
+
+        if(map){
+            if(!map.hasUnit(this) && !map.addUnit(this)){
+                return false;
+            }
+        }
+
+        this._map = map;
+        return true;
     }
 
     private forEachAbility(fn:(ability:Ability, abilityName?:string)=>void):void{

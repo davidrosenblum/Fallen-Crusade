@@ -1,7 +1,5 @@
 import { GameClient } from './GameClient';
-import { Unit } from '../characters/Unit';
 import { PendingInvite } from './invites/PendingInvite';
-import { GameController } from './GameController';
 import { PendingInviteFactory } from './invites/PendingInviteFactory';
 
 export class GameInvites{
@@ -11,8 +9,8 @@ export class GameInvites{
         this._pendingInvites = {};
     }
 
-    public handleInviteSend(client:GameClient, data:{objectID:string, inviteType?:string}):void{
-        if(!client.player || !client.player.map){
+    public handleInviteSend(client:GameClient, data:{objectID:string, inviteType?:string}, findClient:(objectID:string)=>GameClient):void{
+        if(!client.map){
             client.respondInviteSend(null, "You are not in a map.");
             return;
         }
@@ -31,17 +29,12 @@ export class GameInvites{
             return;
         }
 
-        // get the target player's actual player by ID 
-        let unit:Unit = client.player.map.getUnit(objectID);
-        if(!unit){
-            client.respondInviteSend(null, "Target not found.");
-            return;
-        }
-
         // find the recipient player from the actual player object 
-        let targetClient:GameClient = unit.map.getClient(unit.ownerID);
+        let targetClient:GameClient = findClient(objectID);
+
+        // must find target
         if(!targetClient){
-            client.respondInviteSend(null, "Target is not a player."); // or player not found (impossible?)
+            client.respondInviteSend(null, "Couldn't find target to invite.");
             return;
         }
 
@@ -52,7 +45,7 @@ export class GameInvites{
         }
 
         // create the invite
-        let invite:PendingInvite = PendingInviteFactory.create(inviteType, client, targetClient);
+        let invite:PendingInvite = PendingInviteFactory.create("instance", targetClient, client);
 
         // deliver invite to target 
         targetClient.setPendingInvite(invite);
@@ -64,7 +57,7 @@ export class GameInvites{
 
     public handleReplyInvite(client:GameClient, data:{inviteID:string, accept?:boolean}):void{
         // must be in a map
-        if(!client.player || !client.player.map){
+        if(!client.map){
             client.respondInviteReply(null, "You are not in a map.");
             return;
         }
@@ -76,40 +69,30 @@ export class GameInvites{
         }
 
         // extract request parameters
-        let {inviteID=null, accept=null} = data;
+        let {accept} = data;
 
         // enforce request parameters
-        if(!inviteID || typeof accept !== "boolean"){
+        if(typeof accept !== "boolean"){
             client.respondInviteReply(null, "Bad request json.");
             return;
         }
 
-        // find the invite
-        let invite:PendingInvite = this.getPendingInvite(inviteID);
-        if(!invite || invite !== client.pendingInvite){
-            client.respondInviteReply(null, "Invalid invite ID.");
-            return;
-        }
-
         // this should never happen, but fallback for avoid delaying/double responses
-        if(!invite.isPending){
+        if(!client.pendingInvite.isPending){
             client.respondInviteReply(null, "Invitation expired.");
             return;
         }
 
-        // accept or decline invitation? 
-        invite.resolve(accept);
+        // tell the sender of the update 
+        //client.pendingInvite.from.notifyInviteResponse(accept);
 
-        // forget invite
-        delete this._pendingInvites[invite.inviteID];
+        // send response text
+        client.pendingInvite.from.sendChatMessage(`${client.selectedPlayer} has ${accept ? "accepted" : "declined"} your invite.`);
+
+        // accept or decline invitation? (does its job)
+        client.pendingInvite.resolve(accept);
 
         // destroy the invitation 
         client.setPendingInvite(null);
-        delete this._pendingInvites[invite.inviteID];
-        invite = null;
-    }
-
-    private getPendingInvite(inviteID:string):PendingInvite{
-        return this._pendingInvites[inviteID] || null;
     }
 }

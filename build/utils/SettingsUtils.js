@@ -52,7 +52,7 @@ var SettingsUtils = (function () {
     SettingsUtils.PATH = "settings.json";
     SettingsUtils.defaultSettings = {
         port: 8080,
-        mongo_uri: "mongodb://localhost:27017/fallen_crusade"
+        mongodb_uri: "mongodb://localhost:27017/fallen_crusade"
     };
     return SettingsUtils;
 }());
