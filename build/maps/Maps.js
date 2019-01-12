@@ -215,7 +215,7 @@ var Graveyard = (function (_super) {
         });
         _this.createNPC({
             type: "animus",
-            col: 4,
+            col: 6,
             row: 3,
         });
         return _this;

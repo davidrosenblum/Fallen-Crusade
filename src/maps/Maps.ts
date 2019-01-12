@@ -221,7 +221,7 @@ export class Graveyard extends MapInstance{
 
         this.createNPC({
             type:   "animus",
-            col:    4,
+            col:    6,
             row:    3,
         });
     }

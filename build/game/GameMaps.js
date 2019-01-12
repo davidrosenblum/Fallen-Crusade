@@ -201,8 +201,8 @@ var GameMaps = (function () {
             return;
         }
         var players = [];
-        this.forEachMap(function (map) { return players.concat(map.getPlayers()); });
-        delete players[client.player.name];
+        this.forEachMap(function (map) { return players = players.concat(map.getPlayers()); });
+        players = players.filter(function (player) { return player.name !== client.player.name; });
         client.respondAvailablePlayers(players, null);
     };
     GameMaps.prototype.getMapStats = function () {

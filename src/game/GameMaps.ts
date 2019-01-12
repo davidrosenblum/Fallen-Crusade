@@ -341,10 +341,10 @@ export class GameMaps{
         let players:PlayerListItem[] = [];
 
         // get each player in each room 
-        this.forEachMap(map => players.concat(map.getPlayers()));
+        this.forEachMap(map => players = players.concat(map.getPlayers()));
 
         // remove requesting client's player
-        delete players[client.player.name];
+        players = players.filter(player => player.name !== client.player.name);
 
         // send
         client.respondAvailablePlayers(players, null);

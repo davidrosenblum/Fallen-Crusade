@@ -119,6 +119,8 @@ export class InstanceModal extends React.Component{
         let players = this.state.players;
         if(!players) return <div>Loading...</div>;
 
+        console.log(players);
+
         // any players to invite?
         if(!players.length){
             return <div>No other available players to invite.</div>
