@@ -41,6 +41,22 @@ var NPCsCollection = (function () {
                 xp_value: 0
             }),
             this.insertNPC(database, {
+                type: "commander",
+                name: "Commander",
+                team: "Crusaders",
+                tier: "contact",
+                move_speed: 0,
+                health: 500,
+                health_regen: 0.10,
+                mana: 100,
+                mana_regen: 0.10,
+                defense: 1,
+                resistance: 1,
+                abilities: {},
+                gold_value: 0,
+                xp_value: 0
+            }),
+            this.insertNPC(database, {
                 type: "paragon",
                 name: "Paragon",
                 team: "Crusaders",

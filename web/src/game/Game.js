@@ -7,7 +7,7 @@ import Client from "./Client";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
 
 // how big each tile square is for the game (game is tile-based)
-export const TILE_SIZE = 64;
+export const TILE_SIZE = 96;
 
 // default font for each unit's nametag and any floating game text 
 fw.TextField.defaultFont = "15px electrolize";
@@ -17,7 +17,7 @@ class Game extends EventEmitter{
     constructor(){
         super();
 
-        this.renderer = new fw.Renderer(1280, 720);     // the renderer (has the canvas)
+        this.renderer = new fw.Renderer(1920, 1080);     // the renderer (has the canvas)
         this.layers = new fw.MapLayers();               // map layers (background, midground, foreground)
         this.objects = new fw.MPEntityStorage();        // game object updater
         this.keys = null;                               // keyboard input listener
@@ -80,7 +80,7 @@ class Game extends EventEmitter{
             },
             midground: {
                 tileLayout: mapData.midground,
-                tileTypes:  [null]
+                tileTypes:  [null, MapTiles.StoneWall]
             },
             foreground: {
                 tileLayout: mapData.foreground,

@@ -22,8 +22,8 @@ var NPCFactory_1 = require("../characters/NPCFactory");
 var events_1 = require("events");
 var MapInstance = (function (_super) {
     __extends(MapInstance, _super);
-    function MapInstance(name, mapData, tileSize, playerSpawn) {
-        if (tileSize === void 0) { tileSize = 64; }
+    function MapInstance(name, mapData, playerSpawn, tileSize) {
+        if (tileSize === void 0) { tileSize = 96; }
         var _this = _super.call(this) || this;
         _this._instanceID = MapInstance.tokenGen.nextToken();
         _this._name = name;

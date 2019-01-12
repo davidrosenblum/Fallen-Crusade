@@ -54,7 +54,7 @@ export class MapInstance extends EventEmitter{
     private _clients;
     private _numClients:number;
 
-    constructor(name:string, mapData:MapData, tileSize:number=64, playerSpawn?:SpawnLocation){
+    constructor(name:string, mapData:MapData, playerSpawn?:SpawnLocation, tileSize:number=96){
         super();
         
         this._instanceID = MapInstance.tokenGen.nextToken();
