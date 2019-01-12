@@ -144,7 +144,7 @@ export class CharacterSelect extends React.Component{
         // render the table
         return (
             <div>
-                <Table>
+                <Table borderless>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -157,6 +157,7 @@ export class CharacterSelect extends React.Component{
                         {rows}
                     </tbody>
                 </Table>
+                <br/>
                 {this.renderLogoutBtn()}
             </div>  
         )
@@ -183,6 +184,7 @@ export class CharacterSelect extends React.Component{
             return (
                 <div>
                     <div>{errMessage}</div>
+                    <br/>
                     {this.renderLogoutBtn()}
                 </div>
             );
@@ -200,13 +202,14 @@ export class CharacterSelect extends React.Component{
     render(){
         return (
             <div>
-                <br/>
-                <Banner/>
-                <br/>
                 <div className="app-menu">
+                    <br/>
+                    <Banner/>
+                    <br/>
                     <h2 className="text-center">Select Your Hero</h2>
                     <br/>
                     {this.renderBody()}
+                    <br/>
                     <Footer/>
                 </div>
             </div>

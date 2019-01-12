@@ -93,10 +93,12 @@ export class Register extends React.Component{
     render(){
         return (
             <div>
-                <br/>
-                <Banner/>
-                <br/>
                 <div className="app-menu">
+                    <br/>
+                    <Banner/>
+                    <br/>
+                    <h2 className="text-center">Create Account</h2>
+                    <br/>
                     <Form onSubmit={this.onSubmit.bind(this)}>
                         <FormGroup>
                             <Label>Username</Label>
@@ -128,6 +130,7 @@ export class Register extends React.Component{
                                 required
                             />
                         </FormGroup>
+                        <br/>
                         <div className="text-center">
                             <Button width={BUTTON_WIDTH} disabled={this.state.pending}>
                                 Submit
@@ -143,6 +146,7 @@ export class Register extends React.Component{
                             </Button>
                         </div>
                     </Form>
+                    <br/>
                     <Footer/>
                 </div>
             </div>
