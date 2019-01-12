@@ -76,11 +76,18 @@ var Unit = (function (_super) {
         return abilityList;
     };
     Unit.prototype.setMap = function (map) {
-        if (!map || map.hasUnit(this) || map.addUnit(this)) {
-            this._map = map;
-            return true;
+        if (this.map) {
+            if (this.map.hasUnit(this) && !this.map.removeUnit(this)) {
+                return false;
+            }
         }
-        return false;
+        if (map) {
+            if (!map.hasUnit(this) && !map.addUnit(this)) {
+                return false;
+            }
+        }
+        this._map = map;
+        return true;
     };
     Unit.prototype.forEachAbility = function (fn) {
         for (var abilityName in this._abilities) {

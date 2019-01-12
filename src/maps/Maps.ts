@@ -211,17 +211,17 @@ export class Graveyard extends MapInstance{
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
-        });
+        }, {col: 1, row: 3});
 
         this.createNPC({
             type:   "grave-knight",
-            col:    3,
+            col:    6,
             row:    3,
         });
 
         this.createNPC({
             type:   "animus",
-            col:    6,
+            col:    8,
             row:    3,
         });
     }

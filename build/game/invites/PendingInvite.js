@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var TokenGenerator_1 = require("../../utils/TokenGenerator");
 var PendingInvite = (function () {
     function PendingInvite(type, message, to, from, declineTimeout) {
-        if (declineTimeout === void 0) { declineTimeout = 6000; }
+        if (declineTimeout === void 0) { declineTimeout = 15000; }
         var _this = this;
         this._inviteID = PendingInvite.tokenGen.nextToken();
         this._type = type;
         this._message = message;
+        this._to = to;
         this._from = from;
         this._pending = true;
         if (declineTimeout > 0) {

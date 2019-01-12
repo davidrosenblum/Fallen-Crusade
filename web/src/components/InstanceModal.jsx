@@ -119,12 +119,13 @@ export class InstanceModal extends React.Component{
         let players = this.state.players;
         if(!players) return <div>Loading...</div>;
 
-        console.log(players);
-
         // any players to invite?
         if(!players.length){
             return <div>No other available players to invite.</div>
         }
+
+        // sort by name
+        players = players.sort((a, b) => a.name > b.name ? 1 : -1);
 
         // create the table rows
         // [x] Invite? | PlayerName | Level # 

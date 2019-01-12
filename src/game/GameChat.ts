@@ -6,7 +6,7 @@ import { Ability } from '../abilities/Ability';
 export class GameChat{
     public handleChatMessage(client:GameClient, data:{chat?:string}):void{
         // must be in a map
-        if(!client.player || !client.player.map){
+        if(!client.map){
             client.sendChatMessage(null, null, "You must be in a map.");
             return;
         }
@@ -27,7 +27,7 @@ export class GameChat{
         }
         else{
             // send the chat to everyone in the map 
-            client.player.map.broadcastChat(chat, client.selectedPlayer);
+            client.map.broadcastChat(chat, client.selectedPlayer);
         }
     }
 
@@ -49,6 +49,10 @@ export class GameChat{
             // learn a new ability
             case "~learn":
                 this.adminCommandLearn(client, split);
+                break;
+            // map info
+            case "~map":
+                this.adminCommandMap(client, split);
                 break;
             // bad command
             default:
@@ -92,6 +96,24 @@ export class GameChat{
         else{
             // ability not created
             client.sendChatMessage("Invalid ability name.");
+        }
+    }
+
+    private adminCommandMap(client:GameClient, split:string[]):void{
+        let subcommand:string = split[1] || null;
+
+        switch(subcommand){
+            case "players":
+                client.sendChatMessage(
+                    client.map.getPlayers().map(player => player.name).join(", ")
+                );
+                break;
+            case "pop":
+                client.sendChatMessage(`${client.map.numClients} connected players.`);
+                break;
+            default:
+                client.sendChatMessage("Invalid map subcommand.");
+                break;
         }
     }
 }

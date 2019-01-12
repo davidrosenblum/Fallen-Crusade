@@ -54,6 +54,9 @@ var MapInstance = (function (_super) {
     MapInstance.prototype.addClient = function (client) {
         if (!this.hasClient(client)) {
             this._clients[client.clientID] = client;
+            client.setMap(this);
+            this.emit("add-client", { client: client });
+            this._numClients++;
             this.broadcastChat(client.selectedPlayer + " connected.", null, client);
             if (this._playerSpawn) {
                 client.player.x = this._playerSpawn.col * this._tileSize;
@@ -67,6 +70,9 @@ var MapInstance = (function (_super) {
     MapInstance.prototype.removeClient = function (client) {
         if (this.hasClient(client)) {
             delete this._clients[client.clientID];
+            client.setMap(null);
+            this.emit("remove-client", { client: client });
+            this._numClients--;
             this.removeUnit(client.player);
             this.broadcastChat(client.selectedPlayer + " disconnected.", null, client);
             if (this.isEmpty)
@@ -84,6 +90,7 @@ var MapInstance = (function (_super) {
             this.forEachClient(function (client) { return client.notifyObjectCreate(data_1); });
             unit.on("health", function () { return _this.broadcastUnitStats(unit); });
             unit.on("mana", function () { return _this.broadcastUnitStats(unit); });
+            this.emit("add-unit", { unit: unit });
             return true;
         }
         return false;
@@ -93,6 +100,7 @@ var MapInstance = (function (_super) {
             delete this._units[unit.objectID];
             unit.setMap(null);
             this.forEachClient(function (client) { return client.notifyObjectDelete(unit.objectID); });
+            this.emit("remove-unit", { unit: unit });
             return true;
         }
         return false;

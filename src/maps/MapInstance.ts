@@ -91,6 +91,10 @@ export class MapInstance extends EventEmitter{
     public addClient(client:GameClient):boolean{
         if(!this.hasClient(client)){
             this._clients[client.clientID] = client;
+            client.setMap(this); // removes current map
+
+            this.emit("add-client", {client});
+            this._numClients++;
 
             this.broadcastChat(`${client.selectedPlayer} connected.`, null, client);
 
@@ -109,6 +113,10 @@ export class MapInstance extends EventEmitter{
     public removeClient(client:GameClient):boolean{
         if(this.hasClient(client)){
             delete this._clients[client.clientID];
+            client.setMap(null);
+
+            this.emit("remove-client", {client});
+            this._numClients--;
 
             this.removeUnit(client.player);
 
@@ -133,6 +141,8 @@ export class MapInstance extends EventEmitter{
             unit.on("health", () => this.broadcastUnitStats(unit));
             unit.on("mana", () => this.broadcastUnitStats(unit));
 
+            this.emit("add-unit", {unit});
+
             return true;
         }
         return false;
@@ -144,6 +154,8 @@ export class MapInstance extends EventEmitter{
             unit.setMap(null);
 
             this.forEachClient(client => client.notifyObjectDelete(unit.objectID));
+
+            this.emit("remove-unit", {unit});
 
             return true;
         }

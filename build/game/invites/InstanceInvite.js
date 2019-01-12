@@ -28,8 +28,9 @@ var InstanceInvite = (function (_super) {
         return _this;
     }
     InstanceInvite.prototype.onAccept = function () {
-        if (this._map) {
-            this._map.addClient(this.to);
+        if (this._map && this._map.addClient(this.to)) {
+            var mapState = this._map.getMapState();
+            this.to.respondEnterInstance(mapState, null);
         }
     };
     return InstanceInvite;

@@ -3,7 +3,7 @@ import { Status, OpCode, MSG_DELIM } from './Comm';
 import { AccountData } from '../database/AccountData';
 import { Player } from '../characters/Player';
 import { TokenGenerator } from '../utils/TokenGenerator';
-import { MapState, PlayerListItem } from '../maps/MapInstance';
+import { MapState, PlayerListItem, MapInstance } from '../maps/MapInstance';
 import { CharacterPreviewDocument } from '../database/CharactersCollection';
 import { CharacterSpawnState, CharacterUpdateState } from '../characters/Character';
 import { PendingInvite } from "./invites/PendingInvite";
@@ -29,6 +29,7 @@ export class GameClient{
     private _accountData:AccountData;
     private _selectedPlayer:string;
     private _player:Player;
+    private _map:MapInstance;
     private _pendingInvite:PendingInvite;
 
     constructor(conn:websocket.connection){
@@ -37,6 +38,7 @@ export class GameClient{
         this._accountData = null;
         this._selectedPlayer = null;
         this._player = null;
+        this._map = null;
         this._pendingInvite = null;
     }
 
@@ -72,6 +74,26 @@ export class GameClient{
 
     public static createStatsResponse(stats:CharacterStats):GameClientResponse{
         return this.createResponse(OpCode.OBJECT_STATS, {stats}, Status.GOOD);
+    }
+
+    public setMap(map:MapInstance):boolean{
+        // in a map - must leave
+        if(this.map){
+            if(this.map.hasClient(this) && !this.map.removeClient(this)){
+                return false;
+            }
+        }
+
+        // if joinining - must join
+        if(map){
+            if(!map.hasClient(this) && !map.addClient(this)){
+                return false;
+            }
+        }
+
+        // set new map (can be null)
+        this._map = map;
+        return true;
     }
 
     public setPendingInvite(invite:PendingInvite):void{
@@ -200,7 +222,7 @@ export class GameClient{
     }
 
     public notifyInvite(message:string):void{
-        this.send(OpCode.INVITE_NOTIFY, {message}, Status.GOOD);
+        this.send(OpCode.INVITE_RECEIVE, {message}, Status.GOOD);
     }
 
     public notifyInviteResponse(accepted:boolean):void{
@@ -237,6 +259,10 @@ export class GameClient{
 
     public get player():Player{
         return this._player;
+    }
+
+    public get map():MapInstance{
+        return this._map;
     }
 
     public get pendingInvite():PendingInvite{

@@ -9,6 +9,7 @@ var GameClient = (function () {
         this._accountData = null;
         this._selectedPlayer = null;
         this._player = null;
+        this._map = null;
         this._pendingInvite = null;
     }
     GameClient.parseResponse = function (data, onRequest) {
@@ -39,6 +40,20 @@ var GameClient = (function () {
     };
     GameClient.createStatsResponse = function (stats) {
         return this.createResponse(14, { stats: stats }, "ok");
+    };
+    GameClient.prototype.setMap = function (map) {
+        if (this.map) {
+            if (this.map.hasClient(this) && !this.map.removeClient(this)) {
+                return false;
+            }
+        }
+        if (map) {
+            if (!map.hasClient(this) && !map.addClient(this)) {
+                return false;
+            }
+        }
+        this._map = map;
+        return true;
     };
     GameClient.prototype.setPendingInvite = function (invite) {
         this._pendingInvite = invite;
@@ -194,6 +209,13 @@ var GameClient = (function () {
     Object.defineProperty(GameClient.prototype, "player", {
         get: function () {
             return this._player;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GameClient.prototype, "map", {
+        get: function () {
+            return this._map;
         },
         enumerable: true,
         configurable: true

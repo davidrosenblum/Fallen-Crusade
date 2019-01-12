@@ -9,6 +9,7 @@ import { GameViewAbilities } from "./GameViewAbilities";
 import { GameViewDropdown } from "./GameViewDropdown";
 import { InstanceModal } from "./InstanceModal";
 import { UpgradesModal } from "./UpgradesModal";
+import { InviteModal } from "./InviteModal";
 
 export class GameView extends React.Component{
     constructor(props){
@@ -70,6 +71,7 @@ export class GameView extends React.Component{
                 <GameViewDropdown/>
                 <InstanceModal/>
                 <UpgradesModal/>
+                <InviteModal/>
             </div>
         );
     }

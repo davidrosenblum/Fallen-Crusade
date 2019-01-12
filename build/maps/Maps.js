@@ -207,15 +207,15 @@ var Graveyard = (function (_super) {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
-        }) || this;
+        }, { col: 1, row: 3 }) || this;
         _this.createNPC({
             type: "grave-knight",
-            col: 3,
+            col: 6,
             row: 3,
         });
         _this.createNPC({
             type: "animus",
-            col: 6,
+            col: 8,
             row: 3,
         });
         return _this;

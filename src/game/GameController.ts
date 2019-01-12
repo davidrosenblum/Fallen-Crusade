@@ -129,7 +129,9 @@ export class GameController{
                 break;
             // player wants to send an invite to something
             case OpCode.INVITE_SEND:
-                this._invites.handleInviteSend(client, data);
+                this._invites.handleInviteSend(client, data, objectID => {
+                    return this._maps.findClientByPlayerID(objectID);
+                });
                 break;
             // player replies to an invite
             case OpCode.INVITE_REPLY:
@@ -137,7 +139,11 @@ export class GameController{
                 break;
             // player is creating a new instance
             case OpCode.CREATE_INSTANCE:
-                this._maps.handleCreateInstance(client, data);
+                this._maps.handleCreateInstance(client, data, objectID => {
+                    this.invites.handleInviteSend(client, {objectID, inviteType: "instance"}, id => {
+                        return this._maps.findClientByPlayerID(id);
+                    });
+                });
                 break;
             // player requests all players in current map
             case OpCode.MAP_PLAYERS:
