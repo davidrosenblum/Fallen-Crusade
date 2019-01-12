@@ -28,13 +28,14 @@ export class Player extends Unit{
             type:           "player",
             team:           "Crusaders",
             ownerID,
-            health:         25,
+            health:         100,
             healthRegen:    0.02,
             mana:           100,
             manaRegen:      0.02,
             defense:        0,
             resistance:     0,
             abilities:      saveData.abilities || {},
+            moveSpeed:      1.5
         });
 
         this._level =           Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));
@@ -65,6 +66,7 @@ export class Player extends Unit{
         let xpRemaining:number = xp;
 
         while(xpRemaining >= this.xpToGo){
+            xpRemaining -= this.xpToGo;
             this.levelUp();
         }
 

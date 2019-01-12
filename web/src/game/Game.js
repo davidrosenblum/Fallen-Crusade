@@ -156,8 +156,19 @@ class Game extends EventEmitter{
             this.layers.add(object);
             object.setPosition(x, y - object.height);
 
-            // select any object when it is clicked 
-            object.on("click", () => this.selectTarget(object));
+            // on click functionality
+            if(data.type === "paragon"){
+                // paragons open upgrade menu
+                object.on("click", () => ModalDispatcher.upgradesModal());
+            }
+            else if(data.type === "commander"){
+                // commanders open instance mennu
+                object.on("click", () =>  ModalDispatcher.instanceModal());
+            }
+            else{
+                // normal units selects them
+                object.on("click", () => this.selectTarget(object));
+            }
 
             // check if the object is the current player 
             if(data.type === "player" && data.ownerID === Client.clientID){

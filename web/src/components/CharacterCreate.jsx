@@ -88,7 +88,6 @@ export class CharacterCreate extends React.Component{
                                 required
                             />
                         </FormGroup>
-                        <br/>
                         <FormGroup>
                             <Label>Appearance</Label>
                             <Row>

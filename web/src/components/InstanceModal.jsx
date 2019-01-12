@@ -182,7 +182,6 @@ export class InstanceModal extends React.Component{
                                 required
                             >
                                 <option>Graveyard</option>
-                                <option>Crypt</option>
                             </Input>
                         </FormGroup>
                         <FormGroup>
