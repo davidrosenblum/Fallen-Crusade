@@ -129,7 +129,7 @@ var Server = (function () {
                         return [3, 4];
                     case 4:
                         console.log("Connecting to MongoDB...");
-                        mongoUri = process.env.MONGO_URI || settings.mongodb_uri;
+                        mongoUri = process.env.MONGODB_URI || settings.mongodb_uri;
                         mongoDbName = mongoUri.split("/").pop();
                         return [4, mongodb_1.MongoClient.connect(mongoUri, { useNewUrlParser: true })];
                     case 5:
