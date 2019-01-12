@@ -26,6 +26,9 @@ export class GameViewChat extends React.Component{
                     // no text - make display text the first chat message
                     elem.value = text;
                 }
+
+                // auto scroll to bottom
+                elem.scrollTop = elem.scrollHeight;
             }
         };
     }

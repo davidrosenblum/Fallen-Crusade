@@ -22,13 +22,14 @@ var Player = (function (_super) {
             type: "player",
             team: "Crusaders",
             ownerID: ownerID,
-            health: 25,
+            health: 100,
             healthRegen: 0.02,
             mana: 100,
             manaRegen: 0.02,
             defense: 0,
             resistance: 0,
             abilities: saveData.abilities || {},
+            moveSpeed: 1.5
         }) || this;
         _this._level = Math.max(1, Math.min(saveData.level, Player.LEVEL_CAP));
         _this._xpNeeded = _this.calculateXPNeeded();
@@ -53,6 +54,7 @@ var Player = (function (_super) {
     Player.prototype.addXP = function (xp) {
         var xpRemaining = xp;
         while (xpRemaining >= this.xpToGo) {
+            xpRemaining -= this.xpToGo;
             this.levelUp();
         }
         this._xp += xpRemaining;
