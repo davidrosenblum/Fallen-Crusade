@@ -76,7 +76,7 @@ class Game extends EventEmitter{
             tileSize: TILE_SIZE,
             background: {
                 tileLayout: mapData.background,
-                tileTypes:  [null, MapTiles.Grass]
+                tileTypes:  [null, MapTiles.Grass, MapTiles.MetalFloor, MapTiles.StoneFloor]
             },
             midground: {
                 tileLayout: mapData.midground,

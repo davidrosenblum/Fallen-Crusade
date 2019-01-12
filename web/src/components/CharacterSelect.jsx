@@ -1,5 +1,7 @@
 import React from "react";
 import { Table, Button } from "reactstrap";
+import { Banner } from "./Banner";
+import { Footer } from "./Footer";
 import { BUTTON_WIDTH } from "../data/Data";
 import Client from "../game/Client";
 import Game from "../game/Game";
@@ -108,7 +110,7 @@ export class CharacterSelect extends React.Component{
                 rows.push(
                     <tr key={i}>
                         <td>{name}</td>
-                        <td>Level {level}</td>
+                        <td>{level}</td>
                         <td>{last_map}</td>
                         <td>
                             <Button
@@ -116,7 +118,7 @@ export class CharacterSelect extends React.Component{
                                 onClick={() => this.selectPlayer(name)}
                                 disabled={this.state.pending}
                             >
-                                Select
+                                Play
                             </Button>
                         </td>
                     </tr>
@@ -125,7 +127,7 @@ export class CharacterSelect extends React.Component{
             else{
                 rows.push(
                     <tr key={i}>
-                        <td>
+                        <td colSpan={4}>
                             <Button
                                 width={BUTTON_WIDTH}
                                 onClick={this.onCreate.bind(this)}
@@ -142,11 +144,20 @@ export class CharacterSelect extends React.Component{
         // render the table
         return (
             <div>
-                <Table>
+                <Table borderless>
                     <thead>
-                        {rows}
+                        <tr>
+                            <th>Name</th>
+                            <th>Level</th>
+                            <th>Location</th>
+                            <th></th>
+                        </tr>
                     </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
                 </Table>
+                <br/>
                 {this.renderLogoutBtn()}
             </div>  
         )
@@ -173,6 +184,7 @@ export class CharacterSelect extends React.Component{
             return (
                 <div>
                     <div>{errMessage}</div>
+                    <br/>
                     {this.renderLogoutBtn()}
                 </div>
             );
@@ -192,7 +204,13 @@ export class CharacterSelect extends React.Component{
             <div>
                 <div className="app-menu">
                     <br/>
+                    <Banner/>
+                    <br/>
+                    <h2 className="text-center">Select Your Hero</h2>
+                    <br/>
                     {this.renderBody()}
+                    <br/>
+                    <Footer/>
                 </div>
             </div>
         );

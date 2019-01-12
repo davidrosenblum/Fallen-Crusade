@@ -114,10 +114,12 @@ export class Login extends React.Component{
     render(){
         return (
             <div>
-                <br/>
-                <Banner/>
-                <br/>
                 <div className="app-menu">
+                    <br/>
+                    <Banner/>
+                    <br/>
+                    <h2 className="text-center">Account Login</h2>
+                    <br/>
                     <Form onSubmit={this.onSubmit.bind(this)}>
                         <FormGroup>
                             <Label>Username</Label>
@@ -139,6 +141,7 @@ export class Login extends React.Component{
                                 required
                             />
                         </FormGroup>
+                        <br/>
                         <div className="text-center">
                             <Button width={BUTTON_WIDTH} disabled={this.state.pending}>
                                 Submit
@@ -154,6 +157,7 @@ export class Login extends React.Component{
                             </Button>
                         </div>
                     </Form>
+                    <br/>
                     <Footer/>
                 </div>
             </div>

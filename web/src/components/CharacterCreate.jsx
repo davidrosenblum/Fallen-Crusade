@@ -1,9 +1,14 @@
 import React from "react";
 import { Form, FormGroup, Label, Input, Button, Row, Col } from "reactstrap";
+import { Footer } from "./Footer";
+import { Banner } from "./Banner";
+import humanMale from "../img/player_previews/human_male.png";
 import { NAME_MAX_LENGTH, BUTTON_WIDTH } from "../data/Data";
 import Client from "../game/Client";
 import NavDispatcher from "../dispatchers/NavDispatcher";
 import ModalDispatcher from "../dispatchers/ModalDispatcher";
+
+export const PREVIEWS = [humanMale];
 
 export class CharacterCreate extends React.Component{
     constructor(props){
@@ -13,7 +18,8 @@ export class CharacterCreate extends React.Component{
         this.skinInput = null;  // <input> element for the skin (dropdown)
 
         this.state = {
-            pending: false      // awaiting response (locks UI)
+            pending:    false,      // awaiting response (locks UI)
+            previewNum: 0           // skin selected (corresponds with previews array)
         };
 
         // handler for when the client receives a character create response 
@@ -65,8 +71,12 @@ export class CharacterCreate extends React.Component{
     render(){
         return (
             <div>
-                <br/>
                 <div className="app-menu">
+                    <br/>
+                    <Banner/>
+                    <br/>
+                    <h2 className="text-center">Create Your Hero</h2>
+                    <br/>
                     <Form onSubmit={this.onSubmit.bind(this)}>
                         <FormGroup>
                             <Label>Name</Label>
@@ -78,8 +88,9 @@ export class CharacterCreate extends React.Component{
                                 required
                             />
                         </FormGroup>
+                        <br/>
                         <FormGroup>
-                            <Label>Skin</Label>
+                            <Label>Appearance</Label>
                             <Row>
                                 <Col lg={6}>
                                     <Input
@@ -88,15 +99,20 @@ export class CharacterCreate extends React.Component{
                                         disabled={this.state.pending}
                                         required
                                     >
-                                        <option value={1}>Human Male</option>
-                                        <option value={2}>Human Female</option>
+                                        <option value={1}>Male Mage</option>
                                     </Input>
                                 </Col>
-                                <Col lg={6}>
-                                    (Preview)
+                                <Col lg={6} className="text-center">
+                                    <img 
+                                        src={PREVIEWS[this.state.previewNum]}
+                                        width={64}
+                                        title="Preview"
+                                        onContextMenu={evt => evt.preventDefault()}
+                                    />
                                 </Col>
                             </Row>
                         </FormGroup>
+                        <br/>
                         <div className="text-center">
                             <Button>
                                 Submit
@@ -107,6 +123,8 @@ export class CharacterCreate extends React.Component{
                             </Button>
                         </div>
                     </Form>
+                    <br/>
+                    <Footer/>
                 </div>
             </div>
         );

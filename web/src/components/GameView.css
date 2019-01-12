@@ -72,8 +72,8 @@
 }
 
 .hud-abilities img{
-    border: 1px solid black;
-    border-radius: 6px;
+    border-radius: 25%;
+    box-shadow: 1px 1px 1px;
     margin: 3px;
     cursor: pointer;
 }

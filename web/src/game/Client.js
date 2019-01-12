@@ -141,6 +141,7 @@ class Client extends EventEmitter{
                 break;
             case OpCode.INVITE_RECEIVE:
                 this.handleInviteReceive(data);
+                break;
             default:
                 break;
         }
